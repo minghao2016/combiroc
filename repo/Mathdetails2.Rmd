@@ -1,0 +1,14 @@
+---
+title: ''
+output: html_document
+---
+
+The total number of enumerable combinations is:
+<br>
+<br>
+
+
+
+
+
+For more theoretical details see:<http://faculty.ksu.edu.sa/fawaz/431files/Books/Richard%20A.%20Brualdi-Introductory%20Combinatorics%20(5th%20Edition)%20(2009).pdf>.
