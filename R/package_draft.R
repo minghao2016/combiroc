@@ -4,6 +4,7 @@
 library(tidyr)
 library(dplyr)
 library(ggplot2)
+library(gtools)
 
 ## Essential functions:
 
@@ -25,13 +26,13 @@ data_long <- tidyr::pivot_longer(data, cols =  starts_with("Marker"), names_to =
 
 ## list of long data tables (one for each class)
 nclass <- unique(data[,2])
-data_class_list <-c()
-for (class in nclass) {data_class_list <- 
-  list(data_class_list, dplyr::filter(data_long, Class == class))}
+long_data_class_list <-c()
+for (class in nclass) {long_data_class_list <- 
+  list(long_data_class_list, dplyr::filter(data_long, Class == class))}
 
-data_class_list[[1]]<- data_class_list[[1]][[2]] # to remove the first NULL element
+long_data_class_list[[1]]<- long_data_class_list[[1]][[2]] # to remove the first NULL element
 
-names(data_class_list) <- nclass # to rename elements
+names(long_data_class_list) <- nclass # to rename elements
 
 
 
@@ -45,10 +46,67 @@ ggplot(data = data_long, aes(Markers, Values)) +
   theme_classic()  # ADD SUPERIOR LIMIT ?
 
 for (class in nclass) {print(paste("STATISTICS OF CLASS ", class, ":", sep = ""))
-                       print(summary(data.frame(data_class_list[class])[,4]))}
+                       print(summary(data.frame(long_data_class_list[class])[,4]))}
+for (i in long_data_class_list){i <- as_tibble(i)}
 
 # - a function to perform the COMBINATORIAL ANALYSIS
+dfe <- data[data$Class== nclass[1],]
+dfe<- dfe[,3:dim( dfe)[2]]
+dfe<-t(dfe)
 
+n_features<-length(rownames(dfe))
+k<-1:n_features
+K<-2^n_features-1   
+
+
+
+df_comb_list <- c()
+for (i in nclass) { df <- data[data$Class== i,]
+  df <- df[,3:dim( df)[2]]
+  df <- t(df)
+  df_comb_list <- list(df_comb_list, df)}
+df_comb_list[[1]]<- df_comb_list[[1]][[2]] # to remove the first NULL element
+
+names(df_comb_list) <- nclass # to rename elements
+
+
+
+### list of all possible combinations
+listCombinationAntigens <- array(0,dim=c(K,1))
+
+### relative frequency for each class  (the row numbers depend on the K possible combinations while the column numbers depends on the number classes:2 (classA2 and classB2, pairwise comparison))
+frequencyCombinationAntigens<-array(0,dim=c(K,2))
+
+
+
+signalthr<- 450
+combithr <- 1
+
+index<-1
+
+dim(temp)[1]
+
+for (i in 1:length(k)){
+  temp<- combinations(n_features,k[i],rownames(dfe))
+  # storage the row index to calculate the relative frequency
+  row_index_combination<-combinations(n_features,k[i],k)
+  for (j in 1:dim(temp)[1]){
+    listCombinationAntigens[index,1]<-paste(temp[j,],collapse="-")
+    ## single antigen
+    if(dim(temp)[2]==1){ ## 1 antigen combination
+      frequencyCombinationAntigens[index,1]<-length(which(
+        data.frame(df_comb_list['A'])[row_index_combination[j,],]>=signalthr))    #input$signalthr
+      frequencyCombinationAntigens[index,2]<-length(which(
+        data.frame(df_comb_list['B'])[row_index_combination[j,],]>=signalthr))    #input$signalthr
+    }else{ ## more than 1 antigen (combination)
+      frequencyCombinationAntigens[index,1]<- length(which((colSums(
+        data.frame(df_comb_list['A'])[row_index_combination[j,],]>=signalthr))>=combithr))   #input$signalthr))>=input$combithr
+      frequencyCombinationAntigens[index,2]<-length(which((colSums(
+        data.frame(df_comb_list['B'])[row_index_combination[j,],]>=signalthr))>=combithr))     #input$signalthr))>=input$combithr
+    }
+    index<-index+1
+  }
+}
 # - a function to SHOW the BEST COMBINATIONS (dataframe + buble chart?):
 #   ALTERNATIVE 1 - Do something like the app, where you select SN and SP 
 #                   and the app returns the buble chart and the table
