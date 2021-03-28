@@ -107,7 +107,32 @@ for (i in 1:length(k)){
     index<-index+1
   }
 }
+
+
 # - a function to SHOW the BEST COMBINATIONS (dataframe + buble chart?):
+
+
+length(colnames((data.frame(df_comb_list[1]))))
+
+# Sensitivity  (the row numbers depend on the K possible combinations while the column numbers depends on the number classes:2 (classA2 and classB2, pairwise comparison))
+
+
+names<- c()
+
+SE_SP<-array(0,dim=c(K,length(nclass)*2))
+
+for (i in  1:length(nclass)){
+  SE_SP[,i*2-1]<- round(frequencyCombinationAntigens[,1]*100/length(colnames((data.frame(df_comb_list[i]))))
+                      ,digits=0)
+  names[i*2-1] <- paste('SE%', nclass[i])
+  SE_SP[,i*2]<- 100-SE_SP[,i*2-1]
+  names[i*2] <- paste('SP%', nclass[i])
+}
+
+
+rownames(SE_SP)<-listCombinationAntigens
+colnames(SE_SP)<- names
+
 #   ALTERNATIVE 1 - Do something like the app, where you select SN and SP 
 #                   and the app returns the buble chart and the table
 #   ALTERNATIVE 2 - The function returns the table with combinations 
