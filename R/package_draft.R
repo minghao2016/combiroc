@@ -47,7 +47,6 @@ ggplot(data = data_long, aes(Markers, Values)) +
 
 for (class in nclass) {print(paste("STATISTICS OF CLASS ", class, ":", sep = ""))
                        print(summary(data.frame(long_data_class_list[class])[,4]))}
-for (i in long_data_class_list){i <- as_tibble(i)}
 
 # - a function to perform the COMBINATORIAL ANALYSIS
 dfe <- data[data$Class== nclass[1],]
@@ -84,7 +83,7 @@ combithr <- 1
 
 index<-1
 
-dim(temp)[1]
+
 
 for (i in 1:length(k)){
   temp<- combinations(n_features,k[i],rownames(dfe))
@@ -94,16 +93,15 @@ for (i in 1:length(k)){
     listCombinationAntigens[index,1]<-paste(temp[j,],collapse="-")
     ## single antigen
     if(dim(temp)[2]==1){ ## 1 antigen combination
-      frequencyCombinationAntigens[index,1]<-length(which(
-        data.frame(df_comb_list['A'])[row_index_combination[j,],]>=signalthr))    #input$signalthr
-      frequencyCombinationAntigens[index,2]<-length(which(
-        data.frame(df_comb_list['B'])[row_index_combination[j,],]>=signalthr))    #input$signalthr
+      for (n in 1:length(nclass)){
+         frequencyCombinationAntigens[index,n]<-length(which(
+           data.frame(df_comb_list[n])[row_index_combination[j,],]>=signalthr))    #input$signalthr
+      }
     }else{ ## more than 1 antigen (combination)
-      frequencyCombinationAntigens[index,1]<- length(which((colSums(
-        data.frame(df_comb_list['A'])[row_index_combination[j,],]>=signalthr))>=combithr))   #input$signalthr))>=input$combithr
-      frequencyCombinationAntigens[index,2]<-length(which((colSums(
-        data.frame(df_comb_list['B'])[row_index_combination[j,],]>=signalthr))>=combithr))     #input$signalthr))>=input$combithr
-    }
+      for (n in 1:length(nclass)){
+         frequencyCombinationAntigens[index,n]<- length(which((colSums(
+           data.frame(df_comb_list[n])[row_index_combination[j,],]>=signalthr))>=combithr))   #input$signalthr))>=input$combithr
+     }}
     index<-index+1
   }
 }
