@@ -109,10 +109,7 @@ for (i in 1:length(k)){
 
 # - a function to SHOW the BEST COMBINATIONS (dataframe + buble chart?):
 
-
-length(colnames((data.frame(df_comb_list[1]))))
-
-# Sensitivity  (the row numbers depend on the K possible combinations while the column numbers depends on the number classes:2 (classA2 and classB2, pairwise comparison))
+### Sensitivity  (the row numbers depend on the K possible combinations while the column numbers depends on the number classes:2 (classA2 and classB2, pairwise comparison))
 
 
 names<- c()
@@ -127,9 +124,12 @@ for (i in  1:length(nclass)){
   names[i*2] <- paste('SP%', nclass[i])
 }
 
-
+SE_SP <- data.frame(SE_SP)
 rownames(SE_SP)<-listCombinationAntigens
 colnames(SE_SP)<- names
+SE_SP$min <-  apply(SE_SP, 1, FUN=min)
+ranked_SE_SP<-SE_SP[order(-SE_SP$min),] # 9/14
+
 
 #   ALTERNATIVE 1 - Do something like the app, where you select SN and SP 
 #                   and the app returns the buble chart and the table
@@ -137,6 +137,7 @@ colnames(SE_SP)<- names
 #                   ranked by F1-score, showing on the top the 
 #                   combinations with the highest SN and SP (I suppose)
 #                   in order not to force a priori threshold selection.
+
 
 # - a function to SHOW ROC CURVES and corresponding METRICS of the 
 #   selected combinations
