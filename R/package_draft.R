@@ -11,12 +11,21 @@ library(stringr)
 ## Essential functions:
 
 # - a function to READ DATA (if correctly formatted)
-load <- function(data,  header = TRUE, sep = ";", na.strings="" ) {
-  CombiROC_data <- read.table(data, header = header, sep = sep , na.strings=na.strings)
-  # add format check
 
-  return(CombiROC_data)
-}
+load <- function(data, sep = ";", na.strings="" ) {
+  
+CombiROC_data <- read.table(data, header = TRUE, sep = sep , na.strings=na.strings)
+
+names(CombiROC_data)[2] <- 'Class'
+cond_list <- rep(NA, dim(CombiROC_data)[2])
+for (i in 1:dim(CombiROC_data)[2]){
+cond_list[i] <- class(CombiROC_data[,i])=='numeric' | class(CombiROC_data[,i])=='integer'}
+
+if (class(CombiROC_data[,1])!= 'character'){stop('Values of 1st column must be characters')}
+else if (class(CombiROC_data[,2])!= 'character'){stop('Values of 2nd column must be characters')}
+else if (length(unique(CombiROC_data[,2]))!=2){stop('2nd column must contain 2 categories (e.g. Disease / Healthy)')}
+else if (sum(cond_list) != dim(CombiROC_data)[2]-2){stop('Values from 3rd column on must be numbers')}
+else{return(CombiROC_data)}}
 
 
 
@@ -122,16 +131,38 @@ return(SE_SP)
 
 #The function returns the table with combinations ranked by F1-score
 
-ranked_combs <- function(combo_table){
+
+
+
+ranked_combs <- function(data,combo_table, case_class) {
+
+nclass <- unique(data$Class)
+
+if (case_class == nclass[1]) {
 
 combo_table$F1<-  2*(combo_table[,1] * combo_table[,4])/(combo_table[,1] + combo_table[,4])
 
 
 ranked_SE_SP<-combo_table[order(-combo_table$F1), ]  # REMEMBER TO ADD FREQUENCY
 
-ranked_SE_SP<- ranked_SE_SP[,c(1,4,5),]
-
+ranked_SE_SP<- ranked_SE_SP[,c(1,4,5)]
 return(ranked_SE_SP)}
+
+
+
+else if (case_class == nclass[2]) {
+  
+  combo_table$F1<-  2*(combo_table[,2] * combo_table[,3])/(combo_table[,2] + combo_table[,3])
+  
+  
+  ranked_SE_SP<-combo_table[order(-combo_table$F1), ]  # REMEMBER TO ADD FREQUENCY
+  
+  ranked_SE_SP<- ranked_SE_SP[,c(2,3,5)]
+  return(ranked_SE_SP)}
+
+else {
+  stop('Please, specify the "case class" choosing from the 2 classes of your dataset')
+}}
 
 
 # - a function to SHOW ROC CURVES and corresponding METRICS of the 
@@ -150,4 +181,4 @@ data <- load("data/demo_5Ags.csv")
 data_long <- CombiROC_long(data)
 markers_overview(data_long, ylim =2000)
 mks <-Combi(data, signalthr = 450, combithr = 1)
-rmks<- ranked_combs(mks)
+rmks<- ranked_combs(data, mks, case_class = 'A')
