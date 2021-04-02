@@ -5,7 +5,7 @@ library(tidyr)
 library(dplyr)
 library(ggplot2)
 library(gtools)
-library(ROCR)
+library(pROC)
 library(stringr)
 
 ## Essential functions:
@@ -148,8 +148,6 @@ return(SE_SP)
 #The function returns the table with combinations ranked by F1-score
 
 
-
-
 ranked_combs <- function(data, combo_table, case_class) {
 
 nclass <- unique(data$Class)
@@ -184,6 +182,44 @@ else {
 # - a function to SHOW ROC CURVES and corresponding METRICS of the 
 #   selected combinations
 
+
+ROC_comb <- function(data, markers_table, selected_combination, case_class){
+  data$Class<-factor(c(rep(1,sum(data$Class==case_class)),
+                       rep(0,sum(data$Class!=case_class))))
+  mks <- markers_table
+  m <-str_split(mks$Markers[selected_combination],"-")
+  for (x in m){ 
+    y <- paste("log(",x,"+1)",sep="")}
+  
+  
+  str <- paste(y, collapse = '+')
+  fla <- formula(paste("Class ~",str))
+  
+  glm.combo<-glm(fla,data=data, family="binomial")  
+  
+  rocobj<-roc(data$Class,glm.combo$fitted.values,levels=c("0","1"))
+  plot(rocobj, xlim= c(1,0))
+  optcoordinates<-coords(rocobj, "best", ret=c("threshold", "specificity", 
+                                               "sensitivity", "accuracy","tn", 
+                                               "tp", "fn", "fp", "npv", "ppv", 
+                                               "1-specificity","1-sensitivity", 
+                                               "1-accuracy", "1-npv", "1-ppv"))
+  AUC <- round(rocobj$auc[1],3)
+  ACC <- round(optcoordinates[[4]],3)
+  ERR <- round((optcoordinates[[8]]+optcoordinates[[7]])/dim(data)[1],3)    #(FP+FN)/P+N
+  TP  <- round(optcoordinates[[6]],3)
+  FP  <- round(optcoordinates[[8]],3)
+  TN  <- round(optcoordinates[[5]],3)
+  FN  <- round(optcoordinates[[7]],3)
+  PPV <- round(optcoordinates[[10]],3)
+  NPV <- round(optcoordinates[[9]],3)
+  perfwhole <- cbind(round(optcoordinates[[1]],3),round(optcoordinates[[3]],3),round(optcoordinates[[2]],3),AUC,ACC,ERR,TP,FP,TN,FN,PPV,NPV)
+  colnames(perfwhole)<-c("CutOff","SE","SP","AUC","ACC","ERR","TP","FP","TN","FN","PPV","NPV")
+  rownames(perfwhole)[1] <- rownames(mks)[selected_combination]
+  
+  return(data.frame(perfwhole))
+}
+
 # - a function to ASSESS THE PERFORMANCES?
 
 
@@ -193,10 +229,27 @@ else {
 
 ### WORKFLOW TEST ###
 
-data <- load("data/demo_5Ags.csv", sep=';')
-data_long <- CombiROC_long(data)
-markers_overview(data_long, ylim =2000)
-mks <-Combi(data, signalthr = 450, combithr = 1)
-rmks<- ranked_combs(data, mks, case_class = 'A')
+
+data <- load("data/demo_5Ags.csv", sep=';') # to load the data and check
+# the data format
+
+data_long <- CombiROC_long(data) # to make data in long format
+
+markers_overview(data_long, ylim =2000) # to plot boxplot with selecting
+# the y value lim (zoom only, no data loss) and prints summary for each
+#class
+
+mks <-Combi(data, signalthr = 450, combithr = 1) # to compute combinations
+# and count corresponding positive samples for each class (once thresholds
+# are selected)
 
 
+tab <- SE_SP(data, mks) # to compute SE and SN of each combination for each
+# class
+
+rmks<- ranked_combs(data, tab, case_class = 'A') # to rank the combinations 
+# by F1 score once the case class is selected
+
+optc <- ROC_comb(data, markers_table = mks, case_class = 'A', 
+                 selected_combination = 1) # to plot the roc curve of a 
+# SINGLE selected combination and retrieve opt.cutoff, AUC, SN, SE ...
