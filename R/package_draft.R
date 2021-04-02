@@ -16,7 +16,7 @@ load <- function(data, sep = ";", na.strings="" ) {
   
 CombiROC_data <- read.table(data, header = TRUE, sep = sep , na.strings=na.strings)
 
-names(CombiROC_data)[2] <- 'Class'
+names(CombiROC_data)[2] <- ('Class')
 cond_list <- rep(NA, dim(CombiROC_data)[2])
 for (i in 1:dim(CombiROC_data)[2]){
 cond_list[i] <- class(CombiROC_data[,i])=='numeric' | class(CombiROC_data[,i])=='integer'}
@@ -51,7 +51,6 @@ CombiROC_long <- function(CombiROC_data){
 markers_overview <- function(data_long, ylim=NULL){
   
   nclass <- unique(data_long$Class)
-  
   
   for (class in nclass){print(paste("STATISTICS OF CLASS ", class, ":", sep = ""))
     print(summary(data_long[data_long$Class==class, 4]))}
@@ -103,17 +102,27 @@ for (i in 1:length(k)){
            t(data[data$Class== nclass[n], 3:dim(data)[2]])[row_index_combination[j,],]>=signalthr))>=combithr))   #input$signalthr))>=input$combithr
      }}
     index<-index+1
-  }
+  }}
+
+cdf <- data.frame(listCombinationMarkers, frequencyCombinationMarkers)
+colnames(cdf) <- c('Markers', paste('#Positives ', nclass[1]), paste('#Positives ', nclass[2]))
+
+for (i in 1:length(rownames(cdf))){
+  rownames(cdf)[i] <- paste('Combination ', rownames(cdf)[i] )
 }
 
+return(cdf)}
+
 # COMPUTING SE AND SP FOR EACH COMB. AND FOR BOTH CLASSES
+SE_SP <- function(data, combinations_table){
 
+mks <- combinations_table 
 names<- c()
-
-SE_SP<-array(0,dim=c(K,2*2))
+nclass <- unique(data$Class)
+SE_SP<-array(0,dim=c(dim(mks)[1],2*2))
 
 for (i in  1:length(nclass)){
-  SE_SP[,i]<- round(frequencyCombinationMarkers[,i]*100/length(colnames(t(data[data$Class==nclass[i],])))
+  SE_SP[,i]<- round(mks[,i+1]*100/length(colnames(t(data[data$Class==nclass[i],])))
                       ,digits=0)
   names[i] <- paste('SE%', nclass[i])
   SE_SP[,i+2]<- 100-SE_SP[,i]
@@ -121,8 +130,15 @@ for (i in  1:length(nclass)){
 }
 
 SE_SP <- data.frame(SE_SP)
-rownames(SE_SP)<-listCombinationMarkers
+rownames(SE_SP)<-rownames(mks)
 colnames(SE_SP)<- names
+n_markers<- rep(NA, dim(mks)[1])
+
+for (i in 1:dim(mks)[1]){
+n_markers[i] <- str_count(mks$Markers[i], pattern = "-")+1}
+
+SE_SP$count <- data.frame(n_markers)[,1]
+colnames(SE_SP)[5] <- '# Markers' 
 
 return(SE_SP)
 }
@@ -134,7 +150,7 @@ return(SE_SP)
 
 
 
-ranked_combs <- function(data,combo_table, case_class) {
+ranked_combs <- function(data, combo_table, case_class) {
 
 nclass <- unique(data$Class)
 
@@ -145,7 +161,7 @@ combo_table$F1<-  2*(combo_table[,1] * combo_table[,4])/(combo_table[,1] + combo
 
 ranked_SE_SP<-combo_table[order(-combo_table$F1), ]  # REMEMBER TO ADD FREQUENCY
 
-ranked_SE_SP<- ranked_SE_SP[,c(1,4,5)]
+ranked_SE_SP<- ranked_SE_SP[,c(1,4,5,6)]
 return(ranked_SE_SP)}
 
 
@@ -157,7 +173,7 @@ else if (case_class == nclass[2]) {
   
   ranked_SE_SP<-combo_table[order(-combo_table$F1), ]  # REMEMBER TO ADD FREQUENCY
   
-  ranked_SE_SP<- ranked_SE_SP[,c(2,3,5)]
+  ranked_SE_SP<- ranked_SE_SP[,c(2,3,5,6)]
   return(ranked_SE_SP)}
 
 else {
@@ -177,8 +193,10 @@ else {
 
 ### WORKFLOW TEST ###
 
-data <- load("data/demo_5Ags.csv")
+data <- load("data/demo_5Ags.csv", sep=';')
 data_long <- CombiROC_long(data)
 markers_overview(data_long, ylim =2000)
 mks <-Combi(data, signalthr = 450, combithr = 1)
 rmks<- ranked_combs(data, mks, case_class = 'A')
+
+
