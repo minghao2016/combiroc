@@ -7,7 +7,6 @@ library(ggplot2)
 library(gtools)
 library(pROC)
 library(stringr)
-
 ## Essential functions:
 
 # - a function to READ DATA (if correctly formatted)
@@ -182,43 +181,82 @@ else {
 # - a function to SHOW ROC CURVES and corresponding METRICS of the 
 #   selected combinations
 
-
-ROC_comb <- function(data, markers_table, selected_combination, case_class){
-  data$Class<-factor(c(rep(1,sum(data$Class==case_class)),
-                       rep(0,sum(data$Class!=case_class))))
-  mks <- markers_table
-  m <-str_split(mks$Markers[selected_combination],"-")
-  for (x in m){ 
-    y <- paste("log(",x,"+1)",sep="")}
+ROC_stat <- function(data, markers_table, selected_combinations, case_class){
   
+  bin<- rep(NA, length(rownames(data)))
+  for (i in 1:length(rownames(data))){
+    if (data$Class[i] == case_class){bin[i] <- 1}
+    else{bin[i] <- 0}} 
+  bin <- factor(bin)
   
-  str <- paste(y, collapse = '+')
-  fla <- formula(paste("Class ~",str))
+  data$Class <- bin
   
-  glm.combo<-glm(fla,data=data, family="binomial")  
+  perfwhole <-  data.frame(matrix(0, ncol = 12, nrow = length(selected_combinations)))
   
-  rocobj<-roc(data$Class,glm.combo$fitted.values,levels=c("0","1"))
-  plot(rocobj, xlim= c(1,0))
-  optcoordinates<-coords(rocobj, "best", ret=c("threshold", "specificity", 
-                                               "sensitivity", "accuracy","tn", 
-                                               "tp", "fn", "fp", "npv", "ppv", 
-                                               "1-specificity","1-sensitivity", 
-                                               "1-accuracy", "1-npv", "1-ppv"))
-  AUC <- round(rocobj$auc[1],3)
-  ACC <- round(optcoordinates[[4]],3)
-  ERR <- round((optcoordinates[[8]]+optcoordinates[[7]])/dim(data)[1],3)    #(FP+FN)/P+N
-  TP  <- round(optcoordinates[[6]],3)
-  FP  <- round(optcoordinates[[8]],3)
-  TN  <- round(optcoordinates[[5]],3)
-  FN  <- round(optcoordinates[[7]],3)
-  PPV <- round(optcoordinates[[10]],3)
-  NPV <- round(optcoordinates[[9]],3)
-  perfwhole <- cbind(round(optcoordinates[[1]],3),round(optcoordinates[[3]],3),round(optcoordinates[[2]],3),AUC,ACC,ERR,TP,FP,TN,FN,PPV,NPV)
+  roc_list <- list()
+  
+  for ( i in selected_combinations){
+    m <-str_split(mks$Markers[i],"-")
+    for (x in m){ 
+      y <- paste("log(",x,"+1)",sep="")}
+    
+    str <- paste(y, collapse = '+')
+    fla <- formula(paste("Class ~",str))
+    glm.combo<-glm(fla,data=data, family="binomial")  
+    
+    roc_list[[which(selected_combinations==i)]]<-roc(data$Class,glm.combo$fitted.values,levels=c("0","1"))
+    names(roc_list)[which(selected_combinations==i)] <- rownames(mks)[i]
+    optcoordinates<-coords(roc_list[[which(selected_combinations==i)]], "best", ret=c("threshold", "specificity", 
+                                                                                      "sensitivity", "accuracy","tn", 
+                                                                                      "tp", "fn", "fp", "npv", "ppv", 
+                                                                                      "1-specificity","1-sensitivity", 
+                                                                                      "1-accuracy", "1-npv", "1-ppv"))
+    AUC <- round(roc_list[[which(selected_combinations==i)]]$auc[1],3)
+    ACC <- round(optcoordinates[[4]],3)
+    ERR <- round((optcoordinates[[8]]+optcoordinates[[7]])/dim(data)[1],3)    #(FP+FN)/P+N
+    TP  <- round(optcoordinates[[6]],3)
+    FP  <- round(optcoordinates[[8]],3)
+    TN  <- round(optcoordinates[[5]],3)
+    FN  <- round(optcoordinates[[7]],3)
+    PPV <- round(optcoordinates[[10]],3)
+    NPV <- round(optcoordinates[[9]],3)
+    perfwhole[which(selected_combinations==i),] <- cbind(round(optcoordinates[[1]],3),round(optcoordinates[[3]],3),round(optcoordinates[[2]],3),AUC,ACC,ERR,TP,FP,TN,FN,PPV,NPV)
+    rownames(perfwhole)[which(selected_combinations==i)] <- rownames(mks)[i]
+  }
+  
   colnames(perfwhole)<-c("CutOff","SE","SP","AUC","ACC","ERR","TP","FP","TN","FN","PPV","NPV")
-  rownames(perfwhole)[1] <- rownames(mks)[selected_combination]
-  
+
   return(data.frame(perfwhole))
 }
+
+
+
+
+ROC_plot <- function(data, markers_table, selected_combinations, case_class){
+  
+  bin<- rep(NA, length(rownames(data)))
+  for (i in 1:length(rownames(data))){
+    if (data$Class[i] == case_class){bin[i] <- 1}
+    else{bin[i] <- 0}} 
+  bin <- factor(bin)
+  
+  data$Class <- bin
+  
+  roc_list <- list()
+  
+  for ( i in selected_combinations){
+    m <-str_split(mks$Markers[i],"-")
+    for (x in m){ 
+      y <- paste("log(",x,"+1)",sep="")}
+    
+    str <- paste(y, collapse = '+')
+    fla <- formula(paste("Class ~",str))
+    glm.combo<-glm(fla,data=data, family="binomial")  
+    
+    roc_list[[which(selected_combinations==i)]]<-roc(data$Class,glm.combo$fitted.values,levels=c("0","1"))
+    names(roc_list)[which(selected_combinations==i)] <- rownames(mks)[i]}
+  ggroc(roc_list)}
+
 
 # - a function to ASSESS THE PERFORMANCES?
 
@@ -250,6 +288,10 @@ tab <- SE_SP(data, mks) # to compute SE and SN of each combination for each
 rmks<- ranked_combs(data, tab, case_class = 'A') # to rank the combinations 
 # by F1 score once the case class is selected
 
-optc <- ROC_comb(data, markers_table = mks, case_class = 'A', 
-                 selected_combination = 1) # to plot the roc curve of a 
-# SINGLE selected combination and retrieve opt.cutoff, AUC, SN, SE ...
+rocs <- ROC_stat(data, markers_table = mks, case_class = 'A', 
+                 selected_combinations = c(1,2,5)) # to retrieve 
+# opt.cutoff, AUC, SN, SE ... of a list of selected combinations
+
+ROC_plot(data, markers_table = mks, case_class = 'A', 
+                 selected_combinations = c(1,2,5)) # to plot the roc curve 
+# of a a list of selected combinations 
