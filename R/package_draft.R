@@ -97,7 +97,6 @@ dfe<-t(dfe)
 n_features<-length(rownames(dfe))
 
 markers <- as.factor(rownames(dfe))
-markers <- reorder.factor(markers, new.order =  colnames(data)[3:dim(data)[2]])
 
 # parameters for combinations
 k<-1:n_features
