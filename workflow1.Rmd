@@ -1,0 +1,40 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# needed libraries
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(gtools)
+library(pROC)
+library(stringr)
+# source from file the combiroc custom functions
+source("C:/Users/rossiriccardo/R/combiroc/combiroc_functions.R")
+```
+
+## Data loading
+
+Load the proteomic dataset from Zingaretti et al. 2012. Dataset should be formatted in a specific way. The load() function uses a customized read.table() function and performs a number of checks on the content of the loaded datasets.
+The loaded dataset is assigned to the "data" object.
+
+```{r}
+data <- load("data/demo_5Ags.csv", sep=';')
+head(data)
+data_long <- CombiROC_long(data) # to make data in long format
+```
+
+## Markers distribution overview
+
+To plot boxplot with selecting the y value lim (zoom only, no data loss) and prints summary for each class
+
+```{r}
+markers_overview(data_long, ylim =2000) 
+```
+
