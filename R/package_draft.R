@@ -178,7 +178,7 @@ return(SE_SP)
 #The function returns the table with combinations ranked by F1-score
 
 
-ranked_combs <- function(data, combo_table, case_class) {
+ranked_combs <- function(data, combo_table, case_class, min_SE=0, min_SP=0) {
 
 nclass <- unique(data$Class) # to retrieve the 2 classes
 
@@ -189,7 +189,7 @@ if (case_class == nclass[1]) {
   combo_table$F1<-  2*(combo_table[,1] * combo_table[,4])/(combo_table[,1] + combo_table[,4])
   ranked_SE_SP<-combo_table[order(-combo_table$F1), ]  
   ranked_SE_SP<- ranked_SE_SP[,c(1,4,5,6)]
-  return(ranked_SE_SP)}
+  return(ranked_SE_SP[ranked_SE_SP[,1]>=min_SE & ranked_SE_SP[,2]>=min_SP,])}
 
 
 
@@ -200,7 +200,7 @@ else if (case_class == nclass[2]) {
   combo_table$F1<-  2*(combo_table[,2] * combo_table[,3])/(combo_table[,2] + combo_table[,3])
   ranked_SE_SP<-combo_table[order(-combo_table$F1), ]  
   ranked_SE_SP<- ranked_SE_SP[,c(2,3,5,6)]
-  return(ranked_SE_SP)}
+  return(ranked_SE_SP[ranked_SE_SP[,1]>=min_SE & ranked_SE_SP[,2]>=min_SP,])}
 
 else {
   stop('Please, specify the "case class" choosing from the 2 classes of your dataset')
@@ -263,7 +263,6 @@ ROC_stat <- function(data, markers_table, selected_combinations, case_class){
   return(data.frame(perfwhole))
 }
 
-fct_inorder(c('B', 'C', 'A'))
 
 
 # - a function to PLOT ROC CURVES of the selected combinations
@@ -329,7 +328,7 @@ mks <-Combi(data, signalthr = 450, combithr = 1) # to compute combinations
 tab <- SE_SP(data, mks) # to compute SE and SN of each combination for each
 # class
 
-rmks<- ranked_combs(data, tab, case_class = 'A') # to rank the combinations 
+rmks<- ranked_combs(data, tab, case_class = 'A', min_SE = 40, min_SP = 80) # to rank the combinations 
 # by F1 score once the case class is selected
 
 rocs <- ROC_stat(data, markers_table = mks, case_class = 'A', 
