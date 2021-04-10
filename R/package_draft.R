@@ -23,10 +23,13 @@ names(CombiROC_data)[2] <- ('Class')  #  to force the name of 2nd column as
 
 cond_list <- rep(NA, dim(CombiROC_data)[2]) # to initialize a list of 
      # conditions to check for columns with expression values 
+cond_list1 <- rep(NA, dim(CombiROC_data)[2]) # to initialize a list of 
+# conditions to check for columns with expression values 
 
 # checking the format ...
 for (i in 1:dim(CombiROC_data)[2]){
-cond_list[i] <- class(CombiROC_data[,i])=='numeric' | class(CombiROC_data[,i])=='integer'}
+cond_list[i] <- class(CombiROC_data[,i])=='numeric' | class(CombiROC_data[,i])=='integer'
+cond_list1[i] <- str_detect(colnames(CombiROC_data)[i],"-")}
 # True if a column contains numbers
 
 if (class(CombiROC_data[,1])!= 'character'){stop('Values of 1st column must be characters')}
@@ -41,6 +44,8 @@ else if (length(unique(CombiROC_data[,2]))!=2){stop('2nd column must contain 2 c
 else if (sum(cond_list) != dim(CombiROC_data)[2]-2){stop('Values from 3rd column on must be numbers')}
 # number of numeric columns must be total number of columns -2 
 
+else if (sum(cond_list1) >= 1){stop('"-" is not allowed in column names')}
+# number of numeric columns must be total number of columns -2 
 
 else{ # if it's ok
   # reordering marker columns alphabetically - necessary to properly compute combinations later
@@ -280,6 +285,9 @@ ROC_plot <- function(data, markers_table, selected_combinations, case_class){
   
   roc_list <- list() # It will contain ROC objects
   
+  # 0s dataframe to be filled
+  perfwhole <-  data.frame(matrix(0, ncol = 12, nrow = length(selected_combinations)))
+  
   
   # for each combination
   for ( i in selected_combinations){
@@ -296,8 +304,37 @@ ROC_plot <- function(data, markers_table, selected_combinations, case_class){
     
   # storing the ROC object by naming it with the corresponding combination 
     roc_list[[which(selected_combinations==i)]]<-roc(data$Class,glm.combo$fitted.values,levels=c("0","1"))
-    names(roc_list)[which(selected_combinations==i)] <- rownames(mks)[i]}
-  ggroc(roc_list)}
+    names(roc_list)[which(selected_combinations==i)] <- rownames(mks)[i]
+    roc_obj <-roc_list[[which(selected_combinations==i)]]
+  
+  # retrieving metrics
+  optcoordinates<-coords(roc_obj, "best", ret=c("threshold", "specificity",  "sensitivity", "accuracy","tn", 
+                                                "tp", "fn", "fp", "npv", "ppv", 
+                                                "1-specificity","1-sensitivity", "1-accuracy", "1-npv", "1-ppv"))
+  
+  # rounding metrics and computing ERR
+  AUC <- round(roc_obj$auc[1],3)
+  ACC <- round(optcoordinates[[4]],3)
+  ERR <- round((optcoordinates[[8]]+optcoordinates[[7]])/dim(data)[1],3)    #(FP+FN)/P+N
+  TP  <- round(optcoordinates[[6]],3)
+  FP  <- round(optcoordinates[[8]],3)
+  TN  <- round(optcoordinates[[5]],3)
+  FN  <- round(optcoordinates[[7]],3)
+  PPV <- round(optcoordinates[[10]],3)
+  NPV <- round(optcoordinates[[9]],3)
+  
+  # adding a row containing a combination metrics to perfwhole dataframe 
+  perfwhole[which(selected_combinations==i),] <- cbind(round(optcoordinates[[1]],3),round(optcoordinates[[3]],3),round(optcoordinates[[2]],3),AUC,ACC,ERR,TP,FP,TN,FN,PPV,NPV)
+  rownames(perfwhole)[which(selected_combinations==i)] <- rownames(mks)[i]
+}
+
+colnames(perfwhole)<-c("CutOff","SE","SP","AUC","ACC","ERR","TP","FP","TN","FN","PPV","NPV")
+p <- ggroc(roc_list)
+res<-list(p,data.frame(perfwhole))
+
+names(res) <- c('Plot', 'Metrics')
+  
+return(res)}
 
 
 # - a function to ASSESS THE PERFORMANCES?
@@ -331,21 +368,13 @@ tab <- SE_SP(data, mks) # to compute SE and SN of each combination for each
 rmks<- ranked_combs(data, tab, case_class = 'A', min_SE = 40, min_SP = 80) # to rank the combinations 
 # by F1 score once the case class is selected
 
-rocs <- ROC_stat(data, markers_table = mks, case_class = 'A', 
+rocs <- ROC_reports(data, markers_table = mks, case_class = 'A', 
                  selected_combinations = c(1,16)) # to retrieve 
 # opt.cutoff, AUC, SN, SE ... of a list of selected combinations
 
 # combination 1 = Marker1 that is Marker1 in  the app tutorial 
 # combination 16 = Marker1-Marker2-Marker3 that is Combo VII in the app tutorial
 
-
-ROC_plot(data, markers_table = mks, case_class = 'A', 
-                 selected_combinations = c(1,16)) # to plot the roc curve 
-# of a a list of selected combinations 
-
-
-# combination 1 = Marker1 that is Marker1 in  the app tutorial 
-# combination 16 = Marker1-Marker2-Marker3 that is Combo VII in the app tutorial
 
 
 
@@ -372,19 +401,10 @@ tab <- SE_SP(data, mks) # to compute SE and SN of each combination for each
 rmks<- ranked_combs(data, tab, case_class = 'Disease') # to rank the combinations 
 # by F1 score once the case class is selected
 
-rocs <- ROC_stat(data, markers_table = mks, case_class = 'Disease', 
+rocs <- ROC_reports(data, markers_table = mks, case_class = 'Disease', 
                  selected_combinations = c(3,18)) # to retrieve 
 # opt.cutoff, AUC, SN, SE ... of a list of selected combinations
 # combination 3 = One that is Marker1 in  the app tutorial 
 # combination 18 = One-Two is Combo I in the app tutorial
 
-ROC_plot(data, markers_table = mks, case_class = 'Disease', 
-         selected_combinations = c(3,18)) # to plot the roc curve 
-# of a a list of selected combinations 
-
-# combination 3 = One that is Marker1 in  the app tutorial 
-# combination 18 = One-Two is Combo I in the app tutorial
-
-
-
-
+ 
