@@ -21,21 +21,27 @@ source("C:/Users/rossiriccardo/R/combiroc/combiroc_functions.R")
 ```
 
 
-In this markdown is shown a representative CombiROC analysis workflow in which is assessed the marker combinations performance in classifying samples of the proteomic dataset from Zingaretti et al. 2012 (the one also used in the CombiROC web app tutorial).  This dataset contains multi-marker signatures for Autoimmune Hepatitis (AIH) for samples clinically diagnosed as “abnormal” (class A) or "normal" (class B).
+This markdown shows a representative CombiROC analysis workflow in which is assessed the marker combinations performance in classifying samples of the proteomic dataset from Zingaretti et al. 2012 (the one also used in the CombiROC web app tutorial).  This dataset contains multi-marker signatures for Autoimmune Hepatitis (AIH) for samples clinically diagnosed as “abnormal” (class A) or "normal" (class B).
 
 ## Data loading
 
-Dataset should be formatted in text format, which may include comma, tab or semicolon separated text files. The 1st column must contain patient/sample IDs as characters. The 2nd column must contain the class to which each sample belongs. The class must be 2 and must be written in character format. From the 3rd column on, the dataset must contain numerical values representing the signal corresponding to the markers abundance in each sample. These columns can be called 'Marker1, Marker2, Marker3 ...' or can be called directly with the gene/protein name, but '-' is not allowed in the column name. 
+The dataset to be analysed should be in text format, which can be comma, tab or semicolon separated:
 
-The load() function uses a customized read.table() function and performs a number of checks on the content of the loaded datasets. If format checks are passed, it reorders alphabetically the columns containing the values (the detected signal) of each marker depending on markers names (necessary for a proper computation of combinations), and forces the 2nd column name to be "Class".
-The loaded dataset is assigned to the "data" object.
+- The 1st column must contain patient/sample IDs as characters.
+- The 2nd column must contain the class to which each sample belongs.
+- The classes must be exactly 2 and they must be written in character format. 
+- From the 3rd column on, the dataset must contain numerical values that represent the signal corresponding to the markers abundance in each sample (marker-related columns). 
+- Marker-related columns can be called 'Marker1, Marker2, Marker3, ...' or can be called directly with the gene/protein name, but "-" is not allowed in the column name. 
+
+The **load()** function uses a customized **read.table()** function that checks the conformity of the dataset format. If all the checks are passed, it reorders alphabetically the marker-related columns depending on marker names (necessary for a proper computation of combinations), and it forces the 2nd column name to be "Class".
+The loaded dataset is assigned to the "*data*" object.
 ```{r}
 data <- load("data/demo_5Ags.csv", sep=';')
 head(data)
 tail(data)
 ```
-The CombiROC_long() is a function that simply wraps dyplr::pivot_longer()
-function to make the data in long format. The obtained data in long format is assinged to "data_long" object.
+The **CombiROC_long()** is a function that simply wraps dyplr::**pivot_longer()**
+function to reshape the data in long format. The obtained data in long format is assinged to "*data_long*" object.
 ```{r}
 data_long <- CombiROC_long(data)
 head(data_long)
@@ -44,7 +50,7 @@ tail(data_long)
 
 ## Markers distribution overview
 
-markers_overview(), as suggested by the name, provides an overview of how much each marker is expressed the two classes of the dataset. This function prints a summary statistics for each class and returns a boxplot which y max value can be set, in order to allow a better visualization (zoom only, no data loss).
+**markers_overview()**, as suggested by the name, provides an overview of the expression of each marker in the two classes of the dataset. This function takes as input data in long format ("*data_long*"), it prints a summary statistics for each class and it returns a boxplot whose y max value can be set, in order to allow a better visualization (zoom only, no data loss).
 
 ```{r}
 markers_overview(data_long, ylim =2000) 
@@ -53,7 +59,12 @@ markers_overview(data_long, ylim =2000)
 
 ## Analysis of combinations
 
-Combi() function computes the marker combinations and counts their corresponding positive samples for each class (once thresholds are selected). To be considered positive for a given combination a sample must have a value higher than a given signal threshold (signalthr) for at least a given number of markers composing that combination (combithr). In this case signalthr is set at 450 while combithr is set at 1, in order to reproduce the results reported in Mazzara et. al 2017 (CombiROC paper) and also the tutorial of the web app with default thresholds. In general signalthr should be set by inspecting the previous boxplot and considering the median of markers expression in both classes, in order to set a threshold that positively selects most samples belonging to the case class (which must be above) and, on the other hand,  negatively selects most control samples (which must below). combithr should be set exclusively depending on how much you want to be stringent. In this example the obtained combinations dataframe is assigned to "mks" objects.
+**Combi()** function computes the marker combinations and counts their corresponding positive samples for each class (once thresholds are selected). A sample, to be considered positive for a given combination, must have a value higher than a given signal threshold (signalthr) for at least a given number of markers composing that combination (combithr). In this case signalthr is set at 450 while combithr is set at 1, in order to reproduce the results reported in Mazzara et. al 2017 (CombiROC paper) and also the tutorial of the web app with default thresholds. In general signalthr should be set by inspecting the previous boxplot and considering the median of markers expression in both classes. Since the target of the analysis is the identification of marker combinations capable to correctly classify samples, the user should choose a signalthr that:
+
+- Positively selects most samples belonging to the case class ("A" in this case), which must be above signalthr.
+- Negatively selects most control samples ("B"), which must be below signalthr. 
+
+combithr should be set exclusively depending on the needed stringency. In this example the obtained combinations dataframe is assigned to "*mks*" objects.
 
 ```{r}
 mks <-Combi(data, signalthr = 450, combithr = 1)
@@ -62,8 +73,17 @@ tail(mks)
 ```
 ## Sensitivity and specificity
 
-SE_SP() function computes sensitivity (SE) and specificty (SP) of each combination for each class, and also the number of markers composing the combination. SE of a class is calculated dividing the number of positive samples by the total sample of that class, while SP is calculated subtracting SE to 100. The SE of a combination (capability to find real positives/cases) is the SE of the case class (in this case "A"), while the SP of the combination (capability to exclude real negatives/controls) is the SP of the control class (in this case "B").
-The obtained dataframe with SE, SP and number of markers is assigned to "tab" object. 
+**SE_SP()** function calulates:
+
+- Sensitivity (SE) and specificty (SP) of each combination for each class.
+- The number of markers composing each combination (#Markers). 
+
+SE of case class ("A") is calculated dividing the number of positive samples by the total sample of case class (% of positive "A" samples), while case class SP is calculated subtracting SE to 100 (% of negative "A" samples).
+
+SE of control class ("B") is calculated dividing the number of positive samples by the total sample of control class (% of positive "B" samples), while SP is calculated subtracting SE to 100 (% of negative "B" samples).
+˚
+Thus, the SE of a given combination (capability to find real positives/cases) corresponds to the SE of the case class (in this case "A"), while the its SP (capability to exclude real negatives/controls) is the SP of the control class (in this case "B").
+The obtained dataframe with SE, SP and number of markers is assigned to "*tab*" object. 
 
 ```{r}
 tab <- SE_SP(data, mks)
@@ -72,13 +92,14 @@ tail(tab)
 ```
 ## Selection of combinations
 
-ranked_combs() is a function that, after having specified the case class,  ranks the combinations by F1-score in order to show the combinations with the highest SE (of cases) and SP (of controls) on the top, facilitating the user in the selection of the best ones. The score is calculated in this way:
+**ranked_combs()** is a function that, after having specified the case class ("A" in this case),  ranks the combinations by F1-score in order to show the combinations with the highest SE (of cases) and SP (of controls) on the top, facilitating the user in the selection of the best ones. The score is calculated in this way:
 $$
  F1 = 2(SE*SP)/(SE+SP)
 $$
 
-The user can also set (not mandatory) a minimal value of SN and/or SP that the combination must have to be selected.
-In this case the minimal values of SN and SP are set, respectively, to 40 and 80, in order to reproduce the gold combinations selection reported in Mazzara et. al 2017 and also the tutorial of the web app with default thresholds.
+The user can also set (not mandatory) a minimal value of SE and/or SP that a combination must have to be selected.
+In this case the minimal values of SE and SP are set, respectively, to 40 and 80, in order to reproduce the gold combinations selection reported in Mazzara et. al 2017 and also the tutorial of the web app with default thresholds. The obtained dataframe with ranked combination is assigned to "*rmks*" object. 
+
 
 ```{r}
 rmks<- ranked_combs(data, tab, case_class = 'A', min_SE = 40, min_SP = 80)
@@ -87,7 +108,12 @@ rmks
 
 ## ROC curves
 
-To allow an objective comparison, the function ROC_reports() applies the Generalised Linear Model (family= binomial) for each selected combination. The resulting predictions are used to compute ROC curves and corresponding metrics which are returned by the function as a named list object (in this case called "reports").  This function requires as input the data object ("data", obtained with load()), the table with combinations and corresponding positive samples counts ("mks", obtained with Combi()), and of course requires to specify the class case and the combinations of interest. In this example have been chosen 3 combinations among the 14 contained in "rmks" object.
+To allow an objective comparison, the function **ROC_reports()** applies the Generalised Linear Model (family= binomial) for each selected combination. The resulting predictions are then used to compute ROC curves and their corresponding metrics which are both returned by the function as a named list object (in this case called "*reports*").  This function requires as input:
+
+- The data object ("*data*") obtained with **load()**.
+- The table with combinations and corresponding positive samples counts (*"mks"*), obtained with **Combi()**.
+
+In addition, the function requires to specify the class case and the combinations of interest. In this example 3 combinations have been chosen among the 14 contained in "rmks" object.
 ```{r}
 reports <-ROC_reports(data, markers_table = mks, case_class = 'A', 
          selected_combinations = c(1,10,16))

@@ -1647,11 +1647,18 @@ summary {
 </div>
 
 
-<p>In this markdown is shown a representative CombiROC analysis workflow in which is assessed the marker combinations performance in classifying samples of the proteomic dataset from Zingaretti et al. 2012 (the one also used in the CombiROC web app tutorial). This dataset contains multi-marker signatures for Autoimmune Hepatitis (AIH) for samples clinically diagnosed as “abnormal” (class A) or “normal” (class B).</p>
+<p>This markdown shows a representative CombiROC analysis workflow in which is assessed the marker combinations performance in classifying samples of the proteomic dataset from Zingaretti et al. 2012 (the one also used in the CombiROC web app tutorial). This dataset contains multi-marker signatures for Autoimmune Hepatitis (AIH) for samples clinically diagnosed as “abnormal” (class A) or “normal” (class B).</p>
 <div id="data-loading" class="section level2">
 <h2>Data loading</h2>
-<p>Dataset should be formatted in text format, which may include comma, tab or semicolon separated text files. The 1st column must contain patient/sample IDs as characters. The 2nd column must contain the class to which each sample belongs. The class must be 2 and must be written in character format. From the 3rd column on, the dataset must contain numerical values representing the signal corresponding to the markers abundance in each sample. These columns can be called ‘Marker1, Marker2, Marker3 …’ or can be called directly with the gene/protein name, but ‘-’ is not allowed in the column name.</p>
-<p>The load() function uses a customized read.table() function and performs a number of checks on the content of the loaded datasets. If format checks are passed, it reorders alphabetically the columns containing the values (the detected signal) of each marker depending on markers names (necessary for a proper computation of combinations), and forces the 2nd column name to be “Class”. The loaded dataset is assigned to the “data” object.</p>
+<p>The dataset to be analysed should be in text format, which can be comma, tab or semicolon separated:</p>
+<ul>
+<li>The 1st column must contain patient/sample IDs as characters.</li>
+<li>The 2nd column must contain the class to which each sample belongs.</li>
+<li>The classes must be exactly 2 and they must be written in character format.</li>
+<li>From the 3rd column on, the dataset must contain numerical values that represent the signal corresponding to the markers abundance in each sample (marker-related columns).</li>
+<li>Marker-related columns can be called ‘Marker1, Marker2, Marker3, …’ or can be called directly with the gene/protein name, but “-” is not allowed in the column name.</li>
+</ul>
+<p>The <strong>load()</strong> function uses a customized <strong>read.table()</strong> function that checks the conformity of the dataset format. If all the checks are passed, it reorders alphabetically the marker-related columns depending on marker names (necessary for a proper computation of combinations), and it forces the 2nd column name to be “Class”. The loaded dataset is assigned to the “<em>data</em>” object.</p>
 <pre class="r"><code>data &lt;- load(&quot;data/demo_5Ags.csv&quot;, sep=&#39;;&#39;)
 head(data)</code></pre>
 <div data-pagedtable="false">
@@ -1665,7 +1672,7 @@ head(data)</code></pre>
 {"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Patient.ID"],"name":[1],"type":["chr"],"align":["left"]},{"label":["Class"],"name":[2],"type":["chr"],"align":["left"]},{"label":["Marker1"],"name":[3],"type":["int"],"align":["right"]},{"label":["Marker2"],"name":[4],"type":["int"],"align":["right"]},{"label":["Marker3"],"name":[5],"type":["int"],"align":["right"]},{"label":["Marker4"],"name":[6],"type":["int"],"align":["right"]},{"label":["Marker5"],"name":[7],"type":["int"],"align":["right"]}],"data":[{"1":"no AIH125","2":"B","3":"83","4":"61","5":"299","6":"476","7":"219","_rn_":"165"},{"1":"no AIH126","2":"B","3":"381","4":"303","5":"4","6":"266","7":"376","_rn_":"166"},{"1":"no AIH127","2":"B","3":"253","4":"106","5":"134","6":"626","7":"189","_rn_":"167"},{"1":"no AIH128","2":"B","3":"571","4":"96","5":"31","6":"487","7":"423","_rn_":"168"},{"1":"no AIH129","2":"B","3":"288","4":"298","5":"0","6":"347","7":"411","_rn_":"169"},{"1":"no AIH130","2":"B","3":"135","4":"149","5":"229","6":"864","7":"600","_rn_":"170"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
-<p>The CombiROC_long() is a function that simply wraps dyplr::pivot_longer() function to make the data in long format. The obtained data in long format is assinged to “data_long” object.</p>
+<p>The <strong>CombiROC_long()</strong> is a function that simply wraps dyplr::<strong>pivot_longer()</strong> function to reshape the data in long format. The obtained data in long format is assinged to “<em>data_long</em>” object.</p>
 <pre class="r"><code>data_long &lt;- CombiROC_long(data)
 head(data_long)</code></pre>
 <div data-pagedtable="false">
@@ -1682,7 +1689,7 @@ head(data_long)</code></pre>
 </div>
 <div id="markers-distribution-overview" class="section level2">
 <h2>Markers distribution overview</h2>
-<p>markers_overview(), as suggested by the name, provides an overview of how much each marker is expressed the two classes of the dataset. This function prints a summary statistics for each class and returns a boxplot which y max value can be set, in order to allow a better visualization (zoom only, no data loss).</p>
+<p><strong>markers_overview()</strong>, as suggested by the name, provides an overview of the expression of each marker in the two classes of the dataset. This function takes as input data in long format (“<em>data_long</em>”), it prints a summary statistics for each class and it returns a boxplot whose y max value can be set, in order to allow a better visualization (zoom only, no data loss).</p>
 <pre class="r"><code>markers_overview(data_long, ylim =2000) </code></pre>
 <pre><code>## [1] &quot;STATISTICS OF CLASS A:&quot;
 ##      Values       
@@ -1704,7 +1711,12 @@ head(data_long)</code></pre>
 </div>
 <div id="analysis-of-combinations" class="section level2">
 <h2>Analysis of combinations</h2>
-<p>Combi() function computes the marker combinations and counts their corresponding positive samples for each class (once thresholds are selected). To be considered positive for a given combination a sample must have a value higher than a given signal threshold (signalthr) for at least a given number of markers composing that combination (combithr). In this case signalthr is set at 450 while combithr is set at 1, in order to reproduce the results reported in Mazzara et. al 2017 (CombiROC paper) and also the tutorial of the web app with default thresholds. In general signalthr should be set by inspecting the previous boxplot and considering the median of markers expression in both classes, in order to set a threshold that positively selects most samples belonging to the case class (which must be above) and, on the other hand, negatively selects most control samples (which must below). combithr should be set exclusively depending on how much you want to be stringent. In this example the obtained combinations dataframe is assigned to “mks” objects.</p>
+<p><strong>Combi()</strong> function computes the marker combinations and counts their corresponding positive samples for each class (once thresholds are selected). A sample, to be considered positive for a given combination, must have a value higher than a given signal threshold (signalthr) for at least a given number of markers composing that combination (combithr). In this case signalthr is set at 450 while combithr is set at 1, in order to reproduce the results reported in Mazzara et. al 2017 (CombiROC paper) and also the tutorial of the web app with default thresholds. In general signalthr should be set by inspecting the previous boxplot and considering the median of markers expression in both classes. Since the target of the analysis is the identification of marker combinations capable to correctly classify samples, the user should choose a signalthr that:</p>
+<ul>
+<li>Positively selects most samples belonging to the case class (“A” in this case), which must be above signalthr.</li>
+<li>Negatively selects most control samples (“B”), which must be below signalthr.</li>
+</ul>
+<p>combithr should be set exclusively depending on the needed stringency. In this example the obtained combinations dataframe is assigned to “<em>mks</em>” objects.</p>
 <pre class="r"><code>mks &lt;-Combi(data, signalthr = 450, combithr = 1)
 head(mks)</code></pre>
 <div data-pagedtable="false">
@@ -1721,7 +1733,13 @@ head(mks)</code></pre>
 </div>
 <div id="sensitivity-and-specificity" class="section level2">
 <h2>Sensitivity and specificity</h2>
-<p>SE_SP() function computes sensitivity (SE) and specificty (SP) of each combination for each class, and also the number of markers composing the combination. SE of a class is calculated dividing the number of positive samples by the total sample of that class, while SP is calculated subtracting SE to 100. The SE of a combination (capability to find real positives/cases) is the SE of the case class (in this case “A”), while the SP of the combination (capability to exclude real negatives/controls) is the SP of the control class (in this case “B”). The obtained dataframe with SE, SP and number of markers is assigned to “tab” object.</p>
+<p><strong>SE_SP()</strong> function calulates:</p>
+<ul>
+<li>Sensitivity (SE) and specificty (SP) of each combination for each class.</li>
+<li>The number of markers composing each combination (#Markers).</li>
+</ul>
+<p>SE of case class (“A”) is calculated dividing the number of positive samples by the total sample of case class (% of positive “A” samples), while case class SP is calculated subtracting SE to 100 (% of negative “A” samples).</p>
+<p>SE of control class (“B”) is calculated dividing the number of positive samples by the total sample of control class (% of positive “B” samples), while SP is calculated subtracting SE to 100 (% of negative “B” samples). ˚ Thus, the SE of a given combination (capability to find real positives/cases) corresponds to the SE of the case class (in this case “A”), while the its SP (capability to exclude real negatives/controls) is the SP of the control class (in this case “B”). The obtained dataframe with SE, SP and number of markers is assigned to “<em>tab</em>” object.</p>
 <pre class="r"><code>tab &lt;- SE_SP(data, mks)
 head(tab)</code></pre>
 <div data-pagedtable="false">
@@ -1738,10 +1756,10 @@ head(tab)</code></pre>
 </div>
 <div id="selection-of-combinations" class="section level2">
 <h2>Selection of combinations</h2>
-<p>ranked_combs() is a function that, after having specified the case class, ranks the combinations by F1-score in order to show the combinations with the highest SE (of cases) and SP (of controls) on the top, facilitating the user in the selection of the best ones. The score is calculated in this way: <span class="math display">\[
+<p><strong>ranked_combs()</strong> is a function that, after having specified the case class (“A” in this case), ranks the combinations by F1-score in order to show the combinations with the highest SE (of cases) and SP (of controls) on the top, facilitating the user in the selection of the best ones. The score is calculated in this way: <span class="math display">\[
  F1 = 2(SE*SP)/(SE+SP)
 \]</span></p>
-<p>The user can also set (not mandatory) a minimal value of SN and/or SP that the combination must have to be selected. In this case the minimal values of SN and SP are set, respectively, to 40 and 80, in order to reproduce the gold combinations selection reported in Mazzara et. al 2017 and also the tutorial of the web app with default thresholds.</p>
+<p>The user can also set (not mandatory) a minimal value of SE and/or SP that a combination must have to be selected. In this case the minimal values of SE and SP are set, respectively, to 40 and 80, in order to reproduce the gold combinations selection reported in Mazzara et. al 2017 and also the tutorial of the web app with default thresholds. The obtained dataframe with ranked combination is assigned to “<em>rmks</em>” object.</p>
 <pre class="r"><code>rmks&lt;- ranked_combs(data, tab, case_class = &#39;A&#39;, min_SE = 40, min_SP = 80)
 rmks</code></pre>
 <div data-pagedtable="false">
@@ -1752,7 +1770,12 @@ rmks</code></pre>
 </div>
 <div id="roc-curves" class="section level2">
 <h2>ROC curves</h2>
-<p>To allow an objective comparison, the function ROC_reports() applies the Generalised Linear Model (family= binomial) for each selected combination. The resulting predictions are used to compute ROC curves and corresponding metrics which are returned by the function as a named list object (in this case called “reports”). This function requires as input the data object (“data”, obtained with load()), the table with combinations and corresponding positive samples counts (“mks”, obtained with Combi()), and of course requires to specify the class case and the combinations of interest. In this example have been chosen 3 combinations among the 14 contained in “rmks” object.</p>
+<p>To allow an objective comparison, the function <strong>ROC_reports()</strong> applies the Generalised Linear Model (family= binomial) for each selected combination. The resulting predictions are then used to compute ROC curves and their corresponding metrics which are both returned by the function as a named list object (in this case called “<em>reports</em>”). This function requires as input:</p>
+<ul>
+<li>The data object (“<em>data</em>”) obtained with <strong>load()</strong>.</li>
+<li>The table with combinations and corresponding positive samples counts (<em>“mks”</em>), obtained with <strong>Combi()</strong>.</li>
+</ul>
+<p>In addition, the function requires to specify the class case and the combinations of interest. In this example 3 combinations have been chosen among the 14 contained in “rmks” object.</p>
 <pre class="r"><code>reports &lt;-ROC_reports(data, markers_table = mks, case_class = &#39;A&#39;, 
          selected_combinations = c(1,10,16))</code></pre>
 <pre><code>## Setting direction: controls &lt; cases

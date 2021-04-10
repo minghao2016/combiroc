@@ -1,15 +1,8 @@
 ### CombiROC functions file ###
 
-# needed libraries
-library(tidyr)
-library(dplyr)
-library(ggplot2)
-library(gtools)
-library(pROC)
-library(stringr)
-
 
 # - a function to READ DATA (if correctly formatted)
+
 
 load <- function(data, sep = ";", na.strings="" ) {
   
@@ -21,10 +14,13 @@ load <- function(data, sep = ";", na.strings="" ) {
   
   cond_list <- rep(NA, dim(CombiROC_data)[2]) # to initialize a list of 
   # conditions to check for columns with expression values 
+  cond_list1 <- rep(NA, dim(CombiROC_data)[2]) # to initialize a list of 
+  # conditions to check for columns with expression values 
   
   # checking the format ...
   for (i in 1:dim(CombiROC_data)[2]){
-    cond_list[i] <- class(CombiROC_data[,i])=='numeric' | class(CombiROC_data[,i])=='integer'}
+    cond_list[i] <- class(CombiROC_data[,i])=='numeric' | class(CombiROC_data[,i])=='integer'
+    cond_list1[i] <- str_detect(colnames(CombiROC_data)[i],"-")}
   # True if a column contains numbers
   
   if (class(CombiROC_data[,1])!= 'character'){stop('Values of 1st column must be characters')}
@@ -39,6 +35,9 @@ load <- function(data, sep = ";", na.strings="" ) {
   else if (sum(cond_list) != dim(CombiROC_data)[2]-2){stop('Values from 3rd column on must be numbers')}
   # number of numeric columns must be total number of columns -2 
   
+  else if (sum(cond_list1) >= 1){stop('"-" is not allowed in column names')}
+  # number of numeric columns must be total number of columns -2 
+  
   else{ # if it's ok
     # reordering marker columns alphabetically - necessary to properly compute combinations later
     d <- CombiROC_data[, 3:dim(CombiROC_data)[2]]
@@ -48,6 +47,8 @@ load <- function(data, sep = ";", na.strings="" ) {
     colnames(CombiROC_data)[3:dim(CombiROC_data)[2]] <- colnames(d)
     return(CombiROC_data)}}
 
+
+
 # - a function transform the data in long format for plotting purposes ?
 
 ## long format
@@ -56,6 +57,9 @@ CombiROC_long <- function(CombiROC_data){
   
   return(data_long)
 }
+
+
+
 
 # - a function to properly SELECT the INITIAL CUTOFF: it may return the box 
 #   plot (MAD to get rid of outliers?) and a corresponding dataframe object 
@@ -130,7 +134,6 @@ Combi <-function(data,signalthr=0, combithr=1){
   return(cdf)}
 
 # COMPUTING SE AND SP FOR EACH COMB. AND FOR BOTH CLASSES
-
 SE_SP <- function(data, combinations_table){
   
   mks <- combinations_table 
@@ -163,9 +166,12 @@ SE_SP <- function(data, combinations_table){
   return(SE_SP)
 }
 
-# The function returns the table with combinations ranked by F1-score
 
-ranked_combs <- function(data, combo_table, case_class) {
+
+#The function returns the table with combinations ranked by F1-score
+
+
+ranked_combs <- function(data, combo_table, case_class, min_SE=0, min_SP=0) {
   
   nclass <- unique(data$Class) # to retrieve the 2 classes
   
@@ -176,7 +182,9 @@ ranked_combs <- function(data, combo_table, case_class) {
     combo_table$F1<-  2*(combo_table[,1] * combo_table[,4])/(combo_table[,1] + combo_table[,4])
     ranked_SE_SP<-combo_table[order(-combo_table$F1), ]  
     ranked_SE_SP<- ranked_SE_SP[,c(1,4,5,6)]
-    return(ranked_SE_SP)}
+    return(ranked_SE_SP[ranked_SE_SP[,1]>=min_SE & ranked_SE_SP[,2]>=min_SP,])}
+  
+  
   
   # if case class is the second
   else if (case_class == nclass[2]) {
@@ -185,16 +193,16 @@ ranked_combs <- function(data, combo_table, case_class) {
     combo_table$F1<-  2*(combo_table[,2] * combo_table[,3])/(combo_table[,2] + combo_table[,3])
     ranked_SE_SP<-combo_table[order(-combo_table$F1), ]  
     ranked_SE_SP<- ranked_SE_SP[,c(2,3,5,6)]
-    return(ranked_SE_SP)}
+    return(ranked_SE_SP[ranked_SE_SP[,1]>=min_SE & ranked_SE_SP[,2]>=min_SP,])}
   
   else {
     stop('Please, specify the "case class" choosing from the 2 classes of your dataset')
   }}
 
-# - a function to retrieve ROC METRICS of the selected combinations in a dataframe
 
-ROC_stat <- function(data, markers_table, selected_combinations, case_class){
-  
+# - a function to plot ROC CURVES and retrieve ROC METRICS of the selected combinations
+
+ROC_reports <- function(data, markers_table, selected_combinations, case_class){
   # to binarize $Class 
   bin<- rep(NA, length(rownames(data)))
   for (i in 1:length(rownames(data))){
@@ -203,8 +211,12 @@ ROC_stat <- function(data, markers_table, selected_combinations, case_class){
   bin <- factor(bin)
   data$Class <- bin
   
+  
+  roc_list <- list() # It will contain ROC objects
+  
   # 0s dataframe to be filled
   perfwhole <-  data.frame(matrix(0, ncol = 12, nrow = length(selected_combinations)))
+  
   
   # for each combination
   for ( i in selected_combinations){
@@ -218,8 +230,11 @@ ROC_stat <- function(data, markers_table, selected_combinations, case_class){
     
     glm.combo<-glm(fla,data=data, family="binomial")  # apply the glm model
     
-    # computing the roc object
-    roc_obj <-roc(data$Class,glm.combo$fitted.values,levels=c("0","1"))
+    
+    # storing the ROC object by naming it with the corresponding combination 
+    roc_list[[which(selected_combinations==i)]]<-roc(data$Class,glm.combo$fitted.values,levels=c("0","1"))
+    names(roc_list)[which(selected_combinations==i)] <- rownames(mks)[i]
+    roc_obj <-roc_list[[which(selected_combinations==i)]]
     
     # retrieving metrics
     optcoordinates<-coords(roc_obj, "best", ret=c("threshold", "specificity",  "sensitivity", "accuracy","tn", 
@@ -243,39 +258,10 @@ ROC_stat <- function(data, markers_table, selected_combinations, case_class){
   }
   
   colnames(perfwhole)<-c("CutOff","SE","SP","AUC","ACC","ERR","TP","FP","TN","FN","PPV","NPV")
+  p <- ggroc(roc_list)
+  res<-list(p,data.frame(perfwhole))
   
-  return(data.frame(perfwhole))
-}
-
-
-# - a function to PLOT ROC CURVES of the selected combinations
-
-ROC_plot <- function(data, markers_table, selected_combinations, case_class){
+  names(res) <- c('Plot', 'Metrics')
   
-  # to binarize $Class 
-  bin<- rep(NA, length(rownames(data)))
-  for (i in 1:length(rownames(data))){
-    if (data$Class[i] == case_class){bin[i] <- 1}
-    else{bin[i] <- 0}} 
-  bin <- factor(bin)
-  data$Class <- bin
-  
-  roc_list <- list() # It will contain ROC objects
-  
-  # for each combination
-  for ( i in selected_combinations){
-    m <-str_split(mks$Markers[i],"-") # extract single markers from combination
-    # for each composing marker
-    for (x in m){ 
-      y <- paste("log(",x,"+1)",sep="")} # partial formula
-    
-    str <- paste(y, collapse = '+')
-    fla <- formula(paste("Class ~",str)) # whole formula
-    
-    glm.combo<-glm(fla,data=data, family="binomial")  # apply the glm model
-    
-    # storing the ROC object by naming it with the corresponding combination 
-    roc_list[[which(selected_combinations==i)]]<-roc(data$Class,glm.combo$fitted.values,levels=c("0","1"))
-    names(roc_list)[which(selected_combinations==i)] <- rownames(mks)[i]}
-  ggroc(roc_list)}
+  return(res)}
 
