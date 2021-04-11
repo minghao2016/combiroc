@@ -33,7 +33,7 @@ The dataset to be analysed should be in text format, which can be comma, tab or 
 - From the 3rd column on, the dataset must contain numerical values that represent the signal corresponding to the markers abundance in each sample (marker-related columns). 
 - Marker-related columns can be called 'Marker1, Marker2, Marker3, ...' or can be called directly with the gene/protein name, but "-" is not allowed in the column name. 
 
-The **load()** function uses a customized **read.table()** function that checks the conformity of the dataset format. If all the checks are passed, it reorders alphabetically the marker-related columns depending on marker names (necessary for a proper computation of combinations), and it forces the 2nd column name to be "Class".
+The **load()** function uses a customized **read.table()** function that checks the conformity of the dataset format. If all the checks are passed, it reorders alphabetically the marker-related columns depending on marker names (necessary for a proper computation of combinations), and it forces "Class" as 2nd column name.
 The loaded dataset is assigned to the "*data*" object.
 ```{r}
 data <- load("data/demo_5Ags.csv", sep=';')
@@ -41,7 +41,7 @@ head(data)
 tail(data)
 ```
 The **CombiROC_long()** is a function that simply wraps dyplr::**pivot_longer()**
-function to reshape the data in long format. The obtained data in long format is assinged to "*data_long*" object.
+function, and it's used to reshape the data in long format. Data in long format is required to obtain the boxplot of the next function. The obtained data in long format is assinged to "*data_long*" object.
 ```{r}
 data_long <- CombiROC_long(data)
 head(data_long)
@@ -57,9 +57,9 @@ markers_overview(data_long, ylim =2000)
 ```
 
 
-## Analysis of combinations
+## Combinatorial analysis
 
-**Combi()** function computes the marker combinations and counts their corresponding positive samples for each class (once thresholds are selected). A sample, to be considered positive for a given combination, must have a value higher than a given signal threshold (signalthr) for at least a given number of markers composing that combination (combithr). In this case signalthr is set at 450 while combithr is set at 1, in order to reproduce the results reported in Mazzara et. al 2017 (CombiROC paper) and also the tutorial of the web app with default thresholds. In general signalthr should be set by inspecting the previous boxplot and considering the median of markers expression in both classes. Since the target of the analysis is the identification of marker combinations capable to correctly classify samples, the user should choose a signalthr that:
+**Combi()** function computes the marker combinations and counts their corresponding positive samples for each class (once thresholds are selected). A sample, to be considered positive for a given combination, must have a value higher than a given signal threshold (signalthr) for at least a given number of markers composing that combination (combithr). In this case signalthr is set at 450 while combithr is set at 1, in order to reproduce both the results reported in Mazzara et. al 2017 (CombiROC paper) and also the tutorial of the web app with default thresholds. In general signalthr should be set by inspecting the previous boxplot and considering the median of markers expression in both classes. Since the target of the analysis is the identification of marker combinations capable to correctly classify samples, the user should choose a signalthr that:
 
 - Positively selects most samples belonging to the case class ("A" in this case), which must be above signalthr.
 - Negatively selects most control samples ("B"), which must be below signalthr. 
@@ -81,8 +81,8 @@ tail(mks)
 SE of case class ("A") is calculated dividing the number of positive samples by the total sample of case class (% of positive "A" samples), while case class SP is calculated subtracting SE to 100 (% of negative "A" samples).
 
 SE of control class ("B") is calculated dividing the number of positive samples by the total sample of control class (% of positive "B" samples), while SP is calculated subtracting SE to 100 (% of negative "B" samples).
-˚
-Thus, the SE of a given combination (capability to find real positives/cases) corresponds to the SE of the case class (in this case "A"), while the its SP (capability to exclude real negatives/controls) is the SP of the control class (in this case "B").
+
+Thus, the SE of a given combination (capability to find real positives/cases) corresponds to the SE of the case class (in this case "A"), while its SP (capability to exclude real negatives/controls) corresponds to the SP of the control class (in this case "B").
 The obtained dataframe with SE, SP and number of markers is assigned to "*tab*" object. 
 
 ```{r}
@@ -92,13 +92,13 @@ tail(tab)
 ```
 ## Selection of combinations
 
-**ranked_combs()** is a function that, after having specified the case class ("A" in this case),  ranks the combinations by F1-score in order to show the combinations with the highest SE (of cases) and SP (of controls) on the top, facilitating the user in the selection of the best ones. The score is calculated in this way:
+**ranked_combs()** is a function that, after having specified the case class ("A" in this case),  ranks the combinations by F1-score in order to show the combinations with the highest SE (of cases) and SP (of controls) on the top, facilitating the user in the selection of the best combinations. The score is calculated in this way:
 $$
  F1 = 2(SE*SP)/(SE+SP)
 $$
 
 The user can also set (not mandatory) a minimal value of SE and/or SP that a combination must have to be selected.
-In this case the minimal values of SE and SP are set, respectively, to 40 and 80, in order to reproduce the gold combinations selection reported in Mazzara et. al 2017 and also the tutorial of the web app with default thresholds. The obtained dataframe with ranked combination is assigned to "*rmks*" object. 
+In this case the minimal values of SE and SP are set, respectively, to 40 and 80, in order to reproduce both the gold combinations selection reported in Mazzara et. al 2017 and also the tutorial of the web app with default thresholds. The obtained dataframe with ranked combination is assigned to "*rmks*" object. 
 
 
 ```{r}
@@ -108,7 +108,7 @@ rmks
 
 ## ROC curves
 
-To allow an objective comparison, the function **ROC_reports()** applies the Generalised Linear Model (family= binomial) for each selected combination. The resulting predictions are then used to compute ROC curves and their corresponding metrics which are both returned by the function as a named list object (in this case called "*reports*").  This function requires as input:
+To allow an objective comparison of combinations, the function **ROC_reports()** applies the Generalised Linear Model (family= binomial) for each selected one. The resulting predictions are then used to compute ROC curves and their corresponding metrics which are both returned by the function as a named list object (in this case called "*reports*").  This function requires as input:
 
 - The data object ("*data*") obtained with **load()**.
 - The table with combinations and corresponding positive samples counts (*"mks"*), obtained with **Combi()**.
