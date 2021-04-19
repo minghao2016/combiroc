@@ -16,8 +16,8 @@ library(gtools)
 library(pROC)
 library(stringr)
 # source from file the combiroc custom functions
-source("C:/Users/rossiriccardo/R/combiroc/combiroc_functions.R")
-#source("~/Desktop/ivan/INGM/combiroc/combiroc_functions.R")
+#source("C:/Users/rossiriccardo/R/combiroc/combiroc_functions.R")
+source("~/Desktop/ivan/INGM/combiroc/combiroc_functions.R")
 ```
 
 
@@ -117,7 +117,73 @@ In addition, the function requires to specify the class case and the combination
 ```{r}
 reports <-ROC_reports(data, markers_table = mks, case_class = 'A', 
          selected_combinations = c(1,10,16))
+```
+"*reports*" contains 3 named objects:
+
+- "Plots": a ggplot object with the ROC curves of the selected combinations.
+- "Metrics": a dataframe with the metrics of the roc curves (AUC, opt. cutoff, etc ...).
+- "Models": The list of models that have been computed and then used to classify the samples (the equation for each selected combination).
+
+```{r}
 reports['Plot']
 reports['Metrics']
+reports['Models']
 ```
+
+## Results
+
+To be more clear about the interpretation of results, this section will be focused on "Combination 16" (Marker1+Marker2+Marker3) which has an optimal cutoff equal to  0.216 (see **ROC curves**, reports['Metrics']) .
+This is the equation used to compute the predictions:
+
+$$
+f(x)=β_0+β_1x_1+β_2x_2+ β_3x_3 +...β_nx_n
+$$
+
+
+Instead, the predicted probabilities have been calculated with the sigmoid function:
+
+$$
+p(x) =  \frac{\mathrm{1} }{\mathrm{1} + e^{-f(x)} }  
+$$
+
+
+
+For "Combination 16", the predictions have been calculated in this way (see **ROC curves**, reports['Models']):
+
+
+$$
+f(x)=    -17.0128  +  1.5378 *log(Marker1 + 1)  +  0.9176 *log(Marker2 + 1) + 0.5706* log(Marker3 + 1)$$
+Predictions (f(x) values) of 'Combination 16' can be visualized with the following command: 
+```{r}
+head(predict(reports$Models$`Combination  16`, type='link')) # link = f(x)
+tail(predict(reports$Models$`Combination  16`, type='link'))  # link = f(x)
+```
+
+
+Prediction probabilities (p(x) values) of 'Combination 16' can be instead visualized by typing: 
+```{r}
+head(predict(reports$Models$`Combination  16`, type='response')) # response = p(x)
+tail(predict(reports$Models$`Combination  16`, type='response')) # response = p(x)
+```
+
+
+Finally, the comparison between the prediction probability and the optimal cutoff determines the classification of each sample by following this rule:
+
+
+$$
+C(x) = 
+\begin{cases} 
+      1 & {p}(x) > opt. cutoff \\
+      0 & {p}(x) \leq opt.cutoff 
+\end{cases}
+$$
+
+
+
+Specifically, for "Combination 16":
+
+- Samples with p(x) higher than 0.216 are classified as "positives" (1).
+- Samples with p(x) lower or equal to 0.216 are classified as "negatives" (0).
+
+Thus, using 0.216 as cutoff, "Combination 16" is able to classify the samples in the dataset with a SE equal to 95.0%, SP equal to 86.9%, and accuracy equal to 88.8% (see **ROC curves**, reports['Metrics']).
 

@@ -213,6 +213,7 @@ ROC_reports <- function(data, markers_table, selected_combinations, case_class){
   
   
   roc_list <- list() # It will contain ROC objects
+  model_list <- list()
   
   # 0s dataframe to be filled
   perfwhole <-  data.frame(matrix(0, ncol = 12, nrow = length(selected_combinations)))
@@ -229,7 +230,8 @@ ROC_reports <- function(data, markers_table, selected_combinations, case_class){
     fla <- formula(paste("Class ~",str)) # whole formula
     
     glm.combo<-glm(fla,data=data, family="binomial")  # apply the glm model
-    
+    model_list[[which(selected_combinations==i)]]<- glm(fla,data=data, family="binomial")
+    names(model_list)[which(selected_combinations==i)] <- rownames(mks)[i]
     
     # storing the ROC object by naming it with the corresponding combination 
     roc_list[[which(selected_combinations==i)]]<-roc(data$Class,glm.combo$fitted.values,levels=c("0","1"))
@@ -259,9 +261,9 @@ ROC_reports <- function(data, markers_table, selected_combinations, case_class){
   
   colnames(perfwhole)<-c("CutOff","SE","SP","AUC","ACC","ERR","TP","FP","TN","FN","PPV","NPV")
   p <- ggroc(roc_list)
-  res<-list(p,data.frame(perfwhole))
+  res<-list(p,data.frame(perfwhole), model_list)
   
-  names(res) <- c('Plot', 'Metrics')
+  names(res) <- c('Plot', 'Metrics', 'Models')
   
   return(res)}
 
