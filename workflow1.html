@@ -1771,20 +1771,17 @@ rmks</code></pre>
 </div>
 <div id="roc-curves" class="section level2">
 <h2>ROC curves</h2>
-<p>To allow an objective comparison of combinations, the function <strong>ROC_reports()</strong> applies the Generalised Linear Model (family= binomial) for each selected one. The resulting predictions are then used to compute ROC curves and their corresponding metrics which are both returned by the function as a named list object (in this case called “<em>reports</em>”). This function requires as input:</p>
+<p>To allow an objective comparison of combinations, the function <strong>ROC_reports()</strong> applies the Generalised Linear Model (glm() with family= binomial) for each selected one. The resulting predictions are then used to compute ROC curves (with pROC::roc()) and their corresponding metrics which are both returned by the function as a named list object (in this case called “<em>reports</em>”). This function requires as input:</p>
 <ul>
 <li>The data object (“<em>data</em>”) obtained with <strong>load()</strong>.</li>
 <li>The table with combinations and corresponding positive samples counts (<em>“mks”</em>), obtained with <strong>Combi()</strong>.</li>
 </ul>
-<p>In addition, the function requires to specify the class case and the combinations of interest. In this example 3 combinations have been chosen among the 14 contained in “rmks” object.</p>
+<p>In addition, the function requires to specify the class case and the combinations of interest. Direction can be set (not mandatory) in order to specify if the number of cases is &lt;= (‘&lt;’) or &gt;= (‘&gt;’) the number of controls. Otherwise the direction will be automatically set (default= ‘auto’), defining the group in which the median is higher as case group (see <a href="https://www.rdocumentation.org/packages/pROC/versions/1.17.0.1/topics/roc">roc() documentation</a>). In this example 3 combinations have been chosen among the 14 contained in “rmks” object.</p>
 <pre class="r"><code>reports &lt;-ROC_reports(data, markers_table = mks, case_class = &#39;A&#39;, 
-         selected_combinations = c(1,10,16))</code></pre>
-<pre><code>## Setting direction: controls &lt; cases
-## Setting direction: controls &lt; cases
-## Setting direction: controls &lt; cases</code></pre>
+         selected_combinations = c(1,10,16), direction = &#39;&lt;&#39;)</code></pre>
 <p>“<em>reports</em>” contains 3 named objects:</p>
 <ul>
-<li>“Plots”: a ggplot object with the ROC curves of the selected combinations.</li>
+<li>“Plot”: a ggplot object with the ROC curves of the selected combinations.</li>
 <li>“Metrics”: a dataframe with the metrics of the roc curves (AUC, opt. cutoff, etc …).</li>
 <li>“Models”: The list of models that have been computed and then used to classify the samples (the equation for each selected combination).</li>
 </ul>

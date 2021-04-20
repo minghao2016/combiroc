@@ -1,7 +1,4 @@
-### CombiROC functions file ###
-
-
-# - a function to READ DATA (if correctly formatted)
+#' 
 
 
 load <- function(data, sep = ";", na.strings="" ) {
@@ -202,7 +199,7 @@ ranked_combs <- function(data, combo_table, case_class, min_SE=0, min_SP=0) {
 
 # - a function to plot ROC CURVES and retrieve ROC METRICS of the selected combinations
 
-ROC_reports <- function(data, markers_table, selected_combinations, case_class){
+ROC_reports <- function(data, markers_table, selected_combinations, case_class,  direction = "<"){
   # to binarize $Class 
   bin<- rep(NA, length(rownames(data)))
   for (i in 1:length(rownames(data))){
@@ -234,7 +231,7 @@ ROC_reports <- function(data, markers_table, selected_combinations, case_class){
     names(model_list)[which(selected_combinations==i)] <- rownames(mks)[i]
     
     # storing the ROC object by naming it with the corresponding combination 
-    roc_list[[which(selected_combinations==i)]]<-roc(data$Class,glm.combo$fitted.values,levels=c("0","1"))
+    roc_list[[which(selected_combinations==i)]]<-roc(data$Class,glm.combo$fitted.values,levels=c("0","1"), direction=direction, quiet = FALSE)
     names(roc_list)[which(selected_combinations==i)] <- rownames(mks)[i]
     roc_obj <-roc_list[[which(selected_combinations==i)]]
     
