@@ -1,4 +1,3 @@
-#' 
 
 
 load <- function(data, sep = ";", na.strings="" ) {
@@ -49,7 +48,7 @@ load <- function(data, sep = ";", na.strings="" ) {
 # - a function transform the data in long format for plotting purposes ?
 
 ## long format
-CombiROC_long <- function(CombiROC_data){
+CombiROC_long <- function(data){
   data_long <- tidyr::pivot_longer(data, cols =  3:dim(data)[2], names_to = "Markers", values_to = "Values")
   
   return(data_long)
