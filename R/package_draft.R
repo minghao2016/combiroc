@@ -365,10 +365,11 @@ mks <-Combi(data, signalthr = 450, combithr = 1) # to compute combinations
 tab <- SE_SP(data, mks) # to compute SE and SN of each combination for each
 # class
 
-rmks<- ranked_combs(data, tab, case_class = 'A', min_SE = 40, min_SP = 80) # to rank the combinations 
+rmks<- ranked_combs(data, tab, case_class = 'A', min_SE = 40, min_SP = 80)
+# to rank the combinations 
 # by F1 score once the case class is selected
 
-rocs <- ROC_reports(data, markers_table = mks, case_class = 'A', 
+ rocs <- ROC_reports(data, markers_table = mks, case_class = 'A', 
                  selected_combinations = c(1,16)) # to retrieve 
 # opt.cutoff, AUC, SN, SE ... of a list of selected combinations
 

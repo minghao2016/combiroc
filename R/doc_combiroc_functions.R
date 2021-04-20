@@ -1,4 +1,20 @@
+#' A customized read.table() function that checks the conformity of the dataset format, and only if all checks are passed, loads it.
 
+#' The dataset to be analysed should be in text format, which can be comma, tab or semicolon separated:
+  
+#' - The 1st column must contain patient/sample IDs as characters.
+#' - The 2nd column must contain the class to which each sample belongs.
+#' - The classes must be exactly 2 and they must be written in character format. 
+#' - From the 3rd column on, the dataset must contain numerical values that represent the signal corresponding to the markers abundance in each sample (marker-related columns). 
+#' - Marker-related columns can be called 'Marker1, Marker2, Marker3, ...' or can be called directly with the gene/protein name, but "-" is not allowed in the column name. 
+
+#' Only if all the checks are passed, it reorders alphabetically the marker-related columns depending on marker names (necessary for a proper computation of combinations), and it forces "Class" as 2nd column name.
+
+#' @param data the name of the file which the data are to be read from. 
+#' @param sep the field separator character. 
+#' @param na.strings a character vector of strings which are to be interpreted as NA values. 
+#' @return a data frame (data.frame) containing a representation of the data in the file. 
+#' @export 
 
 load <- function(data, sep = ";", na.strings="" ) {
   
@@ -45,8 +61,10 @@ load <- function(data, sep = ";", na.strings="" ) {
 
 
 
-# - a function transform the data in long format for plotting purposes ?
-
+#' A function that simply wraps dyplr::pivot_longer() to reshape data in long format.
+#' @param data a data.frame obtained returned by load().
+#' @return a data.frame in long format
+#' @export
 ## long format
 CombiROC_long <- function(data){
   data_long <- tidyr::pivot_longer(data, cols =  3:dim(data)[2], names_to = "Markers", values_to = "Values")
@@ -57,9 +75,12 @@ CombiROC_long <- function(data){
 
 
 
-# - a function to properly SELECT the INITIAL CUTOFF: it may return the box 
-#   plot (MAD to get rid of outliers?) and a corresponding dataframe object 
-#   (maybe with a message to aknowledge the user of its creation)
+#' A function that provides an overview of the expression of each marker in the two classes of the dataset. It prints a summary statistics for each class 
+#' and it returns a boxplot, both meant to help the user in the further selection of a signal threshold.
+
+#' @param data_long a data.frame in long format returned by CombiROC_long()
+#' @param ylim a numeric setting the max values of y that will be visualized in the boxplot (zoom only, no data loss).
+#' @export
 
 markers_overview <- function(data_long, ylim=NULL){
   
@@ -73,7 +94,18 @@ markers_overview <- function(data_long, ylim=NULL){
     theme_classic()+
     coord_cartesian(ylim = c(0,ylim))} # shows the boxplot for both classes 
 
-# - a function to perform the COMBINATORIAL ANALYSIS
+
+#' A function that computes the marker combinations and counts their corresponding positive samples for each class (once thresholds are selected).
+#' A sample, to be considered positive for a given combination, must have a value higher than a given signal threshold (signalthr) for at least a given number of markers composing that combination (combithr).
+#'@param data a data.frame obtained returned by load().
+#'@param signalthr a numeric that specifies the value above which a marker expression is considered positive in a given sample. Since the target of the analysis is the identification of marker combinations capable to correctly classify samples, the user should choose a signalthr that:
+
+#' - Positively selects most samples belonging to the case class, which must be above signalthr.
+#' - Negatively selects most control samples, which must be below signalthr.  
+
+#'@param combithr a numeric that specifies the necessary number of positivelly expressed markers (>= signalthr), in a given combination, to cosinder that combination positivelly expressed in a sample.   
+#'@return a data.frame containing how many samples of each class are "positive" for each combination.
+#'@export
 
 Combi <-function(data,signalthr=0, combithr=1){
   
@@ -129,7 +161,16 @@ Combi <-function(data,signalthr=0, combithr=1){
   
   return(cdf)}
 
-# COMPUTING SE AND SP FOR EACH COMB. AND FOR BOTH CLASSES
+
+
+#' A function to compute sensitivity and specificity of each combination for each class.
+#' The SE of a given combination (capability to find real positives/cases) corresponds to the SE of the case class, while its SP (capability to exclude real negatives/controls) corresponds to the SP of the control class.
+#'@param data a data.frame obtained returned by load().
+#'@param combinations_table a data.frame containing how many samples of each class are "positive" for each combination (returned by Combi()).
+#'@return data.frame with SE, SP and number of composing markers for each combination.
+#'@export
+
+
 SE_SP <- function(data, combinations_table){
   
   mks <- combinations_table 
@@ -164,9 +205,16 @@ SE_SP <- function(data, combinations_table){
 
 
 
-#The function returns the table with combinations ranked by F1-score
-
-
+#' A function to rank combinations by F1-score and select them if they have a min SE and/or SP.
+#' This function is meant to help the user in finding the best combinations (in the first rows) and allows also (not mandatory) the SE/SP-dependent filtering of combinations.
+#' @param data a data.frame obtained returned by load().
+#' @param combo_table a data.frame with SE, SP and number of composing markers for each combination (returned by SE_SP()).
+#' @param case_class a character that specifies which of the two classes of the dataset is the case class.
+#' @param min_SE a numeric that specifies the min value of SE that a combination must have to be filtered-in. 
+#' @param min_SP a numeric that specifies the min value of SP that a combination must have to be filtered-in. 
+#' @return a data.frame with ranked combination, reporting: SE, SP, number of markers composing the combination and the F1-score.
+#' @export
+ 
 ranked_combs <- function(data, combo_table, case_class, min_SE=0, min_SP=0) {
   
   nclass <- unique(data$Class) # to retrieve the 2 classes
@@ -196,7 +244,20 @@ ranked_combs <- function(data, combo_table, case_class, min_SE=0, min_SP=0) {
   }}
 
 
-# - a function to plot ROC CURVES and retrieve ROC METRICS of the selected combinations
+#' A function to compute General Linear Model (binomial) and the corresponding ROC curves for each selected combination. 
+#' @param data a data.frame obtained returned by load().
+#' @param markers_table a data.frame with ranked combination, reporting: SE, SP, number of markers composing the combination and the F1-score (returned by ranked_combs()).
+#' @param selected_combinations a numeric vector that specifies the combinations of interest. 
+#' @param case_class a character that specifies which of the two classes of the dataset is the case class.
+#' @param direction a character that specifies in which direction to make the comparison.
+#' #' Direction can be set (not mandatory) in order to specify if the number of cases is <= (‘<’) or >= (‘>’) the number of controls. Otherwise the direction will be automatically set (default= ‘auto’), defining the group in which the median is higher as case group (see pROC::roc() documentation).
+#' @return a named list containing 3 objects:
+
+#' - "Plot": a ggplot object with the ROC curves of the selected combinations.
+#' - "Metrics": a dataframe with the metrics of the roc curves (AUC, opt. cutoff, etc ...).
+#' - "Models": the list of models (glm() objects) that have been computed and then used to classify the samples (in which you can find the model equation for each selected combination).
+#' 
+#' @export
 
 ROC_reports <- function(data, markers_table, selected_combinations, case_class,  direction = "auto"){
   # to binarize $Class 
