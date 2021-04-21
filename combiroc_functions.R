@@ -123,8 +123,11 @@ Combi <-function(data,signalthr=0, combithr=1){
   # creation of the dataframe with combinations and corresponding frequencies
   cdf <- data.frame(listCombinationMarkers, frequencyCombinationMarkers)
   colnames(cdf) <- c('Markers', paste('#Positives ', nclass[1]), paste('#Positives ', nclass[2]))
-  for (i in 1:length(rownames(cdf))){
-    rownames(cdf)[i] <- paste('Combination ', rownames(cdf)[i] )
+  for (i in 1:n_features){
+    rownames(cdf)[i] <- cdf[i,1]
+  }
+for (j in (n_features+1):length(rownames(cdf))){
+    rownames(cdf)[j] <- paste('Combination', as.character(j-n_features) )
   }
   
   return(cdf)}
@@ -198,7 +201,7 @@ ranked_combs <- function(data, combo_table, case_class, min_SE=0, min_SP=0) {
 
 # - a function to plot ROC CURVES and retrieve ROC METRICS of the selected combinations
 
-ROC_reports <- function(data, markers_table, selected_combinations, case_class,  direction = "auto"){
+ROC_reports <- function(data, markers_table, selected_combinations, single_markers=NULL, case_class,  direction = "auto"){
   # to binarize $Class 
   bin<- rep(NA, length(rownames(data)))
   for (i in 1:length(rownames(data))){
@@ -207,13 +210,25 @@ ROC_reports <- function(data, markers_table, selected_combinations, case_class, 
   bin <- factor(bin)
   data$Class <- bin
   
+  mks <- markers_table
   
   roc_list <- list() # It will contain ROC objects
   model_list <- list()
   
+  
+  selected_combinations <- selected_combinations + (length(colnames(data))-2)
+  
+ if (!is.null(single_markers)){
+  for (i in 1:length(single_markers)){
+  single_markers[i] <- which(rownames(mks)== single_markers[i])
+  }
+  selected_combinations <- as.numeric(union(single_markers,selected_combinations))
+  }
+  
   # 0s dataframe to be filled
   perfwhole <-  data.frame(matrix(0, ncol = 12, nrow = length(selected_combinations)))
   
+ 
   
   # for each combination
   for ( i in selected_combinations){
