@@ -50,10 +50,15 @@ tail(data_long)
 
 ## Markers distribution overview
 
-**markers_overview()**, as suggested by the name, provides an overview of the expression of each marker in the two classes of the dataset. This function takes as input data in long format ("*data_long*"), it prints a summary statistics for each class and it returns a boxplot whose y max value can be set, in order to allow a better visualization (zoom only, no data loss).
+**markers_overview()**, as suggested by the name, provides an overview of the expression of each marker in the two classes of the dataset. This function takes as input data in long format ("*data_long*"), and returns a named list (in this case called *overview*).
+This list contains two objects:
 
+- 'Plot': a boxplot whose y max value can be set, in order to allow a better visualization (zoom only, no data loss).
+- 'Summary': a data.frame with a summary statics of the overall expression of markers in the two classes of the dataset.
 ```{r}
-markers_overview(data_long, ylim =2000) 
+overview <- markers_overview(data_long, ylim =2000)
+overview$Plot
+overview$Summary
 ```
 
 
@@ -64,12 +69,12 @@ markers_overview(data_long, ylim =2000)
 - Positively selects most samples belonging to the case class ("A" in this case), which must be above signalthr.
 - Negatively selects most control samples ("B"), which must be below signalthr. 
 
-combithr should be set exclusively depending on the needed stringency. In this example the obtained combinations dataframe is assigned to "*mks*" objects.
+combithr should be set exclusively depending on the needed stringency. In this example the obtained combinations dataframe is assigned to "*tab*" objects.
 
 ```{r}
-mks <-Combi(data, signalthr = 450, combithr = 1)
-head(mks)
-tail(mks)
+tab<-Combi(data, signalthr = 450, combithr = 1)
+head(tab)
+tail(tab)
 ```
 ## Sensitivity and specificity
 
@@ -83,12 +88,12 @@ SE of case class ("A") is calculated dividing the number of positive samples by 
 SE of control class ("B") is calculated dividing the number of positive samples by the total sample of control class (% of positive "B" samples), while SP is calculated subtracting SE to 100 (% of negative "B" samples).
 
 Thus, the SE of a given combination (capability to find real positives/cases) corresponds to the SE of the case class (in this case "A"), while its SP (capability to exclude real negatives/controls) corresponds to the SP of the control class (in this case "B").
-The obtained dataframe with SE, SP and number of markers is assigned to "*tab*" object. 
+The obtained dataframe with SE, SP and number of markers is assigned to "*mks*" object. 
 
 ```{r}
-tab <- SE_SP(data, mks)
-head(tab)
-tail(tab)
+mks <- SE_SP(data, tab)
+head(mks)
+tail(mks)
 ```
 ## Selection of combinations
 
@@ -102,7 +107,7 @@ In this case the minimal values of SE and SP are set, respectively, to 40 and 80
 
 
 ```{r}
-rmks<- ranked_combs(data, tab, case_class = 'A', min_SE = 40, min_SP = 80)
+rmks<- ranked_combs(data, mks, case_class = 'A', min_SE = 40, min_SP = 80)
 rmks
 ```
 
@@ -111,14 +116,14 @@ rmks
 To allow an objective comparison of combinations, the function **ROC_reports()** applies the Generalised Linear Model (glm() with family= binomial) for each selected one. The resulting predictions are then used to compute ROC curves (with pROC::roc()) and their corresponding metrics which are both returned by the function as a named list object (in this case called "*reports*").  This function requires as input:
 
 - The data object ("*data*") obtained with **load()**.
-- The table with combinations and corresponding positive samples counts (*"mks"*), obtained with **Combi()**.
+- The table with combinations and corresponding positive samples counts (*"tab"*), obtained with **Combi()**.
 
-In addition, the function requires to specify the class case and the combinations of interest. 
+In addition, the function requires to specify the class case, the single markers and/or the combinations of interest. 
 Direction can be set (not mandatory) in order to specify if the number of cases is <= ('<') or >= ('>') the number of controls.  Otherwise the direction will be automatically set (default= 'auto'), defining the group in which the median is higher as case group (see [roc() documentation](https://www.rdocumentation.org/packages/pROC/versions/1.17.0.1/topics/roc)). 
-In this example 3 combinations have been chosen among the 14 contained in "rmks" object.
+In this example have been chosen a single marker (Marker1) and 2 combinations (11 and 15).
 ```{r}
-reports <-ROC_reports(data, markers_table = mks, case_class = 'A', 
-         selected_combinations = c(1,10,16), direction = '<')
+reports <-ROC_reports(data, markers_table = tab, case_class = 'A',
+                      single_markers =c('Marker1'), selected_combinations = c(11,15), direction = '<')
 ```
 "*reports*" contains 3 named objects:
 
@@ -131,14 +136,27 @@ reports['Plot']
 reports['Metrics']
 reports['Models']
 ```
+## Retrieving composition of combinations
+
+**show_markers()** returns the composition of the combination of interest. It requires as input one or more combinations and the table containing  the marker combinations and counts their corresponding positive samples for each class (*"tab"*, obtained by Combi()).
+```{r}
+show_markers(selected_combinations =c(11,15), markers_table = tab)
+```
+
+## Retrieving combinations containing markers of interest
+
+**combs_with()** returns the combinations containing all the markers of interest. It requires as input one or more marker and the table containing  the marker combinations and counts their corresponding positive samples for each class (*"tab"*, obtained by Combi()).
+```{r}
+combs_with(markers=c('Marker1', 'Marker3'), markers_table = tab)
+```
 
 ## Results
 
-To be more clear about the interpretation of results, this section will be focused on "Combination 16" (Marker1+Marker2+Marker3) which has an optimal cutoff equal to  0.216 (see **ROC curves**, reports['Metrics']) .
+To be more clear about the interpretation of results, this section will be focused on "Combination 11" (Marker1+Marker2+Marker3) which has an optimal cutoff equal to  0.216 (see **ROC curves**, reports['Metrics']) .
 This is the equation used to compute the predictions:
 
 $$
-f(x)=β_0+β_1x_1+β_2x_2+ β_3x_3 +...β_nx_n
+f(x)=β_0+β_1x_1+β_2x_2+ β_3x_3 +...+β_nx_n
 $$
 
 
@@ -150,22 +168,22 @@ $$
 
 
 
-For "Combination 16", the predictions have been calculated in this way (see **ROC curves**, reports['Models']):
+For "Combination 11", the predictions have been calculated in this way (see **ROC curves**, reports['Models']):
 
 
 $$
 f(x)=    -17.0128  +  1.5378 *log(Marker1 + 1)  +  0.9176 *log(Marker2 + 1) + 0.5706* log(Marker3 + 1)$$
-Predictions (f(x) values) of 'Combination 16' can be visualized with the following command: 
+Predictions (f(x) values) of 'Combination 11' can be visualized with the following command: 
 ```{r}
-head(predict(reports$Models$`Combination  16`, type='link')) # link = f(x)
-tail(predict(reports$Models$`Combination  16`, type='link'))  # link = f(x)
+head(predict(reports$Models$`Combination 11`, type='link')) # link = f(x)
+tail(predict(reports$Models$`Combination 11`, type='link'))  # link = f(x)
 ```
 
 
-Prediction probabilities (p(x) values) of 'Combination 16' can be instead visualized by typing: 
+Prediction probabilities (p(x) values) of 'Combination 11' can be instead visualized by typing: 
 ```{r}
-head(predict(reports$Models$`Combination  16`, type='response')) # response = p(x)
-tail(predict(reports$Models$`Combination  16`, type='response')) # response = p(x)
+head(predict(reports$Models$`Combination 11`, type='response')) # response = p(x)
+tail(predict(reports$Models$`Combination 11`, type='response')) # response = p(x)
 ```
 
 
@@ -182,7 +200,7 @@ $$
 
 
 
-Specifically, for "Combination 16":
+Specifically, for "Combination 11":
 
 - Samples with p(x) higher than 0.216 are classified as "positives" (1).
 - Samples with p(x) lower or equal to 0.216 are classified as "negatives" (0).

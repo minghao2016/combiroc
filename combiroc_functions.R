@@ -63,16 +63,39 @@ CombiROC_long <- function(data){
 
 markers_overview <- function(data_long, ylim=NULL){
   
+  res <- list()
   nclass <- unique(data_long$Class) # to retrieve the 2 classes
+  df <- data.frame(matrix(0, nrow = 2, ncol= 8))
+  rownames(df) <- nclass
+  colnames(df) <- c('# observations', 'Min', 'Max','Median', 'Mean', '1st Q.',  '3rd Q.', 'SD')
   
-  for (class in nclass){print(paste("STATISTICS OF CLASS ", class, ":", sep = ""))
-    print(summary(data_long[data_long$Class==class, 4]))} # prints the summary of the class
   
-  ggplot(data_long, aes(Markers, Values)) +
+  for (i in 1:2){
+    df[i,1] <-  dim(unique(data_long[data_long$Class==nclass[i],1]))[1]
+    df[i,2] <- min(data_long[data_long$Class==nclass[i], 4])
+    df[i,3] <- max(data_long[data_long$Class==nclass[i], 4])
+    df[i,4] <- median(data_long[data_long$Class==nclass[i], 4][[1]])
+    df[i,5] <- mean(data_long[data_long$Class==nclass[i], 4][[1]])
+    df[i,6] <- as.numeric(quantile(t(data_long[data_long$Class==nclass[i], 4]),0.25))
+    df[i,7] <- as.numeric(quantile(t(data_long[data_long$Class==nclass[i], 4]),0.75))
+    df[i,8] <- sd(data_long[data_long$Class==nclass[i], 4][[1]])
+  } # prints the summary of the class
+    
+  if (is.null(ylim)){
+    ylim= max(df$Max)*1.15
+    warning('ylim is not set. Boxplot may be difficult to interpret due to outliers. You should set an appropriate ylim.')
+  }
+  
+  plot<- ggplot(data_long, aes(Markers, Values)) +
     geom_boxplot(aes(color = Class)) +
     theme_classic()+
-    coord_cartesian(ylim = c(0,ylim))} # shows the boxplot for both classes 
+    coord_cartesian(ylim = c(0,ylim)) # shows the boxplot for both classes 
 
+res[[1]] <- df
+res[[2]] <- plot
+names(res) <- c('Summary', 'Plot')
+
+return(res)}
 # - a function to perform the COMBINATORIAL ANALYSIS
 
 Combi <-function(data,signalthr=0, combithr=1){
@@ -278,3 +301,32 @@ ROC_reports <- function(data, markers_table, selected_combinations, single_marke
   
   return(res)}
 
+
+# to show the composition of combinations of interest
+
+show_markers <- function(markers_table, selected_combinations){
+ df<- data.frame(matrix(0, ncol=2, nrow=length(selected_combinations)))
+     combo_list <- list()
+     markers_list <- list()
+     for (i in 1:length(selected_combinations)){
+     combo_list[i]<- paste('Combination',  as.character(selected_combinations[i]))
+     df[i,1] <- combo_list[[i]]
+     markers_list[i] <- markers_table[which(rownames(markers_table)==combo_list[i]), 1]
+     df[i,2] <- markers_list[[i]]
+     }
+    colnames(df) <- c('Combination', 'Composing markers') 
+    
+  return(df)}
+
+
+# to find all the combinations containing all the markers of interest 
+combs_with<- function(markers, markers_table){
+  print('The combinations in which you can find ALL the selected markers are the following:')
+  mask <- rep(NA,dim(markers_table)[1])
+ 
+  for (i in 1:dim(markers_table)[1]){ 
+  mask[i] <- sum(str_count(markers_table[i,1], pattern = markers))==length(markers)
+  }
+  rownames(markers_table[mask,])
+  combs <- as.numeric(gsub("Combination", "", rownames(markers_table[mask,])))
+  return(combs)}
