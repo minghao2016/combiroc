@@ -201,8 +201,8 @@ ranked_combs <- function(data, combo_table, case_class, min_SE=0, min_SP=0) {
   if (case_class == nclass[1]) {
     
     # computing F1 as 2*(SE 1st class * SP 2nd class) /  (SE 1st class + SP 2nd class)
-    combo_table$F1<-  2*(combo_table[,1] * combo_table[,4])/(combo_table[,1] + combo_table[,4])
-    ranked_SE_SP<-combo_table[order(-combo_table$F1), ]  
+    combo_table$score<-  2*(combo_table[,1] * combo_table[,4])/(combo_table[,1] + combo_table[,4])
+    ranked_SE_SP<-combo_table[order(-combo_table$score), ]  
     ranked_SE_SP<- ranked_SE_SP[,c(1,4,5,6)]
     return(ranked_SE_SP[ranked_SE_SP[,1]>=min_SE & ranked_SE_SP[,2]>=min_SP,])}
   
@@ -212,8 +212,8 @@ ranked_combs <- function(data, combo_table, case_class, min_SE=0, min_SP=0) {
   else if (case_class == nclass[2]) {
     
     # computing F1 as 2*(SE 2nd class * SP 1st class) /  (SE 2nd class + SP 1st class)
-    combo_table$F1<-  2*(combo_table[,2] * combo_table[,3])/(combo_table[,2] + combo_table[,3])
-    ranked_SE_SP<-combo_table[order(-combo_table$F1), ]  
+    combo_table$score <-  2*(combo_table[,2] * combo_table[,3])/(combo_table[,2] + combo_table[,3])
+    ranked_SE_SP<-combo_table[order(-combo_table$score), ]  
     ranked_SE_SP<- ranked_SE_SP[,c(2,3,5,6)]
     return(ranked_SE_SP[ranked_SE_SP[,1]>=min_SE & ranked_SE_SP[,2]>=min_SP,])}
   
@@ -321,7 +321,6 @@ show_markers <- function(markers_table, selected_combinations){
 
 # to find all the combinations containing all the markers of interest 
 combs_with<- function(markers, markers_table){
-  print('The combinations in which you can find ALL the selected markers are the following:')
   mask <- rep(NA,dim(markers_table)[1])
  
   for (i in 1:dim(markers_table)[1]){ 
@@ -329,4 +328,10 @@ combs_with<- function(markers, markers_table){
   }
   rownames(markers_table[mask,])
   combs <- as.numeric(gsub("Combination", "", rownames(markers_table[mask,])))
+  if (length(combs)==0){
+    warning('NO COMBINATION FOUND! Please check the selected markers')
+  }
+  
+  message('The combinations in which you can find ALL the selected markers have been computed')
+  
   return(combs)}

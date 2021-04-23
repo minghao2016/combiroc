@@ -1752,15 +1752,14 @@ head(mks)</code></pre>
 </div>
 <div id="selection-of-combinations" class="section level2">
 <h2>Selection of combinations</h2>
-<p><strong>ranked_combs()</strong> is a function that, after having specified the case class (“A” in this case), ranks the combinations by F1-score in order to show the combinations with the highest SE (of cases) and SP (of controls) on the top, facilitating the user in the selection of the best combinations. The score is calculated in this way: <span class="math display">\[
- F1 = 2(SE*SP)/(SE+SP)
-\]</span></p>
-<p>The user can also set (not mandatory) a minimal value of SE and/or SP that a combination must have to be selected. In this case the minimal values of SE and SP are set, respectively, to 40 and 80, in order to reproduce both the gold combinations selection reported in Mazzara et. al 2017 and also the tutorial of the web app with default thresholds. The obtained dataframe with ranked combination is assigned to “<em>rmks</em>” object.</p>
+<p><strong>ranked_combs()</strong> is a function that, after having specified the case class (“A” in this case), ranks the combinations by a ranking score in order to show the combinations with the highest SE (of cases) and SP (of controls) on the top, facilitating the user in the selection of the best ones. The score is calculated in this way: <span class="math display">\[
+ score = 2(SE*SP)/(SE+SP)
+\]</span> The user can also set (not mandatory) a minimal value of SE and/or SP that a combination must have to be selected. In this case the minimal values of SE and SP are set, respectively, to 40 and 80, in order to reproduce both the gold combinations selection reported in Mazzara et. al 2017 and also the tutorial of the web app with default thresholds. The obtained dataframe with ranked combination is assigned to “<em>rmks</em>” object.</p>
 <pre class="r"><code>rmks&lt;- ranked_combs(data, mks, case_class = &#39;A&#39;, min_SE = 40, min_SP = 80)
 rmks</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["SE% A"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["SP% B"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["# Markers"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["F1"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"88","2":"84","3":"4","4":"85.95349","_rn_":"Combination 22"},{"1":"78","2":"95","3":"3","4":"85.66474","_rn_":"Combination 11"},{"1":"82","2":"84","3":"3","4":"82.98795","_rn_":"Combination 13"},{"1":"82","2":"84","3":"3","4":"82.98795","_rn_":"Combination 15"},{"1":"72","2":"95","3":"2","4":"81.91617","_rn_":"Combination 1"},{"1":"72","2":"95","3":"2","4":"81.91617","_rn_":"Combination 2"},{"1":"75","2":"87","3":"3","4":"80.55556","_rn_":"Combination 18"},{"1":"75","2":"84","3":"2","4":"79.24528","_rn_":"Combination 4"},{"1":"70","2":"87","3":"2","4":"77.57962","_rn_":"Combination 7"},{"1":"65","2":"95","3":"1","4":"77.18750","_rn_":"Marker1"},{"1":"68","2":"88","3":"2","4":"76.71795","_rn_":"Combination 9"},{"1":"58","2":"88","3":"1","4":"69.91781","_rn_":"Marker5"},{"1":"52","2":"98","3":"2","4":"67.94667","_rn_":"Combination 5"},{"1":"48","2":"98","3":"1","4":"64.43836","_rn_":"Marker2"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["SE% A"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["SP% B"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["# Markers"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["score"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"88","2":"84","3":"4","4":"85.95349","_rn_":"Combination 22"},{"1":"78","2":"95","3":"3","4":"85.66474","_rn_":"Combination 11"},{"1":"82","2":"84","3":"3","4":"82.98795","_rn_":"Combination 13"},{"1":"82","2":"84","3":"3","4":"82.98795","_rn_":"Combination 15"},{"1":"72","2":"95","3":"2","4":"81.91617","_rn_":"Combination 1"},{"1":"72","2":"95","3":"2","4":"81.91617","_rn_":"Combination 2"},{"1":"75","2":"87","3":"3","4":"80.55556","_rn_":"Combination 18"},{"1":"75","2":"84","3":"2","4":"79.24528","_rn_":"Combination 4"},{"1":"70","2":"87","3":"2","4":"77.57962","_rn_":"Combination 7"},{"1":"65","2":"95","3":"1","4":"77.18750","_rn_":"Marker1"},{"1":"68","2":"88","3":"2","4":"76.71795","_rn_":"Combination 9"},{"1":"58","2":"88","3":"1","4":"69.91781","_rn_":"Marker5"},{"1":"52","2":"98","3":"2","4":"67.94667","_rn_":"Combination 5"},{"1":"48","2":"98","3":"1","4":"64.43836","_rn_":"Marker2"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 </div>
@@ -1829,7 +1828,7 @@ rmks</code></pre>
 </div>
 <div id="retrieving-composition-of-combinations" class="section level2">
 <h2>Retrieving composition of combinations</h2>
-<p><strong>show_markers()</strong> returns the composition of the combination of interest. It requires as input one or more combinations and the table containing the marker combinations and counts their corresponding positive samples for each class (<em>“tab”</em>, obtained by Combi()).</p>
+<p><strong>show_markers()</strong> returns a data.frame containing the composition of each combination of interest. It requires as input one or more combinations (only their numbers) and the table containing the marker combinations and counts their corresponding positive samples for each class (<em>“tab”</em>, obtained with <strong>Combi()</strong>).</p>
 <pre class="r"><code>show_markers(selected_combinations =c(11,15), markers_table = tab)</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
@@ -1839,9 +1838,10 @@ rmks</code></pre>
 </div>
 <div id="retrieving-combinations-containing-markers-of-interest" class="section level2">
 <h2>Retrieving combinations containing markers of interest</h2>
-<p><strong>combs_with()</strong> returns the combinations containing all the markers of interest. It requires as input one or more marker and the table containing the marker combinations and counts their corresponding positive samples for each class (<em>“tab”</em>, obtained by Combi()).</p>
-<pre class="r"><code>combs_with(markers=c(&#39;Marker1&#39;, &#39;Marker3&#39;), markers_table = tab)</code></pre>
-<pre><code>## [1] &quot;The combinations in which you can find ALL the selected markers are the following:&quot;</code></pre>
+<p><strong>combs_with()</strong> returns the combinations containing all the markers of interest. It requires as input one or more single marker, and the table containing the marker combinations and counts their corresponding positive samples for each class (<em>“tab”</em>, obtained with <strong>Combi()</strong>). The list with the combinations containing all the markers are assigned to <em>“combs_list”</em> object.</p>
+<pre class="r"><code>combs_list &lt;- combs_with(markers=c(&#39;Marker1&#39;, &#39;Marker3&#39;), markers_table = tab)</code></pre>
+<pre><code>## The combinations in which you can find ALL the selected markers have been computed</code></pre>
+<pre class="r"><code>combs_list</code></pre>
 <pre><code>## [1]  2 11 14 15 21 22 24 26</code></pre>
 </div>
 <div id="results" class="section level2">

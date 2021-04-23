@@ -69,7 +69,7 @@ overview$Summary
 - Positively selects most samples belonging to the case class ("A" in this case), which must be above signalthr.
 - Negatively selects most control samples ("B"), which must be below signalthr. 
 
-combithr should be set exclusively depending on the needed stringency. In this example the obtained combinations dataframe is assigned to "*tab*" objects.
+combithr should be set exclusively depending on the needed stringency. In this example the obtained combinations dataframe is assigned to "*tab*" object.
 
 ```{r}
 tab<-Combi(data, signalthr = 450, combithr = 1)
@@ -97,11 +97,10 @@ tail(mks)
 ```
 ## Selection of combinations
 
-**ranked_combs()** is a function that, after having specified the case class ("A" in this case),  ranks the combinations by F1-score in order to show the combinations with the highest SE (of cases) and SP (of controls) on the top, facilitating the user in the selection of the best combinations. The score is calculated in this way:
+**ranked_combs()** is a function that, after having specified the case class ("A" in this case),  ranks the combinations by a ranking score in order to show the combinations with the highest SE (of cases) and SP (of controls) on the top, facilitating the user in the selection of the best ones. The score is calculated in this way:
 $$
- F1 = 2(SE*SP)/(SE+SP)
+ score = 2(SE*SP)/(SE+SP)
 $$
-
 The user can also set (not mandatory) a minimal value of SE and/or SP that a combination must have to be selected.
 In this case the minimal values of SE and SP are set, respectively, to 40 and 80, in order to reproduce both the gold combinations selection reported in Mazzara et. al 2017 and also the tutorial of the web app with default thresholds. The obtained dataframe with ranked combination is assigned to "*rmks*" object. 
 
@@ -113,7 +112,7 @@ rmks
 
 ## ROC curves
 
-To allow an objective comparison of combinations, the function **ROC_reports()** applies the Generalised Linear Model (glm() with family= binomial) for each selected one. The resulting predictions are then used to compute ROC curves (with pROC::roc()) and their corresponding metrics which are both returned by the function as a named list object (in this case called "*reports*").  This function requires as input:
+To allow an objective comparison of combinations, the function **ROC_reports()** applies the Generalised Linear Model (stats::**glm()** with family= binomial) for each selected one. The resulting predictions are then used to compute ROC curves (with pROC::**roc()**) and their corresponding metrics which are both returned by the function as a named list object (in this case called "*reports*").  This function requires as input:
 
 - The data object ("*data*") obtained with **load()**.
 - The table with combinations and corresponding positive samples counts (*"tab"*), obtained with **Combi()**.
@@ -138,16 +137,17 @@ reports['Models']
 ```
 ## Retrieving composition of combinations
 
-**show_markers()** returns the composition of the combination of interest. It requires as input one or more combinations and the table containing  the marker combinations and counts their corresponding positive samples for each class (*"tab"*, obtained by Combi()).
+**show_markers()** returns a data.frame containing the composition of each combination of interest. It requires as input one or more combinations (only their numbers), and the table with combinations and corresponding positive samples counts (*"tab"*, obtained with **Combi()**).
 ```{r}
 show_markers(selected_combinations =c(11,15), markers_table = tab)
 ```
 
 ## Retrieving combinations containing markers of interest
 
-**combs_with()** returns the combinations containing all the markers of interest. It requires as input one or more marker and the table containing  the marker combinations and counts their corresponding positive samples for each class (*"tab"*, obtained by Combi()).
+**combs_with()** returns the combinations containing all the markers of interest. It requires as input one or more single marker, and the table with combinations and corresponding positive samples counts (*"tab"*, obtained with **Combi()**). The list with the combinations containing all the markers is assigned to *"combs_list"* object.
 ```{r}
-combs_with(markers=c('Marker1', 'Marker3'), markers_table = tab)
+combs_list <- combs_with(markers=c('Marker1', 'Marker3'), markers_table = tab)
+combs_list
 ```
 
 ## Results
@@ -205,5 +205,5 @@ Specifically, for "Combination 11":
 - Samples with p(x) higher than 0.216 are classified as "positives" (1).
 - Samples with p(x) lower or equal to 0.216 are classified as "negatives" (0).
 
-Thus, using 0.216 as cutoff, "Combination 16" is able to classify the samples in the dataset with a SE equal to 95.0%, SP equal to 86.9%, and accuracy equal to 88.8% (see **ROC curves**, reports['Metrics']).
+Thus, using 0.216 as cutoff, "Combination 11" is able to classify the samples in the dataset with a SE equal to 95.0%, SP equal to 86.9%, and accuracy equal to 88.8% (see **ROC curves**, reports['Metrics']).
 
