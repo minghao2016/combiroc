@@ -21,37 +21,26 @@ load <- function(data, sep = ";", na.strings="" ) {
   CombiROC_data <- read.table(data, header = TRUE, sep = sep ,
                               na.strings=na.strings)  # to load the data
   
-  names(CombiROC_data)[2] <- ('Class')  #  to force the name of 2nd column as
-  # 'Class'
+  names(CombiROC_data)[2] <- ('Class')  #  to force the name of 2nd column as 'Class'
   
-  cond_list <- rep(NA, dim(CombiROC_data)[2]) # to initialize a list of 
-  # conditions to check for columns with expression values 
-  cond_list1 <- rep(NA, dim(CombiROC_data)[2]) # to initialize a list of 
-  # conditions to check for columns with expression values 
-  
-  # checking the format ...
+  cond_list <- rep(NA, dim(CombiROC_data)[2]) # to initialize a list of conditions to check for columns with expression values 
+  cond_list1 <- rep(NA, dim(CombiROC_data)[2]) # to initialize a list of conditions to check for columns with expression values 
   for (i in 1:dim(CombiROC_data)[2]){
     cond_list[i] <- class(CombiROC_data[,i])=='numeric' | class(CombiROC_data[,i])=='integer'
-    cond_list1[i] <- str_detect(colnames(CombiROC_data)[i],"-")}
-  # True if a column contains numbers
+    cond_list1[i] <- str_detect(colnames(CombiROC_data)[i],"-")}   # True if a column contains numbers
+
   
-  if (class(CombiROC_data[,1])!= 'character'){stop('Values of 1st column must be characters')}
-  # fist column must have patients/samples ID as characters
+  if (class(CombiROC_data[,1])!= 'character'){stop('Values of 1st column must be characters')} # fist column must have patients/samples ID as characters
   
-  else if (class(CombiROC_data[,2])!= 'character'){stop('Values of 2nd column must be characters')}
-  # second column must contain the class of the samples as characters 
+  else if (class(CombiROC_data[,2])!= 'character'){stop('Values of 2nd column must be characters')} # second column must contain the class of the samples as characters 
   
-  else if (length(unique(CombiROC_data[,2]))!=2){stop('2nd column must contain 2 categories (e.g. Disease / Healthy)')}
-  # only 2 categories are allowed 
+  else if (length(unique(CombiROC_data[,2]))!=2){stop('2nd column must contain 2 categories (e.g. Disease / Healthy)')} # only 2 categories are allowed 
   
-  else if (sum(cond_list) != dim(CombiROC_data)[2]-2){stop('Values from 3rd column on must be numbers')}
-  # number of numeric columns must be total number of columns -2 
+  else if (sum(cond_list) != dim(CombiROC_data)[2]-2){stop('Values from 3rd column on must be numbers')} # number of numeric columns must be total number of columns -2 
   
-  else if (sum(cond_list1) >= 1){stop('"-" is not allowed in column names')}
-  # number of numeric columns must be total number of columns -2 
+  else if (sum(cond_list1) >= 1){stop('"-" is not allowed in column names')} # number of numeric columns must be total number of columns -2 
   
-  else{ # if it's ok
-    # reordering marker columns alphabetically - necessary to properly compute combinations later
+  else{ # if it's ok reordering marker columns alphabetically - necessary to properly compute combinations later
     d <- CombiROC_data[, 3:dim(CombiROC_data)[2]]
     d <- d[, order(colnames(d))]
     CombiROC_data[,3:dim(CombiROC_data)[2]] <- d
@@ -65,7 +54,7 @@ load <- function(data, sep = ";", na.strings="" ) {
 #' @param data a data.frame obtained returned by load().
 #' @return a data.frame in long format
 #' @export
-## long format
+
 CombiROC_long <- function(data){
   data_long <- tidyr::pivot_longer(data, cols =  3:dim(data)[2], names_to = "Markers", values_to = "Values")
   
@@ -75,25 +64,51 @@ CombiROC_long <- function(data){
 
 
 
-#' A function that provides an overview of the expression of each marker in the two classes of the dataset. It prints a summary statistics for each class 
-#' and it returns a boxplot, both meant to help the user in the further selection of a signal threshold.
+#' A function that provides an overview of the expression of each marker in the two classes of the dataset.  It returns a named list that contains two objects:
 
+#' - ‘Plot’: a boxplot whose y max value can be set, in order to allow a better visualization (zoom only, no data loss).
+#' - ‘Summary’: a data.frame with a summary statics of the overall expression of markers in the two classes of the dataset. It  a summary statistics for each class.
+#' 
 #' @param data_long a data.frame in long format returned by CombiROC_long()
 #' @param ylim a numeric setting the max values of y that will be visualized in the boxplot (zoom only, no data loss).
+#' @return a named list containing 'Summary' data.frame and 'Plot' object. 
 #' @export
 
 markers_overview <- function(data_long, ylim=NULL){
   
+  res <- list()
   nclass <- unique(data_long$Class) # to retrieve the 2 classes
+  df <- data.frame(matrix(0, nrow = 2, ncol= 8))
+  rownames(df) <- nclass
+  colnames(df) <- c('# observations', 'Min', 'Max','Median', 'Mean', '1st Q.',  '3rd Q.', 'SD')
   
-  for (class in nclass){print(paste("STATISTICS OF CLASS ", class, ":", sep = ""))
-    print(summary(data_long[data_long$Class==class, 4]))} # prints the summary of the class
   
-  ggplot(data_long, aes(Markers, Values)) +
+  for (i in 1:2){
+    df[i,1] <-  dim(unique(data_long[data_long$Class==nclass[i],1]))[1]
+    df[i,2] <- min(data_long[data_long$Class==nclass[i], 4])
+    df[i,3] <- max(data_long[data_long$Class==nclass[i], 4])
+    df[i,4] <- median(data_long[data_long$Class==nclass[i], 4][[1]])
+    df[i,5] <- mean(data_long[data_long$Class==nclass[i], 4][[1]])
+    df[i,6] <- as.numeric(quantile(t(data_long[data_long$Class==nclass[i], 4]),0.25))
+    df[i,7] <- as.numeric(quantile(t(data_long[data_long$Class==nclass[i], 4]),0.75))
+    df[i,8] <- sd(data_long[data_long$Class==nclass[i], 4][[1]])
+  } # prints the summary of the class
+  
+  if (is.null(ylim)){
+    ylim= max(df$Max)*1.15
+    warning('ylim is not set. Boxplot may be difficult to interpret due to outliers. You should set an appropriate ylim.')
+  }
+  
+  plot<- ggplot(data_long, aes(Markers, Values)) +
     geom_boxplot(aes(color = Class)) +
     theme_classic()+
-    coord_cartesian(ylim = c(0,ylim))} # shows the boxplot for both classes 
-
+    coord_cartesian(ylim = c(0,ylim)) # shows the boxplot for both classes 
+  
+  res[[1]] <- df
+  res[[2]] <- plot
+  names(res) <- c('Summary', 'Plot')
+  
+  return(res)}
 
 #' A function that computes the marker combinations and counts their corresponding positive samples for each class (once thresholds are selected).
 #' A sample, to be considered positive for a given combination, must have a value higher than a given signal threshold (signalthr) for at least a given number of markers composing that combination (combithr).
@@ -112,33 +127,31 @@ Combi <-function(data,signalthr=0, combithr=1){
   nclass <- unique(data$Class) # to retrieve the 2 classes
   
   
-  #sample df to get names and dims
-  dfe <- data[data$Class== nclass[1], 3:dim(data)[2]]
+  dfe <- data[data$Class== nclass[1], 3:dim(data)[2]] #sample df to get names and dims
   dfe<-t(dfe)
   n_features<-length(rownames(dfe))
   
   markers <- as.factor(rownames(dfe))
   
-  # parameters for combinations
+
   k<-1:n_features
   K<-2^n_features-1   
   
-  ### list of all possible combinations
-  listCombinationMarkers <- array(0,dim=c(K,1))
+ 
+  listCombinationMarkers <- array(0,dim=c(K,1)) ### list of all possible combinations
   
-  ### relative frequency for each class  (the row numbers depend on the K possible combinations while the column numbers depends on the number classes:2 (class A and class B, pairwise comparison))
-  frequencyCombinationMarkers<-array(0,dim=c(K,2))
+  frequencyCombinationMarkers<-array(0,dim=c(K,2)) ### relative frequency for each class  (the row numbers depend on the K possible combinations while the column numbers depends on the number classes:2 (class A and class B, pairwise comparison))
+
   
-  # COMPUTING COMBINATIONS AND FREQUENCIES
-  index<-1
+  
+  index<-1           # COMPUTING COMBINATIONS AND FREQUENCIES
   
   for (i in 1:length(k)){
-    temp<- combinations(n_features,k[i],rownames(dfe))
-    # storing the row index to calculate the relative frequency
+    temp<- combinations(n_features,k[i],rownames(dfe)) # storing the row index to calculate the relative frequency
     row_index_combination<-combinations(n_features,k[i],k)
     for (j in 1:dim(temp)[1]){
       listCombinationMarkers[index,1]<-paste(temp[j,],collapse="-")
-      ## single antigen
+   
       if(dim(temp)[2]==1){ ## 1 antigen combination
         for (n in 1:length(nclass)){
           frequencyCombinationMarkers[index,n]<-length(which(
@@ -152,8 +165,7 @@ Combi <-function(data,signalthr=0, combithr=1){
       index<-index+1
     }}
   
-  # creation of the dataframe with combinations and corresponding frequencies
-  cdf <- data.frame(listCombinationMarkers, frequencyCombinationMarkers)
+  cdf <- data.frame(listCombinationMarkers, frequencyCombinationMarkers) # creation of the dataframe with combinations and corresponding frequencies
   colnames(cdf) <- c('Markers', paste('#Positives ', nclass[1]), paste('#Positives ', nclass[2]))
   for (i in 1:length(rownames(cdf))){
     rownames(cdf)[i] <- paste('Combination ', rownames(cdf)[i] )
@@ -191,11 +203,9 @@ SE_SP <- function(data, combinations_table){
   rownames(SE_SP)<-rownames(mks)
   colnames(SE_SP)<- names
   
-  # to add the count of markers composing the combination
-  n_markers<- rep(NA, dim(mks)[1])
+  n_markers<- rep(NA, dim(mks)[1]) # to add the count of markers composing the combination
   for (i in 1:dim(mks)[1]){
-    n_markers[i] <- str_count(mks$Markers[i], pattern = "-")+1} 
-  # the number of markers is equal to number of '-' +1  => '-' must be avoided in marker name
+    n_markers[i] <- str_count(mks$Markers[i], pattern = "-")+1} # the number of markers is equal to number of '-' +1  => '-' must be avoided in marker name
   
   SE_SP$count <- data.frame(n_markers)[,1]
   colnames(SE_SP)[5] <- '# Markers' 
@@ -205,52 +215,51 @@ SE_SP <- function(data, combinations_table){
 
 
 
-#' A function to rank combinations by F1-score and select them if they have a min SE and/or SP.
+#' A function to rank combinations by a ranking-score and select them if they have a min SE and/or SP.
 #' This function is meant to help the user in finding the best combinations (in the first rows) and allows also (not mandatory) the SE/SP-dependent filtering of combinations.
 #' @param data a data.frame obtained returned by load().
 #' @param combo_table a data.frame with SE, SP and number of composing markers for each combination (returned by SE_SP()).
 #' @param case_class a character that specifies which of the two classes of the dataset is the case class.
 #' @param min_SE a numeric that specifies the min value of SE that a combination must have to be filtered-in. 
 #' @param min_SP a numeric that specifies the min value of SP that a combination must have to be filtered-in. 
-#' @return a data.frame with ranked combination, reporting: SE, SP, number of markers composing the combination and the F1-score.
+#' @return a data.frame with ranked combination, reporting: SE, SP, number of markers composing the combination and the score.
 #' @export
- 
+
+
 ranked_combs <- function(data, combo_table, case_class, min_SE=0, min_SP=0) {
   
   nclass <- unique(data$Class) # to retrieve the 2 classes
   
-  # if case class is the first
-  if (case_class == nclass[1]) {
+  if (case_class == nclass[1]) {  # if case class is the first
     
-    # computing F1 as 2*(SE 1st class * SP 2nd class) /  (SE 1st class + SP 2nd class)
-    combo_table$F1<-  2*(combo_table[,1] * combo_table[,4])/(combo_table[,1] + combo_table[,4])
-    ranked_SE_SP<-combo_table[order(-combo_table$F1), ]  
+    combo_table$score<-  2*(combo_table[,1] * combo_table[,4])/(combo_table[,1] + combo_table[,4]) # computing as 2*(SE 1st class * SP 2nd class) /  (SE 1st class + SP 2nd class)
+    
+    ranked_SE_SP<-combo_table[order(-combo_table$score), ]  
     ranked_SE_SP<- ranked_SE_SP[,c(1,4,5,6)]
     return(ranked_SE_SP[ranked_SE_SP[,1]>=min_SE & ranked_SE_SP[,2]>=min_SP,])}
   
   
   
-  # if case class is the second
-  else if (case_class == nclass[2]) {
+  else if (case_class == nclass[2]) {  # if case class is the second
     
-    # computing F1 as 2*(SE 2nd class * SP 1st class) /  (SE 2nd class + SP 1st class)
-    combo_table$F1<-  2*(combo_table[,2] * combo_table[,3])/(combo_table[,2] + combo_table[,3])
-    ranked_SE_SP<-combo_table[order(-combo_table$F1), ]  
+    combo_table$score <-  2*(combo_table[,2] * combo_table[,3])/(combo_table[,2] + combo_table[,3])  # computing score as 2*(SE 2nd class * SP 1st class) /  (SE 2nd class + SP 1st class)
+   
+    ranked_SE_SP<-combo_table[order(-combo_table$score), ]  
     ranked_SE_SP<- ranked_SE_SP[,c(2,3,5,6)]
     return(ranked_SE_SP[ranked_SE_SP[,1]>=min_SE & ranked_SE_SP[,2]>=min_SP,])}
   
   else {
     stop('Please, specify the "case class" choosing from the 2 classes of your dataset')
   }}
+ 
 
 
 #' A function to compute General Linear Model (binomial) and the corresponding ROC curves for each selected combination. 
 #' @param data a data.frame obtained returned by load().
-#' @param markers_table a data.frame with ranked combination, reporting: SE, SP, number of markers composing the combination and the F1-score (returned by ranked_combs()).
+#' @param markers_table a data.frame with ranked combination, reporting: SE, SP, number of markers composing the combination and the score (returned by ranked_combs()).
 #' @param selected_combinations a numeric vector that specifies the combinations of interest. 
 #' @param case_class a character that specifies which of the two classes of the dataset is the case class.
-#' @param direction a character that specifies in which direction to make the comparison.
-#' #' Direction can be set (not mandatory) in order to specify if the number of cases is <= (‘<’) or >= (‘>’) the number of controls. Otherwise the direction will be automatically set (default= ‘auto’), defining the group in which the median is higher as case group (see pROC::roc() documentation).
+#' @param direction a character that specifies in which direction to make the comparison. Direction can be set (not mandatory) in order to specify if the number of cases is <= (‘<’) or >= (‘>’) the number of controls. Otherwise the direction will be automatically set (default= ‘auto’), defining the group in which the median is higher as case group (see pROC::roc() documentation).
 #' @return a named list containing 3 objects:
 
 #' - "Plot": a ggplot object with the ROC curves of the selected combinations.
@@ -259,8 +268,7 @@ ranked_combs <- function(data, combo_table, case_class, min_SE=0, min_SP=0) {
 #' 
 #' @export
 
-ROC_reports <- function(data, markers_table, selected_combinations, case_class,  direction = "auto"){
-  # to binarize $Class 
+ROC_reports <- function(data, markers_table, selected_combinations, case_class,  direction = "auto"){ # to binarize $Class 
   bin<- rep(NA, length(rownames(data)))
   for (i in 1:length(rownames(data))){
     if (data$Class[i] == case_class){bin[i] <- 1}
@@ -272,15 +280,14 @@ ROC_reports <- function(data, markers_table, selected_combinations, case_class, 
   roc_list <- list() # It will contain ROC objects
   model_list <- list()
   
-  # 0s dataframe to be filled
-  perfwhole <-  data.frame(matrix(0, ncol = 12, nrow = length(selected_combinations)))
+  perfwhole <-  data.frame(matrix(0, ncol = 12, nrow = length(selected_combinations))) # 0s dataframe to be filled
   
   
-  # for each combination
-  for ( i in selected_combinations){
+  
+  for ( i in selected_combinations){# for each combination
     m <-str_split(mks$Markers[i],"-") # extract single markers from combination
-    # for each composing marker
-    for (x in m){ 
+    
+    for (x in m){ # for each composing marker
       y <- paste("log(",x,"+1)",sep="")} # partial formula
     
     str <- paste(y, collapse = '+')
@@ -290,17 +297,17 @@ ROC_reports <- function(data, markers_table, selected_combinations, case_class, 
     model_list[[which(selected_combinations==i)]]<- glm(fla,data=data, family="binomial")
     names(model_list)[which(selected_combinations==i)] <- rownames(mks)[i]
     
-    # storing the ROC object by naming it with the corresponding combination 
-    roc_list[[which(selected_combinations==i)]]<-roc(data$Class,glm.combo$fitted.values,levels=c("0","1"), direction=direction, quiet = FALSE)
+    
+    roc_list[[which(selected_combinations==i)]]<-roc(data$Class,glm.combo$fitted.values,levels=c("0","1"), direction=direction, quiet = FALSE) # storing the ROC object by naming it with the corresponding combination 
     names(roc_list)[which(selected_combinations==i)] <- rownames(mks)[i]
     roc_obj <-roc_list[[which(selected_combinations==i)]]
     
-    # retrieving metrics
+  
     optcoordinates<-coords(roc_obj, "best", ret=c("threshold", "specificity",  "sensitivity", "accuracy","tn", 
                                                   "tp", "fn", "fp", "npv", "ppv", 
-                                                  "1-specificity","1-sensitivity", "1-accuracy", "1-npv", "1-ppv"))
+                                                  "1-specificity","1-sensitivity", "1-accuracy", "1-npv", "1-ppv"))   # retrieving metrics
     
-    # rounding metrics and computing ERR
+    
     AUC <- round(roc_obj$auc[1],3)
     ACC <- round(optcoordinates[[4]],3)
     ERR <- round((optcoordinates[[8]]+optcoordinates[[7]])/dim(data)[1],3)    #(FP+FN)/P+N
@@ -311,8 +318,7 @@ ROC_reports <- function(data, markers_table, selected_combinations, case_class, 
     PPV <- round(optcoordinates[[10]],3)
     NPV <- round(optcoordinates[[9]],3)
     
-    # adding a row containing a combination metrics to perfwhole dataframe 
-    perfwhole[which(selected_combinations==i),] <- cbind(round(optcoordinates[[1]],3),round(optcoordinates[[3]],3),round(optcoordinates[[2]],3),AUC,ACC,ERR,TP,FP,TN,FN,PPV,NPV)
+    perfwhole[which(selected_combinations==i),] <- cbind(round(optcoordinates[[1]],3),round(optcoordinates[[3]],3),round(optcoordinates[[2]],3),AUC,ACC,ERR,TP,FP,TN,FN,PPV,NPV) # adding a row containing a combination metrics to perfwhole dataframe 
     rownames(perfwhole)[which(selected_combinations==i)] <- rownames(mks)[i]
   }
   
@@ -324,3 +330,50 @@ ROC_reports <- function(data, markers_table, selected_combinations, case_class, 
   
   return(res)}
 
+
+
+#' A function to show the composition of combinations of interest.
+#' @param markers_table a data.frame with ranked combination, reporting: SE, SP, number of markers composing the combination and the score (returned by ranked_combs()).
+#' @param selected_combinations a numeric vector that specifies the combinations of interest. 
+#' @return a data.frame containing the selected combinations and their composing markers.
+#' @export
+
+show_markers <- function(markers_table, selected_combinations){
+  df<- data.frame(matrix(0, ncol=2, nrow=length(selected_combinations)))
+  combo_list <- list()
+  markers_list <- list()
+  for (i in 1:length(selected_combinations)){
+    combo_list[i]<- paste('Combination',  as.character(selected_combinations[i]))
+    df[i,1] <- combo_list[[i]]
+    markers_list[i] <- markers_table[which(rownames(markers_table)==combo_list[i]), 1]
+    df[i,2] <- markers_list[[i]]
+  }
+  colnames(df) <- c('Combination', 'Composing markers') 
+  
+  return(df)}
+
+
+
+#' A function to find all the combinations containing all the markers of interest .
+
+#' @param markers a character vector containing one or more markers of interest.
+#' @param markers_table a data.frame with ranked combination, reporting: SE, SP, number of markers composing the combination and the score (returned by ranked_combs()).
+#' @return a numeric vector containing the numbers corresponding to the combinations containing all the selected markers.
+#' @export
+
+
+combs_with<- function(markers, markers_table){
+  mask <- rep(NA,dim(markers_table)[1])
+  
+  for (i in 1:dim(markers_table)[1]){ 
+    mask[i] <- sum(str_count(markers_table[i,1], pattern = markers))==length(markers)
+  }
+  rownames(markers_table[mask,])
+  combs <- as.numeric(gsub("Combination", "", rownames(markers_table[mask,])))
+  if (length(combs)==0){
+    warning('NO COMBINATION FOUND! Please check the selected markers')
+  }
+  
+  message('The combinations in which you can find ALL the selected markers have been computed')
+  
+  return(combs)}
