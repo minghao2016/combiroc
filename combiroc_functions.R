@@ -224,7 +224,7 @@ ranked_combs <- function(data, combo_table, case_class, min_SE=0, min_SP=0) {
 
 # - a function to plot ROC CURVES and retrieve ROC METRICS of the selected combinations
 
-ROC_reports <- function(data, markers_table, selected_combinations, single_markers=NULL, case_class,  direction = "auto"){
+ROC_reports <- function(data, markers_table, selected_combinations=NULL, single_markers=NULL, case_class,  direction = "auto"){
   # to binarize $Class 
   bin<- rep(NA, length(rownames(data)))
   for (i in 1:length(rownames(data))){
@@ -233,29 +233,33 @@ ROC_reports <- function(data, markers_table, selected_combinations, single_marke
   bin <- factor(bin)
   data$Class <- bin
   
-  mks <- markers_table
+  tab <- markers_table
   
   roc_list <- list() # It will contain ROC objects
   model_list <- list()
   
   
-  selected_combinations <- selected_combinations + (length(colnames(data))-2)
-  
+  if (is.null(selected_combinations)){
+    sc<- single_markers}
+  if (!is.null(selected_combinations)){
+  sc<- selected_combinations + (length(colnames(data))-2)}
  if (!is.null(single_markers)){
   for (i in 1:length(single_markers)){
   single_markers[i] <- which(rownames(mks)== single_markers[i])
   }
-  selected_combinations <- as.numeric(union(single_markers,selected_combinations))
-  }
+  sc <- as.numeric(union(single_markers,sc))
+ }
+  
+  
+  AUC <- rep(0, length(sc))
   
   # 0s dataframe to be filled
-  perfwhole <-  data.frame(matrix(0, ncol = 12, nrow = length(selected_combinations)))
-  
- 
+  perfwhole <-  data.frame(matrix(0, ncol = 10, nrow = length(sc)))
+
   
   # for each combination
-  for ( i in selected_combinations){
-    m <-str_split(mks$Markers[i],"-") # extract single markers from combination
+  for ( i in sc){
+    m <-str_split(tab$Markers[i],"-") # extract single markers from combination
     # for each composing marker
     for (x in m){ 
       y <- paste("log(",x,"+1)",sep="")} # partial formula
@@ -263,39 +267,33 @@ ROC_reports <- function(data, markers_table, selected_combinations, single_marke
     str <- paste(y, collapse = '+')
     fla <- formula(paste("Class ~",str)) # whole formula
     
-    glm.combo<-glm(fla,data=data, family="binomial")  # apply the glm model
-    model_list[[which(selected_combinations==i)]]<- glm(fla,data=data, family="binomial")
-    names(model_list)[which(selected_combinations==i)] <- rownames(mks)[i]
+    model_list[[which(sc==i)]]<- glm(fla,data=data, family="binomial")
+    names(model_list)[which(sc==i)] <- rownames(tab)[i]
     
     # storing the ROC object by naming it with the corresponding combination 
-    roc_list[[which(selected_combinations==i)]]<-roc(data$Class,glm.combo$fitted.values,levels=c("0","1"), direction=direction, quiet = FALSE)
-    names(roc_list)[which(selected_combinations==i)] <- rownames(mks)[i]
-    roc_obj <-roc_list[[which(selected_combinations==i)]]
+    roc_list[[which(sc==i)]]<-roc(data$Class,model_list[[which(sc==i)]]$fitted.values,levels=c("0","1"), direction=direction, quiet = FALSE)
+    names(roc_list)[which(sc==i)] <- rownames(tab)[i]
+    
     
     # retrieving metrics
-    optcoordinates<-coords(roc_obj, "best", ret=c("threshold", "specificity",  "sensitivity", "accuracy","tn", 
-                                                  "tp", "fn", "fp", "npv", "ppv", 
-                                                  "1-specificity","1-sensitivity", "1-accuracy", "1-npv", "1-ppv"))
+    optcoordinates<-coords(roc_list[[which(sc==i)]], "best", ret=c("threshold", "specificity",  "sensitivity", "accuracy","tn", 
+                                                  "tp", "fn", "fp", "npv", "ppv"))
     
-    # rounding metrics and computing ERR
-    AUC <- round(roc_obj$auc[1],3)
-    ACC <- round(optcoordinates[[4]],3)
-    ERR <- round((optcoordinates[[8]]+optcoordinates[[7]])/dim(data)[1],3)    #(FP+FN)/P+N
-    TP  <- round(optcoordinates[[6]],3)
-    FP  <- round(optcoordinates[[8]],3)
-    TN  <- round(optcoordinates[[5]],3)
-    FN  <- round(optcoordinates[[7]],3)
-    PPV <- round(optcoordinates[[10]],3)
-    NPV <- round(optcoordinates[[9]],3)
+
     
     # adding a row containing a combination metrics to perfwhole dataframe 
-    perfwhole[which(selected_combinations==i),] <- cbind(round(optcoordinates[[1]],3),round(optcoordinates[[3]],3),round(optcoordinates[[2]],3),AUC,ACC,ERR,TP,FP,TN,FN,PPV,NPV)
-    rownames(perfwhole)[which(selected_combinations==i)] <- rownames(mks)[i]
-  }
+    perfwhole[which(sc==i),] <- optcoordinates[1,]
+
+    rownames(perfwhole)[which(sc==i)] <- rownames(tab)[i]
   
-  colnames(perfwhole)<-c("CutOff","SE","SP","AUC","ACC","ERR","TP","FP","TN","FN","PPV","NPV")
+    AUC[which(sc==i)] <- roc_list[[which(sc==i)]]$auc[1]
+    }
+  colnames(perfwhole)<-c("CutOff","SP","SE","ACC","TN","TP","FN","FP","NPV","PPV")
+  perfwhole <- mutate(perfwhole, AUC = AUC)
+  perfwhole <- perfwhole[,c(11,3,2,1,4,5,6,7,8,9,10)]
+  
   p <- ggroc(roc_list)
-  res<-list(p,data.frame(perfwhole), model_list)
+  res<-list(p,round(perfwhole,3), model_list)
   
   names(res) <- c('Plot', 'Metrics', 'Models')
   
