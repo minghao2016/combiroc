@@ -96,6 +96,78 @@ res[[2]] <- plot
 names(res) <- c('Summary', 'Plot')
 
 return(res)}
+
+
+markers_distribution <- function(data, min_SE=40, min_SP=80, x_lim=NULL, y_lim=NULL , signalthr_prediction=FALSE, case_class) {
+  
+  if (min_SE==40 & min_SP==80){
+    warning('In $Coord object you will see only the signal threshold values at which SE>=40 and SP>=80 by default. If you want to change this limits, please set min_SE and min_SP')
+  }
+  
+  bin<- rep(NA, length(rownames(data)))
+  for (i in 1:length(rownames(data))){
+    if (data$Class[i] == case_class){bin[i] <- 1}
+    else{bin[i] <- 0}} 
+  bin <- factor(bin)
+
+  
+  rocobj <-roc(data$Values, response=bin, levels=c("0","1"), quiet= TRUE)
+  coord <- coords(rocobj)
+  if (length(coord$threshold)==0){
+    stop(' $Coord object is empty! No signal thresholds contained with SE >= min_SE  AND SP >= min_SP.')}
+  coord$Youden <- coord$specificity+coord$sensitivity
+  coord$specificity <- round(coord$specificity*100)
+  coord$sensitivity <- round(coord$sensitivity*100)
+  coord <- coord[coord$specificity>=min_SP & coord$sensitivity>=min_SE, ]
+  
+  
+  
+  if (is.null(x_lim)&is.null(y_lim)) {
+    warning('You can adjust density plot zoom by setting y_lim and x_lim')
+    p<- ggplot(data, aes(x=Values, color=Class)) +
+      geom_density(n=10000) +
+      theme_classic() }
+  
+  else if (is.null(x_lim)&!is.null(y_lim)) {
+    p<- ggplot(data, aes(x=Values, color=Class)) +
+      geom_density(n=10000) +
+      theme_classic()+
+      coord_cartesian(ylim = c(0, y_lim))}
+  
+  else if (!is.null(x_lim)&is.null(y_lim)) {
+    p<- ggplot(data, aes(x=Values, color=Class)) +
+      geom_density(n=10000) +
+      theme_classic()+
+      coord_cartesian(xlim = c(0, x_lim))}
+  
+  else  {
+    p<- ggplot(data, aes(x=Values, color=Class)) +
+      geom_density(n=10000) +
+      theme_classic()+
+      coord_cartesian(xlim = c(0, x_lim), ylim = c(0, y_lim))}
+  
+  if (isFALSE(signalthr_prediction)){
+    res <- p+labs(x = "Signnal intensity", y="Frequency")
+  }
+  
+
+  
+  if (isTRUE(signalthr_prediction)){
+    
+   
+
+   pr <- median(coord$threshold)
+   warning('The suggested signal threshold in $Plot_density is the median of the signal thresholds at which SE>min_SE and SP>min_SP. This is ONLY a suggestion. Please check if signal threshold is suggested by your analysis kit guidelines instead, and remember to check $Plot_density to better judge our suggested threshold by inspecting the 2 distributions.')
+    
+    res <- p+geom_vline(aes(xintercept=pr),
+                        color="black", linetype="dashed", size=0.5)+
+     annotate("text", x = pr*0.60, y = 0, label =  as.character(round(pr)))+
+      labs(x = "Signal intensity", y="Frequency")}
+  
+  robj <- list(res, coord, ggroc(rocobj))
+  names(robj) <- c('Plot_density', 'Coord', 'ROC')
+  return(robj)}
+
 # - a function to perform the COMBINATORIAL ANALYSIS
 
 Combi <-function(data,signalthr=0, combithr=1){
@@ -201,8 +273,9 @@ ranked_combs <- function(data, combo_table, case_class, min_SE=0, min_SP=0) {
   if (case_class == nclass[1]) {
     
     # computing F1 as 2*(SE 1st class * SP 2nd class) /  (SE 1st class + SP 2nd class)
-    combo_table$score<-  2*(combo_table[,1] * combo_table[,4])/(combo_table[,1] + combo_table[,4])
-    ranked_SE_SP<-combo_table[order(-combo_table$score), ]  
+    combo_table$Youden<-  combo_table[,1] + combo_table[,4]
+    combo_table$Youden<-combo_table$Youden/100
+    ranked_SE_SP<-combo_table[order(-combo_table$Youden), ]  
     ranked_SE_SP<- ranked_SE_SP[,c(1,4,5,6)]
     return(ranked_SE_SP[ranked_SE_SP[,1]>=min_SE & ranked_SE_SP[,2]>=min_SP,])}
   
@@ -212,8 +285,9 @@ ranked_combs <- function(data, combo_table, case_class, min_SE=0, min_SP=0) {
   else if (case_class == nclass[2]) {
     
     # computing F1 as 2*(SE 2nd class * SP 1st class) /  (SE 2nd class + SP 1st class)
-    combo_table$score <-  2*(combo_table[,2] * combo_table[,3])/(combo_table[,2] + combo_table[,3])
-    ranked_SE_SP<-combo_table[order(-combo_table$score), ]  
+    combo_table$Youden<-combo_table[,2] + combo_table[,3]
+    combo_table$Youden<-combo_table$Youden/100
+    ranked_SE_SP<-combo_table[order(-combo_table$Youden), ]  
     ranked_SE_SP<- ranked_SE_SP[,c(2,3,5,6)]
     return(ranked_SE_SP[ranked_SE_SP[,1]>=min_SE & ranked_SE_SP[,2]>=min_SP,])}
   
@@ -224,7 +298,7 @@ ranked_combs <- function(data, combo_table, case_class, min_SE=0, min_SP=0) {
 
 # - a function to plot ROC CURVES and retrieve ROC METRICS of the selected combinations
 
-ROC_reports <- function(data, markers_table, selected_combinations=NULL, single_markers=NULL, case_class,  direction = "auto"){
+ROC_reports <- function(data, markers_table, selected_combinations=NULL, single_markers=NULL, case_class){
   # to binarize $Class 
   bin<- rep(NA, length(rownames(data)))
   for (i in 1:length(rownames(data))){
@@ -271,7 +345,7 @@ ROC_reports <- function(data, markers_table, selected_combinations=NULL, single_
     names(model_list)[which(sc==i)] <- rownames(tab)[i]
     
     # storing the ROC object by naming it with the corresponding combination 
-    roc_list[[which(sc==i)]]<-roc(data$Class,model_list[[which(sc==i)]]$fitted.values,levels=c("0","1"), direction=direction, quiet = FALSE)
+    roc_list[[which(sc==i)]]<-roc(data$Class,model_list[[which(sc==i)]]$fitted.values,levels=c("0","1"), quiet= TRUE)
     names(roc_list)[which(sc==i)] <- rownames(tab)[i]
     
     

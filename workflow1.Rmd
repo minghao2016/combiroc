@@ -21,7 +21,7 @@ source("~/Desktop/ivan/INGM/combiroc/combiroc_functions.R")
 ```
 
 
-This markdown shows a representative CombiROC analysis workflow in which is assessed the marker combinations performance in classifying samples of the proteomic dataset from Zingaretti et al. 2012 (the one also used in the CombiROC web app tutorial).  This dataset contains multi-marker signatures for Autoimmune Hepatitis (AIH) for samples clinically diagnosed as “abnormal” (class A) or "normal" (class B).
+This markdown shows a representative CombiROC analysis workflow in which is assessed the marker combinations performance in classifying samples of the proteomic dataset from [Zingaretti et al. 2012](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3518104/) (the one also used in the CombiROC web app tutorial).  This dataset contains multi-marker signatures for Autoimmune Hepatitis (AIH) for samples clinically diagnosed as “abnormal” (class A) or "normal" (class B).
 
 ## Data loading
 
@@ -60,16 +60,37 @@ overview <- markers_overview(data_long, ylim =2000)
 overview$Plot
 overview$Summary
 ```
+Since the target of the analysis is the identification of marker combinations capable to correctly classify samples, the user should choose a signal threshold to define the positivity for a given marker/combination. This threshold should:
+
+- Positively select most samples belonging to the case class ("A" in this case), which values must be above the signal threshold.
+- Negatively select most control samples ("B"), which values must be below the signal threshold. 
+
+Usually this threshold is suggested by the guidelines of the kit used for the analysis (e.g. mean of buffer signal + n standard deviations). However, it is a good practice to always check the distribution of signal intensity of the dataset. To help the user with this operation, the **markers_distribution()** have been implemented. This function takes as input data in long format ("*data_long*"), and returns a named list (here assigned to '*distribution*') containing the following objects:
+
+- "Plot_density": a density plot showing the distribution of the signal intensity values for both the classes. In addition, the function allows the user to set both the y_lim and x_lim values to provide a better visualization.
+- "ROC": a ROC cure showing how many real positive samples would be found positive (SE) and how many real negative samples would be found negative (SP) in function of signal threshold. NB: these SE and SP are refereed to the signal intensity threshold considering all the markers together; it is NOT equal to the SE/SP of a single marker/combination (shown later in **Sensitivity and specificity**).
+- "Coord": a dataframe that contains the coordinates of the above described "ROC" (threshold, SP and SE) that have at least a min SE (40 by default) and a min SP (80 by default). These limits can be set manually by specifying  min_SE and min_SP.
+
+In case of lack of a priori known threshold the user can set set signalthr_prediction= TRUE. In this way the function provides a "suggested signal threshold" that corresponds to the median of the singnal threshold values (in "Coord") at which SE/SP are grater or equal to their set minimal values (min_SE and min_SP), and it adds this threshold on the "Plot_density" object as a dashed black line. The use of the median allows to pick a threshold whose SE/SP are not too close to the limits (min_SE and min_SP), but it is recommended to always inspect "Coord" and choose the most appropriate signal threshold by considering SP, SE and Youden index.
+
+
+
+```{r}
+distribution <- markers_distribution(data = data_long, case_class = 'A', y_lim = 0.0015, x_lim = 3000, signalthr_prediction = TRUE, min_SE = 40, min_SP = 80)
+distribution$Plot_density
+distribution$ROC
+distribution$Coord
+```
 
 
 ## Combinatorial analysis
 
-**Combi()** function computes the marker combinations and counts their corresponding positive samples for each class (once thresholds are selected). A sample, to be considered positive for a given combination, must have a value higher than a given signal threshold (signalthr) for at least a given number of markers composing that combination (combithr). In this case signalthr is set at 450 while combithr is set at 1, in order to reproduce both the results reported in Mazzara et. al 2017 (CombiROC paper) and also the tutorial of the web app with default thresholds. In general signalthr should be set by inspecting the previous boxplot and considering the median of markers expression in both classes. Since the target of the analysis is the identification of marker combinations capable to correctly classify samples, the user should choose a signalthr that:
+**Combi()** function computes the marker combinations and counts their corresponding positive samples for each class (once thresholds are selected). A sample, to be considered positive for a given combination, must have a value higher than a given signal threshold (signalthr) for at least a given number of markers composing that combination (combithr). In this case signalthr is set at 450 while combithr is set at 1, in order to reproduce both the results reported in [Mazzara et. al 2017](https://www.nature.com/articles/srep45477) (CombiROC paper) and also the tutorial of the web app with default thresholds. 
 
-- Positively selects most samples belonging to the case class ("A" in this case), which must be above signalthr.
-- Negatively selects most control samples ("B"), which must be below signalthr. 
+As discussed before, signalthr should be set depending on the guidelines of the kit used for the analysis or by an accurate inspection of signal intensity distribution (see **Markers distribution overview** section). In this specific case 450 is the mean of the intensity of buffer + 3 standard deviation (see [Bombaci & Rossi 2019](https://link.springer.com/protocol/10.1007%2F978-1-4939-9164-8_16)).
+In case of lack of guidelines, it's recommended the inspection of data distribution (see **markers_distribution()**). 
 
-combithr should be set exclusively depending on the needed stringency. In this example the obtained combinations dataframe is assigned to "*tab*" object.
+combithr, instead, should be set exclusively depending on the needed stringency. In this example the obtained combinations dataframe is assigned to "*tab*" object.
 
 ```{r}
 tab<-Combi(data, signalthr = 450, combithr = 1)
@@ -97,12 +118,12 @@ tail(mks)
 ```
 ## Selection of combinations
 
-**ranked_combs()** is a function that, after having specified the case class ("A" in this case),  ranks the combinations by a ranking score in order to show the combinations with the highest SE (of cases) and SP (of controls) on the top, facilitating the user in the selection of the best ones. The score is calculated in this way:
+**ranked_combs()** is a function that, after having specified the case class ("A" in this case),  ranks the combinations by the Youden index in order to show the combinations with the highest SE (of cases) and SP (of controls) on the top, facilitating the user in the selection of the best ones. The Youden is calculated in this way:
 $$
- score = 2(SE*SP)/(SE+SP)
+ Youden = SE+SP
 $$
 The user can also set (not mandatory) a minimal value of SE and/or SP that a combination must have to be selected.
-In this case the minimal values of SE and SP are set, respectively, to 40 and 80, in order to reproduce both the gold combinations selection reported in Mazzara et. al 2017 and also the tutorial of the web app with default thresholds. The obtained dataframe with ranked combination is assigned to "*rmks*" object. 
+In this case the minimal values of SE and SP are set, respectively, to 40 and 80, in order to reproduce both the gold combinations selection reported in [Mazzara et. al 2017](https://www.nature.com/articles/srep45477) and also the tutorial of the web app with default thresholds. The obtained dataframe with ranked combination is assigned to "*rmks*" object. 
 
 
 ```{r}
@@ -118,11 +139,10 @@ To allow an objective comparison of combinations, the function **ROC_reports()**
 - The table with combinations and corresponding positive samples counts (*"tab"*), obtained with **Combi()**.
 
 In addition, the function requires to specify the class case, the single markers and/or the combinations of interest. 
-Direction can be set (not mandatory) in order to specify if the number of cases is <= ('<') or >= ('>') the number of controls.  Otherwise the direction will be automatically set (default= 'auto'), defining the group in which the median is higher as case group (see [roc() documentation](https://www.rdocumentation.org/packages/pROC/versions/1.17.0.1/topics/roc)). 
 In this example have been chosen a single marker (Marker1) and 2 combinations (11 and 15).
 ```{r}
 reports <-ROC_reports(data, markers_table = tab, case_class = 'A',
-                      single_markers =c('Marker1'), selected_combinations = c(11,15), direction = '<')
+                      single_markers =c('Marker1'), selected_combinations = c(11,15))
 ```
 "*reports*" contains 3 named objects:
 
@@ -131,9 +151,9 @@ reports <-ROC_reports(data, markers_table = tab, case_class = 'A',
 - "Models": The list of models that have been computed and then used to classify the samples (the equation for each selected combination).
 
 ```{r}
-reports['Plot']
-reports['Metrics']
-reports['Models']
+reports$Plot
+reports$Metrics
+reports$Models
 ```
 ## Retrieving composition of combinations
 
