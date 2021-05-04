@@ -113,14 +113,15 @@ markers_distribution <- function(data, min_SE=40, min_SP=80, x_lim=NULL, y_lim=N
   
   rocobj <-roc(data$Values, response=bin, levels=c("0","1"), quiet= TRUE)
   coord <- coords(rocobj)
-  if (length(coord$threshold)==0){
-    stop(' $Coord object is empty! No signal thresholds contained with SE >= min_SE  AND SP >= min_SP.')}
   coord$Youden <- coord$specificity+coord$sensitivity
   coord$specificity <- round(coord$specificity*100)
   coord$sensitivity <- round(coord$sensitivity*100)
   coord <- coord[coord$specificity>=min_SP & coord$sensitivity>=min_SE, ]
   
   
+  if (length(coord$threshold)==0){
+    stop(' $Coord object is empty! No signal thresholds contained with SE >= min_SE  AND SP >= min_SP.')}
+
   
   if (is.null(x_lim)&is.null(y_lim)) {
     warning('You can adjust density plot zoom by setting y_lim and x_lim')
