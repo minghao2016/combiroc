@@ -158,7 +158,7 @@ markers_distribution <- function(data, min_SE=40, min_SP=80, x_lim=NULL, y_lim=N
    
 
    pr <- median(coord$threshold)
-   warning('The suggested signal threshold in $Plot_density is the median of the signal thresholds at which SE>min_SE and SP>min_SP. This is ONLY a suggestion. Please check if signal threshold is suggested by your analysis kit guidelines instead, and remember to check $Plot_density to better judge our suggested threshold by inspecting the 2 distributions.')
+   warning('The suggested signal threshold in $Plot_density is the median of the signal thresholds at which SE>=min_SE and SP>=min_SP. This is ONLY a suggestion. Please check if signal threshold is suggested by your analysis kit guidelines instead, and remember to check $Plot_density to better judge our suggested threshold by inspecting the 2 distributions.')
     
     res <- p+geom_vline(aes(xintercept=pr),
                         color="black", linetype="dashed", size=0.5)+
