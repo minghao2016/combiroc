@@ -1872,8 +1872,8 @@ rmks</code></pre>
 <pre class="r"><code>combs_list</code></pre>
 <pre><code>## [1]  2 11 14 15 21 22 24 26</code></pre>
 </div>
-<div id="results" class="section level2">
-<h2>Results</h2>
+<div id="results-explanation" class="section level2">
+<h2>Results explanation</h2>
 <p>To be more clear about the interpretation of results, this section will be focused on “Combination 11” (Marker1+Marker2+Marker3) which has an optimal cutoff equal to 0.216 (see <strong>ROC curves</strong>, reports[‘Metrics’]) . This is the equation used to compute the predictions:</p>
 <p><span class="math display">\[
 f(x)=β_0+β_1x_1+β_2x_2+ β_3x_3 +...+β_nx_n
@@ -1912,6 +1912,37 @@ C(x) =
 <li>Samples with p(x) lower or equal to 0.216 are classified as “negatives” (0).</li>
 </ul>
 <p>Thus, using 0.216 as cutoff, “Combination 11” is able to classify the samples in the dataset with a SE equal to 95.0%, SP equal to 86.9%, and accuracy equal to 88.8% (see <strong>ROC curves</strong>, reports[‘Metrics’]).</p>
+</div>
+<div id="classification-of-new-samples" class="section level2">
+<h2>Classification of new samples</h2>
+<p>CombiROC package also offers the possibility to exploit the models for each selected marker/combination obtained with <strong>ROC_reports()</strong> (here assigned to <em>reports$Models</em>) to directly classify new samples.</p>
+<p>The unclassified dataset must be similar to the dataset used for the previous combinatorial analysis (with the same markers, and obviously without the ‘Class’ column).</p>
+<p>To load the dataset with the new unclassified samples <strong>load_unclassified_data()</strong> has been implemented. This function is analogue to <strong>load()</strong> because it loads the same kind of files and it performs the same format checks, with the exception of what concerns ‘Class’ column (which is not present in unclassified datasets).</p>
+<p>For explanatory purposes, in the following example has been used a ‘synthetic’ unclassified dataset (‘data/unclassified_proteomic_data.csv’) obtained by randomly picking 20 samples from the already classified dataset (<em>data</em>). The loaded unclassified sample is here assinged to <em>unc_data</em>.</p>
+<pre class="r"><code>unc_data &lt;- load_unclassified_data(data = &#39;data/unclassified_proteomic_data.csv&#39;, sep = &#39;,&#39;)
+unc_data</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["Patient.ID"],"name":[1],"type":["chr"],"align":["left"]},{"label":["Marker1"],"name":[2],"type":["int"],"align":["right"]},{"label":["Marker2"],"name":[3],"type":["int"],"align":["right"]},{"label":["Marker3"],"name":[4],"type":["int"],"align":["right"]},{"label":["Marker4"],"name":[5],"type":["int"],"align":["right"]},{"label":["Marker5"],"name":[6],"type":["int"],"align":["right"]}],"data":[{"1":"AIH33","2":"1964","3":"875","4":"404","5":"1883","6":"1021"},{"1":"no AIH126","2":"381","3":"303","4":"4","5":"266","6":"376"},{"1":"AIH12","2":"261","3":"153","4":"528","5":"449","6":"237"},{"1":"no AIH112","2":"144","3":"155","4":"25","5":"600","6":"0"},{"1":"no AIH41","2":"0","3":"193","4":"50","5":"382","6":"135"},{"1":"no AIH38","2":"46","3":"51","4":"24","5":"342","6":"74"},{"1":"AIH4","2":"552","3":"267","4":"296","5":"666","6":"22"},{"1":"no AIH32","2":"94","3":"57","4":"18","5":"581","6":"88"},{"1":"AIH20","2":"433","3":"330","4":"92","5":"1266","6":"743"},{"1":"no AIH13","2":"0","3":"0","4":"0","5":"15","6":"21"},{"1":"no AIH11","2":"0","3":"113","4":"0","5":"0","6":"56"},{"1":"no AIH114","2":"224","3":"115","4":"27","5":"276","6":"67"},{"1":"no AIH121","2":"94","3":"413","4":"46","5":"400","6":"229"},{"1":"AIH17","2":"8584","3":"2662","4":"13178","5":"3390","6":"2757"},{"1":"AIH14","2":"499","3":"302","4":"181","5":"1088","6":"568"},{"1":"no AIH106","2":"111","3":"34","4":"32","5":"343","6":"13"},{"1":"no AIH67","2":"73","3":"25","4":"0","5":"267","6":"68"},{"1":"AIH9","2":"538","3":"412","4":"282","5":"1071","6":"474"},{"1":"no AIH74","2":"0","3":"47","4":"0","5":"337","6":"0"},{"1":"AIH16","2":"6485","3":"3704","4":"8834","5":"2595","6":"1570"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>The prediction of the class can be achieved with <strong>Classify()</strong>: a function that applies the previously calculated models to the unclassified dataset and classifies the samples accordingly to the very same rule shown in the end of the <strong>Results explanation</strong> section.</p>
+<p>This function takes as inputs:</p>
+<ul>
+<li>the unclassified dataset containing the new samples to be classified (<em>unc_data</em>).</li>
+<li>the list of models that have been previously computed by <strong>ROC_reports()</strong> (<em>reports$Models</em>).</li>
+<li>the list of metrics that have been previously computed by <strong>ROC_reports()</strong> (<em>reports$Metrics</em>).</li>
+</ul>
+<p>In addition the user can set the labels of the predicted class (setting Positive_class and Negative_class), otherwise they will be 1 for positive samples and 0 for the negative samples by default (see the rule shown in the end of the <strong>Results explanation</strong> section).</p>
+<p>The function returns a named list of data.frames (here assigned to <em>cl_data</em>), one for each marker/combination contained in the list of models (<em>reports$Models</em>), containg the predicted class for each sample.</p>
+<p>To visualize a data.frame containing the classification performed by a model corresponding to a given marker/combination (‘Combination 11’ in the following example) it is sufficient to call the data.frame list and specify it.</p>
+<pre class="r"><code>cl_data &lt;- Classify(unc_data, Models =  reports$Models, Metrics = reports$Metrics, Positive_class = &#39;A&#39;, Negative_class = &#39;B&#39;)
+cl_data$`Combination 11`</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["Patient.ID"],"name":[1],"type":["chr"],"align":["left"]},{"label":["predicted_class"],"name":[2],"type":["chr"],"align":["left"]}],"data":[{"1":"AIH33","2":"A"},{"1":"no AIH126","2":"B"},{"1":"AIH12","2":"A"},{"1":"no AIH112","2":"B"},{"1":"no AIH41","2":"B"},{"1":"no AIH38","2":"B"},{"1":"AIH4","2":"A"},{"1":"no AIH32","2":"B"},{"1":"AIH20","2":"A"},{"1":"no AIH13","2":"B"},{"1":"no AIH11","2":"B"},{"1":"no AIH114","2":"B"},{"1":"no AIH121","2":"B"},{"1":"AIH17","2":"A"},{"1":"AIH14","2":"A"},{"1":"no AIH106","2":"B"},{"1":"no AIH67","2":"B"},{"1":"AIH9","2":"A"},{"1":"no AIH74","2":"B"},{"1":"AIH16","2":"A"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
 </div>
 
 

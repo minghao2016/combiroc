@@ -23,3 +23,6 @@ reports['Metrics']
 reports['Models']
 show_markers(selected_combinations = c(1,15), markers_table = tab)
 combs_with(markers=c('Marker1', 'Marker3'), markers_table = tab)
+
+unc_data <- load_unclassified_data(data = 'data/unclassified_proteomic_data.csv', sep = ',')
+cl_data <- Classify(unc_data, Models =  reports$Models , Metrics = reports$Metrics)

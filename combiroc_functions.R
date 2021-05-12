@@ -408,3 +408,68 @@ combs_with<- function(markers, markers_table){
   message('The combinations in which you can find ALL the selected markers have been computed')
   
   return(combs)}
+
+
+# a function to load unclassified data
+
+
+load_unclassified_data <- function(data, sep = ";", na.strings="" ) {
+  
+  unclassified_data <- read.table(data, header = TRUE, sep = sep ,
+                              na.strings=na.strings)  # to load the data
+  
+  cond_list <- rep(NA, dim(unclassified_data)[2]) # to initialize a list of 
+  # conditions to check for columns with expression values 
+  cond_list1 <- rep(NA, dim(unclassified_data)[2]) # to initialize a list of 
+  # conditions to check for columns with expression values 
+  
+  # checking the format ...
+  for (i in 1:dim(unclassified_data)[2]){
+    cond_list[i] <- class(unclassified_data[,i])=='numeric' | class(unclassified_data[,i])=='integer'
+    cond_list1[i] <- str_detect(colnames(unclassified_data)[i],"-")}
+  # True if a column contains numbers
+  
+  if (class(unclassified_data[,1])!= 'character'){stop('Values of 1st column must be characters')}
+  # fist column must have patients/samples ID as characters
+  
+
+  
+  else if (sum(cond_list) != dim(unclassified_data)[2]-1){stop('Values from 2nd column on must be numbers')}
+  # number of numeric columns must be total number of columns -1
+  
+  else if (sum(cond_list1) >= 1){stop('"-" is not allowed in column names')}
+
+  else{ # if it's ok
+    # reordering marker columns alphabetically - necessary to properly compute combinations later
+    d <- unclassified_data[, 2:dim(unclassified_data)[2]]
+    d <- d[, order(colnames(d))]
+    unclassified_data[,2:dim(unclassified_data)[2]] <- d
+    
+    colnames(unclassified_data)[2:dim(unclassified_data)[2]] <- colnames(d)
+    return(unclassified_data)}}
+
+
+
+
+# a function to fit the trained models on a new dataset to be classified
+
+
+Classify <- function(unclassified_data, Models, Metrics, Positive_class=1, Negative_class=0){
+
+classification <- list()
+
+for (i in names(Models)){
+  
+  
+  
+  pred <- predict(Models[[i]], newdata = unclassified_data,
+                  type = "response")
+  cutoff <- Metrics[which(rownames(Metrics)==i), 4]
+  pr_df <- data.frame(unclassified_data[,1])
+  pr_df$predicted_class <- pred>cutoff
+  colnames(pr_df)[1]<- colnames(unclassified_data)[1]
+  pr_df$predicted_class[which(pr_df$predicted_class=='TRUE')] <- Positive_class
+  pr_df$predicted_class[which(pr_df$predicted_class=='FALSE')] <- Negative_class
+  classification[[i]] <- pr_df
+}
+return(classification)}
