@@ -24,20 +24,20 @@
 #' @export
 
 
-markers_distribution <- function(data, min_SE=40, min_SP=80, x_lim=NULL, y_lim=NULL , signalthr_prediction=FALSE, case_class) {
+markers_distribution <- function(data_long, min_SE=40, min_SP=80, x_lim=NULL, y_lim=NULL , signalthr_prediction=FALSE, case_class) {
 
   if (min_SE==40 & min_SP==80){
     warning('In $Coord object you will see only the signal threshold values at which SE>=40 and SP>=80 by default. If you want to change this limits, please set min_SE and min_SP')
   }
 
-  bin<- rep(NA, length(rownames(data)))
-  for (i in 1:length(rownames(data))){
-    if (data$Class[i] == case_class){bin[i] <- 1}
+  bin<- rep(NA, length(rownames(data_long)))
+  for (i in 1:length(rownames(data_long))){
+    if (data_long$Class[i] == case_class){bin[i] <- 1}
     else{bin[i] <- 0}}
   bin <- factor(bin)
 
 
-  rocobj <-roc(data$Values, response=bin, levels=c("0","1"), quiet= TRUE)
+  rocobj <-roc(data_long$Values, response=bin, levels=c("0","1"), quiet= TRUE)
   coord <- coords(rocobj)
   coord$Youden <- coord$specificity+coord$sensitivity
   coord$specificity <- round(coord$specificity*100)
@@ -51,24 +51,24 @@ markers_distribution <- function(data, min_SE=40, min_SP=80, x_lim=NULL, y_lim=N
 
   if (is.null(x_lim)&is.null(y_lim)) {
     warning('You can adjust density plot zoom by setting y_lim and x_lim')
-    p<- ggplot(data, aes(x=Values, color=Class)) +
+    p<- ggplot(data_long, aes(x=Values, color=Class)) +
       geom_density(n=10000) +
       theme_classic() }
 
   else if (is.null(x_lim)&!is.null(y_lim)) {
-    p<- ggplot(data, aes(x=Values, color=Class)) +
+    p<- ggplot(data_long, aes(x=Values, color=Class)) +
       geom_density(n=10000) +
       theme_classic()+
       coord_cartesian(ylim = c(0, y_lim))}
 
   else if (!is.null(x_lim)&is.null(y_lim)) {
-    p<- ggplot(data, aes(x=Values, color=Class)) +
+    p<- ggplot(data_long, aes(x=Values, color=Class)) +
       geom_density(n=10000) +
       theme_classic()+
       coord_cartesian(xlim = c(0, x_lim))}
 
   else  {
-    p<- ggplot(data, aes(x=Values, color=Class)) +
+    p<- ggplot(data_long, aes(x=Values, color=Class)) +
       geom_density(n=10000) +
       theme_classic()+
       coord_cartesian(xlim = c(0, x_lim), ylim = c(0, y_lim))}

@@ -5,7 +5,7 @@
 \title{Show distribution of intensity values for all the markers taken together.}
 \usage{
 markers_distribution(
-  data,
+  data_long,
   min_SE = 40,
   min_SP = 80,
   x_lim = NULL,
@@ -15,6 +15,8 @@ markers_distribution(
 )
 }
 \arguments{
+\item{data_long}{a data.frame in long format returned by CombiROC_long()}
+
 \item{min_SE}{a numeric that specifies the min value of SE that a threshold must have to be included in $Coord.}
 
 \item{min_SP}{a numeric that specifies the min value of SP that a threshold must have to be included in $Coord.}
@@ -26,8 +28,6 @@ markers_distribution(
 \item{signalthr_prediction}{a boolean that specifies if the density plot will also show the "suggested signal threshold".}
 
 \item{case_class}{a character that specifies which of the two classes of the dataset is the case class.}
-
-\item{data_long}{a data.frame in long format returned by CombiROC_long()}
 }
 \value{
 a named list containing 'Coord' data.frame, 'ROC' and 'Plot_density' plot objects.

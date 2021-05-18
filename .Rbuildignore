@@ -3,3 +3,5 @@
 ^combiroc\.Rproj$
 
 ^\./repo$
+^\./workflow1\.html$
+^workflow1\.Rmd$
