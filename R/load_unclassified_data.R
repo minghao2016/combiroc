@@ -1,7 +1,7 @@
 #' @title Load unclassified data.
-#' @description  A function to load datasets not yet classified. It's analogue to load_data() since it loads the same data type and performs the same format checks, with the exception of class column that in unclassified data is missing.
+#' @description  A function to load datasets not yet classified. It's analogue to load_data() since it loads the same data type and performs the same format checks, with the exception of "Class" column that in unclassified data is missing.
 
-#' The unclassified dataset to be loaded should be in text format, which can be comma, tab or semicolon separated:
+#' @details  The unclassified dataset to be loaded should be in text format, which can be comma, tab or semicolon separated:
 
 #' - The 1st column must contain patient/sample IDs as characters.
 #' - From the 2nd column on, the dataset must contain numerical values that represent the signal corresponding to the markers abundance in each sample (marker-related columns).

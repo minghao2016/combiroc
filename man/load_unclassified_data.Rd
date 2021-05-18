@@ -17,7 +17,9 @@ load_unclassified_data(data, sep = ";", na.strings = "")
 a data frame (data.frame) containing a representation of the data in the file.
 }
 \description{
-A function to load datasets not yet classified. It's analogue to load_data() since it loads the same data type and performs the same format checks, with the exception of class column that in unclassified data is missing.
+A function to load datasets not yet classified. It's analogue to load_data() since it loads the same data type and performs the same format checks, with the exception of "Class" column that in unclassified data is missing.
+}
+\details{
 The unclassified dataset to be loaded should be in text format, which can be comma, tab or semicolon separated:
 \itemize{
 \item The 1st column must contain patient/sample IDs as characters.

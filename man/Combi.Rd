@@ -22,5 +22,7 @@ a data.frame containing how many samples of each class are "positive" for each c
 }
 \description{
 A function that computes the marker combinations and counts their corresponding positive samples for each class (once thresholds are selected).
-A sample, to be considered positive for a given combination, must have a value higher than a given signal threshold (signalthr) for at least a given number of markers composing that combination (combithr).
+}
+\details{
+This function counts how many samples are 'positive' for each combination. A sample, to be considered positive for a given combination, must have a value higher than a given signal threshold (signalthr) for at least a given number of markers composing that combination (combithr).
 }

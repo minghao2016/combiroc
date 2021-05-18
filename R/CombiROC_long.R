@@ -1,6 +1,7 @@
 
 #' @title Reshape CombiROC data in long format.
 #' @description A function that simply wraps dyplr::pivot_longer() to reshape data in long format.
+#' @details This function returns the data in long format (with 'Markers' and 'Values' columns)
 #' @param data a data.frame returned by load_data().
 #' @return a data.frame in long format
 #' @importFrom tidyr pivot_longer

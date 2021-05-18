@@ -22,5 +22,7 @@ a data.frame with ranked combination, reporting: SE, SP, number of markers compo
 }
 \description{
 A function to rank combinations by a Youden index and select them if they have a min SE and/or SP.
+}
+\details{
 This function is meant to help the user in finding the best combinations (in the first rows) and allows also (not mandatory) the SE/SP-dependent filtering of combinations.
 }

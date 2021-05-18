@@ -15,3 +15,6 @@ a data.frame in long format
 \description{
 A function that simply wraps dyplr::pivot_longer() to reshape data in long format.
 }
+\details{
+This function returns the data in long format (with 'Markers' and 'Values' columns)
+}

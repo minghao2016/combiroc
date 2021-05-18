@@ -24,13 +24,16 @@ ROC_reports(
 \item{case_class}{a character that specifies which of the two classes of the dataset is the case class.}
 }
 \value{
-a named list containing 3 objects:
-\itemize{
-\item "Plot": a ggplot object with the ROC curves of the selected combinations.
-\item "Metrics": a dataframe with the metrics of the roc curves (AUC, opt. cutoff, etc ...).
-\item "Models": the list of models (glm() objects) that have been computed and then used to classify the samples (in which you can find the model equation for each selected combination).
-}
+a named list containing 3 objects: "Plot", "Metrics" and "Models".
 }
 \description{
 A function to compute General Linear Model (binomial) and the corresponding ROC curves for each selected combination.
+}
+\details{
+This function trains a logistic regression model for each combination and returns a named list containing 3 objects:
+\itemize{
+\item "Plot": a ggplot object with the ROC curves of the selected combinations.
+\item "Metrics": a data.frame with the metrics of the roc curves (AUC, opt. cutoff, etc ...).
+\item "Models": the list of models (glm() objects) that have been computed and then used to classify the samples (in which you can find the model equation for each selected combination).
+}
 }

@@ -18,6 +18,8 @@ a data frame (data.frame) containing a representation of the data in the file.
 }
 \description{
 A customized read.table() function that checks the conformity of the dataset format, and only if all checks are passed, loads it.
+}
+\details{
 The dataset to be analysed should be in text format, which can be comma, tab or semicolon separated:
 \itemize{
 \item The 1st column must contain patient/sample IDs as characters.

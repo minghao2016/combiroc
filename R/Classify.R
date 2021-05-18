@@ -1,7 +1,7 @@
 
 #'@title Classify data.frames using glm(link='binomial') models.
 #'@description A function that applies the previously calculated models to an unclassified dataset and classifies the samples.
-#' The unclassified dataset to be classified should be loaded with load_unclassified_data() and MUST contain all the markers of the classified dataset used to train the models (the one loaded with load()).
+#'@details This function  can classify dataset loaded with load_unclassified_data() that MUST contain all the markers of the classified dataset used to train the models (the one loaded with load_data()).
 
 
 #' @param unclassified_data a data.frame returned by load_unclassified_data().

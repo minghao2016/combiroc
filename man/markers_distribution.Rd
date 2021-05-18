@@ -33,14 +33,18 @@ markers_distribution(
 a named list containing 'Coord' data.frame, 'ROC' and 'Plot_density' plot objects.
 }
 \description{
-A function that takes as input data in long format, and returns a named list containing the following objects:
+A function that takes as input data in long format, and shows how the signal intensity value of markers are distributed.
+}
+\details{
+This function returns a named list containing the following objects:
 \itemize{
 \item “Plot_density”: a density plot showing the distribution of the signal intensity values for both the classes.
 \item “ROC”: a ROC curve showing how many real positive samples would be found positive (SE) and how many real negative samples would be found negative (SP) in function of signal threshold. NB: these SE and SP are refereed to the signal intensity threshold considering all the markers together; it is NOT equal to the SE/SP of a single marker/combination found with SE_SP().
 \item “Coord”: a dataframe that contains the coordinates of the above described “ROC” (threshold, SP and SE) that have at least a min SE (40 by default) and a min SP (80 by default).
+}
+
 In case of lack of a priori known threshold the user can set set signalthr_prediction= TRUE.
 In this way the function provides a "suggested signal threshold" that corresponds to the median of the singnal threshold values (in "Coord") at which SE/SP are grater or equal to their set minimal values (min_SE and min_SP),
 and it adds this threshold on the "Plot_density" object as a dashed black line.
-The use of the median allows to pick a threshold whose SE/SP are not too close to the limits (min_SE and min_SP), but it is recommended to always inspect "Coord" and choose the most appropriate signal threshold by considering SP, SE and Youden index
-}
+The use of the median allows to pick a threshold whose SE/SP are not too close to the limits (min_SE and min_SP), but it is recommended to always inspect "Coord" and choose the most appropriate signal threshold by considering SP, SE and Youden index.
 }

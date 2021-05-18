@@ -5,3 +5,4 @@
 ^\./repo$
 ^\./workflow1\.html$
 ^workflow1\.Rmd$
+^LICENSE\.md$

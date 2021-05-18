@@ -1,6 +1,6 @@
 #' @title Rank combinations.
 #' @description A function to rank combinations by a Youden index and select them if they have a min SE and/or SP.
-#' This function is meant to help the user in finding the best combinations (in the first rows) and allows also (not mandatory) the SE/SP-dependent filtering of combinations.
+#' @details This function is meant to help the user in finding the best combinations (in the first rows) and allows also (not mandatory) the SE/SP-dependent filtering of combinations.
 #' @param data a data.frame returned by load_data().
 #' @param combo_table a data.frame with SE, SP and number of composing markers for each combination (returned by SE_SP()).
 #' @param case_class a character that specifies which of the two classes of the dataset is the case class.

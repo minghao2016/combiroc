@@ -15,14 +15,14 @@ Authors@R:
     person(given = "Saveria",
            family = "Mazzara",
            role = "aut",
-           email = "saveria.mazzara@gmail.com")
+           email = "saveria.mazzara@gmail.com"),
     person(given = "Mauro",
            family = "Bombaci",
            role = "dtc",
            email = "bombaci@ingm.org",
            comment = c(ORCID = "0000-0002-9887-4165")))
 Description: Easily and Powerfully Calculates Specificity, Sensitivity and ROC Curves of Biomarkers Combinations.
-License: use_mit_license()
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)

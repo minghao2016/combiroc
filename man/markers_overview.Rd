@@ -15,7 +15,10 @@ markers_overview(data_long, ylim = NULL)
 a named list containing 'Summary' data.frame and 'Plot' object.
 }
 \description{
-A function that provides an overview of the expression of each marker in the two classes of the dataset.  It returns a named list that contains two objects:
+A function that provides an overview of the expression of each marker in the two classes of the dataset.
+}
+\details{
+This function returns a named list that contains two objects:
 \itemize{
 \item ‘Plot’: a boxplot whose y max value can be set, in order to allow a better visualization (zoom only, no data loss).
 \item ‘Summary’: a data.frame with a summary statics of the overall expression of markers in the two classes of the dataset. It  a summary statistics for each class.

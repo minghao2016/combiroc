@@ -1,6 +1,6 @@
 #' @title Compute combinations.
 #' @description A function that computes the marker combinations and counts their corresponding positive samples for each class (once thresholds are selected).
-#' A sample, to be considered positive for a given combination, must have a value higher than a given signal threshold (signalthr) for at least a given number of markers composing that combination (combithr).
+#' @details This function counts how many samples are 'positive' for each combination. A sample, to be considered positive for a given combination, must have a value higher than a given signal threshold (signalthr) for at least a given number of markers composing that combination (combithr).
 #'@param data a data.frame returned by load_data().
 #'@param signalthr a numeric that specifies the value above which a marker expression is considered positive in a given sample. Since the target of the analysis is the identification of marker combinations capable to correctly classify samples, the user should choose a signalthr that:
 
