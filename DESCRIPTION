@@ -1,15 +1,27 @@
 Package: combiroc
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
+Title: Taming Combination of Biomarkers
+Version: 0.1.0
 Authors@R: 
-    person(given = "First",
-           family = "Last",
+  c(person(given = "Ivan",
+           family = "Ferrari",
+           role = "aut",
+           email = "ferrari@ingm.org"),
+    person(given = "Riccardo",
+           family = "Rossi",
            role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to
-    pick a license
+           email = "rossi@ingm.org",
+           comment = c(ORCID = "0000-0002-4964-3264")),
+    person(given = "Saveria",
+           family = "Mazzara",
+           role = "aut",
+           email = "saveria.mazzara@gmail.com")
+    person(given = "Mauro",
+           family = "Bombaci",
+           role = "dtc",
+           email = "bombaci@ingm.org",
+           comment = c(ORCID = "0000-0002-9887-4165")))
+Description: Easily and Powerfully Calculates Specificity, Sensitivity and ROC Curves of Biomarkers Combinations.
+License: use_mit_license()
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
