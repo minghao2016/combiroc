@@ -9,6 +9,7 @@
 
 #'@param combithr a numeric that specifies the necessary number of positivelly expressed markers (>= signalthr), in a given combination, to cosinder that combination positivelly expressed in a sample.
 #'@return a data.frame containing how many samples of each class are "positive" for each combination.
+#'@import gtools
 #'@export
 
 

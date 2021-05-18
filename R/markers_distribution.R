@@ -21,10 +21,13 @@
 #' @param case_class a character that specifies which of the two classes of the dataset is the case class.
 #' @param signalthr_prediction a boolean that specifies if the density plot will also show the "suggested signal threshold".
 #' @return a named list containing 'Coord' data.frame, 'ROC' and 'Plot_density' plot objects.
+#' @import ggplot2 pROC
 #' @export
 
 
 markers_distribution <- function(data_long, min_SE=40, min_SP=80, x_lim=NULL, y_lim=NULL , signalthr_prediction=FALSE, case_class) {
+Class <- data_long$Class
+Values <- data_long$Values
 
   if (min_SE==40 & min_SP==80){
     warning('In $Coord object you will see only the signal threshold values at which SE>=40 and SP>=80 by default. If you want to change this limits, please set min_SE and min_SP')
@@ -32,12 +35,12 @@ markers_distribution <- function(data_long, min_SE=40, min_SP=80, x_lim=NULL, y_
 
   bin<- rep(NA, length(rownames(data_long)))
   for (i in 1:length(rownames(data_long))){
-    if (data_long$Class[i] == case_class){bin[i] <- 1}
+    if (Class[i] == case_class){bin[i] <- 1}
     else{bin[i] <- 0}}
   bin <- factor(bin)
 
 
-  rocobj <-roc(data_long$Values, response=bin, levels=c("0","1"), quiet= TRUE)
+  rocobj <-roc(Values, response=bin, levels=c("0","1"), quiet= TRUE)
   coord <- coords(rocobj)
   coord$Youden <- coord$specificity+coord$sensitivity
   coord$specificity <- round(coord$specificity*100)

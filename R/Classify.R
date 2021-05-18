@@ -10,6 +10,7 @@
 #' @param Positive_class a numeric or a character that specifies the label of the samples that will be classified as positives
 #' @param Negative_class a numeric or a character that specifies the label of the samples that will be classified as negatives
 #' @return  a named list of data.frames, one for each marker/combination contained in the list of models, containg the predicted class for each sample
+#' @importFrom stats formula glm median predict quantile sd
 #' @export
 Classify <- function(unclassified_data, Models, Metrics, Positive_class=1, Negative_class=0){
 

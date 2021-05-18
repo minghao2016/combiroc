@@ -11,6 +11,7 @@
 #' - "Metrics": a dataframe with the metrics of the roc curves (AUC, opt. cutoff, etc ...).
 #' - "Models": the list of models (glm() objects) that have been computed and then used to classify the samples (in which you can find the model equation for each selected combination).
 #'
+#' @import dplyr ggplot2 pROC stringr
 #' @export
 
 ROC_reports <- function(data, markers_table, selected_combinations=NULL, single_markers=NULL, case_class){
@@ -34,7 +35,7 @@ ROC_reports <- function(data, markers_table, selected_combinations=NULL, single_
     sc<- selected_combinations + (length(colnames(data))-2)}
   if (!is.null(single_markers)){
     for (i in 1:length(single_markers)){
-      single_markers[i] <- which(rownames(mks)== single_markers[i])
+      single_markers[i] <- which(rownames(markers_table)== single_markers[i])
     }
     sc <- as.numeric(union(single_markers,sc))
   }
