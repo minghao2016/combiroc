@@ -1,5 +1,5 @@
 Package: combiroc
-Title: Taming Combination of Biomarkers
+Title: Taming Combinations of Biomarkers
 Version: 0.1.0
 Authors@R: 
   c(person(given = "Ivan",
