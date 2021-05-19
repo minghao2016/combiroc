@@ -5,6 +5,7 @@
 #' @param data a data.frame returned by load_data().
 #' @return a data.frame in long format
 #' @importFrom tidyr pivot_longer
+#' @example R/examples/CombiROC_long_example.R
 #' @export
 
 CombiROC_long <- function(data){

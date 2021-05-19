@@ -28,3 +28,8 @@ The unclassified dataset to be loaded should be in text format, which can be com
 Only if all the checks are passed, it reorders alphabetically the marker-related columns depending on marker names (necessary for a proper computation of combinations), and it forces "Class" as 2nd column name.
 }
 }
+\examples{
+# To load an unclassified dataset.
+
+## demo_unclassified_data <- load_unclassified_data(data= "data/unclassified_proteomic_data.csv", sep = ";", na.strings="" )
+}

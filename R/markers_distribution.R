@@ -1,34 +1,67 @@
 
-#' @title  Show distribution of intensity values for all the markers taken together.
+#' @title  Show distribution of intensity values for all the markers both singularly and all together.
 
 
 #' @description A function that takes as input data in long format, and shows how the signal intensity value of markers are distributed.
 #' @details This function returns a named list containing the following objects:
 
-#'  -  “Plot_density”: a density plot showing the distribution of the signal intensity values for both the classes.
-#'  -  “ROC”: a ROC curve showing how many real positive samples would be found positive (SE) and how many real negative samples would be found negative (SP) in function of signal threshold. NB: these SE and SP are refereed to the signal intensity threshold considering all the markers together; it is NOT equal to the SE/SP of a single marker/combination found with SE_SP().
-#'  - “Coord”: a dataframe that contains the coordinates of the above described “ROC” (threshold, SP and SE) that have at least a min SE (40 by default) and a min SP (80 by default).
+#'  - “Density_plot”: a density plot showing the distribution of the signal intensity values for both the classes.
+#'  - "Density_summary": a data.frame showing a summary statistics of the distributions.
+#'  - “ROC”: a ROC curve showing how many real positive samples would be found positive (SE) and how many real negative samples would be found negative (SP) in function of signal threshold. NB: these SE and SP are refereed to the signal intensity threshold considering all the markers together; it is NOT equal to the SE/SP of a single marker/combination found with SE_SP().
+#'  - “Coord”: a data.frame that contains the coordinates of the above described “ROC” (threshold, SP and SE) that have at least a min SE (40 by default) and a min SP (80 by default).
+#'  - "Boxplot": a boxplot showing the distribution of the signal intensity values of each marker singularly, for both the classes.
 #'
 #' In case of lack of a priori known threshold the user can set set signalthr_prediction= TRUE.
 #' In this way the function provides a "suggested signal threshold" that corresponds to the median of the singnal threshold values (in "Coord") at which SE/SP are grater or equal to their set minimal values (min_SE and min_SP),
-#' and it adds this threshold on the "Plot_density" object as a dashed black line.
+#' and it adds this threshold on the "Density_plot" object as a dashed black line.
 #' The use of the median allows to pick a threshold whose SE/SP are not too close to the limits (min_SE and min_SP), but it is recommended to always inspect "Coord" and choose the most appropriate signal threshold by considering SP, SE and Youden index.
 
 #' @param data_long a data.frame in long format returned by CombiROC_long()
 #' @param y_lim a numeric setting the max values of y that will be visualized in the density plot (zoom only, no data loss).
 #' @param x_lim a numeric setting the max values of x that will be visualized in the density plot (zoom only, no data loss).
+#' @param boxplot_lim a numeric setting the max values of y that will be visualized in the boxplot (zoom only, no data loss).
 #' @param min_SE a numeric that specifies the min value of SE that a threshold must have to be included in $Coord.
 #' @param min_SP a numeric that specifies the min value of SP that a threshold must have to be included in $Coord.
 #' @param case_class a character that specifies which of the two classes of the dataset is the case class.
 #' @param signalthr_prediction a boolean that specifies if the density plot will also show the "suggested signal threshold".
-#' @return a named list containing 'Coord' data.frame, 'ROC' and 'Plot_density' plot objects.
+#' @return a named list containing 'Coord' and 'Density_summary' data.frames, and 'ROC', 'Boxplot' and 'Density_plot' plot objects.
 #' @import ggplot2 pROC
+#' @example R/examples/markers_distribution_example.R
 #' @export
 
 
-markers_distribution <- function(data_long, min_SE=40, min_SP=80, x_lim=NULL, y_lim=NULL , signalthr_prediction=FALSE, case_class) {
+markers_distribution <- function(data_long, min_SE=40, min_SP=80, x_lim=NULL, y_lim=NULL, boxplot_lim=NULL , signalthr_prediction=FALSE, case_class) {
 Class <- data_long$Class
 Values <- data_long$Values
+Markers <- data_long$Markers
+
+nclass <- unique(Class) # to retrieve the 2 classes
+
+df <- data.frame(matrix(0, nrow = 2, ncol= 8))
+rownames(df) <- nclass
+colnames(df) <- c('# observations', 'Min', 'Max','Median', 'Mean', '1st Q.',  '3rd Q.', 'SD')
+
+
+for (i in 1:2){
+  df[i,1] <-  dim(unique(data_long[Class==nclass[i],1]))[1]
+  df[i,2] <- min(data_long[Class==nclass[i], 4])
+  df[i,3] <- max(data_long[Class==nclass[i], 4])
+  df[i,4] <- median(data_long[Class==nclass[i], 4][[1]])
+  df[i,5] <- mean(data_long[Class==nclass[i], 4][[1]])
+  df[i,6] <- as.numeric(quantile(t(data_long[Class==nclass[i], 4]),0.25))
+  df[i,7] <- as.numeric(quantile(t(data_long[Class==nclass[i], 4]),0.75))
+  df[i,8] <- sd(data_long[Class==nclass[i], 4][[1]])
+}
+if (is.null(boxplot_lim)){
+  boxplot_lim= max(df$Max)*1.15
+  warning('boxplot_lim is not set. Boxplot may be difficult to interpret due to outliers. You should set an appropriate y axis limit.')
+}
+
+Boxplot<- ggplot(data_long, aes(Markers, Values)) +
+  geom_boxplot(aes(color = Class)) +
+  theme_classic()+
+  coord_cartesian(ylim = c(0,boxplot_lim)) # shows the boxplot for both classes
+
 
   if (min_SE==40 & min_SP==80){
     warning('In $Coord object you will see only the signal threshold values at which SE>=40 and SP>=80 by default. If you want to change this limits, please set min_SE and min_SP')
@@ -95,6 +128,6 @@ Values <- data_long$Values
       annotate("text", x = pr*0.60, y = 0, label =  as.character(round(pr)))+
       labs(x = "Signal intensity", y="Frequency")}
 
-  robj <- list(res, coord, ggroc(rocobj))
-  names(robj) <- c('Plot_density', 'Coord', 'ROC')
+  robj <- list(res, coord, ggroc(rocobj), df, Boxplot)
+  names(robj) <- c('Density_plot', 'Coord', 'ROC', 'Density_summary', 'Boxplot')
   return(robj)}

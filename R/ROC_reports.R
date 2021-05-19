@@ -12,8 +12,8 @@
 #' @param selected_combinations a numeric vector that specifies the combinations of interest.
 #' @param case_class a character that specifies which of the two classes of the dataset is the case class.
 #' @return a named list containing 3 objects: "Plot", "Metrics" and "Models".
-#'
 #' @import dplyr ggplot2 pROC stringr
+#' @example R/examples/ROC_reports_example.R
 #' @export
 
 ROC_reports <- function(data, markers_table, selected_combinations=NULL, single_markers=NULL, case_class){

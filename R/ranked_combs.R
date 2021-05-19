@@ -6,6 +6,7 @@
 #' @param case_class a character that specifies which of the two classes of the dataset is the case class.
 #' @param min_SE a numeric that specifies the min value of SE that a combination must have to be filtered-in.
 #' @param min_SP a numeric that specifies the min value of SP that a combination must have to be filtered-in.
+#' @example R/examples/ranked_combs_example.R
 #' @return a data.frame with ranked combination, reporting: SE, SP, number of markers composing the combination and the score.
 #' @export
 

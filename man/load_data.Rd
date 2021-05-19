@@ -30,3 +30,8 @@ The dataset to be analysed should be in text format, which can be comma, tab or 
 Only if all the checks are passed, it reorders alphabetically the marker-related columns depending on marker names (necessary for a proper computation of combinations), and it forces "Class" as 2nd column name.
 }
 }
+\examples{
+#To load proteomics data from Zingaretti et al. 2012 (PMC3518104)
+
+## demo_data <- load_data(data = 'data/demo_5Ags.csv', sep = ';', na.strings = "")
+}

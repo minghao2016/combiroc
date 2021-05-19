@@ -43,16 +43,6 @@ tail(data_long)
 
 ## Markers distribution overview
 
-**markers_overview()**, as suggested by the name, provides an overview of the expression of each marker in the two classes of the dataset. This function takes as input data in long format ("*data_long*"), and returns a named list (in this case called *overview*).
-This list contains two objects:
-
-- 'Plot': a boxplot whose y max value can be set, in order to allow a better visualization (zoom only, no data loss).
-- 'Summary': a data.frame with a summary statics of the overall expression of markers in the two classes of the dataset.
-```{r}
-overview <- markers_overview(data_long, ylim =2000)
-overview$Plot
-overview$Summary
-```
 Since the target of the analysis is the identification of marker combinations capable to correctly classify samples, the user should choose a signal threshold to define the positivity for a given marker/combination. This threshold should:
 
 - Positively select most samples belonging to the case class ("A" in this case), which values must be above the signal threshold.
@@ -69,10 +59,13 @@ In case of lack of a priori known threshold the user can set set signalthr_predi
 
 
 ```{r}
-distribution <- markers_distribution(data_long, case_class = 'A', y_lim = 0.0015, x_lim = 3000, signalthr_prediction = TRUE, min_SE = 40, min_SP = 80)
-distribution$Plot_density
+distribution <- markers_distribution(data_long, case_class = 'A', y_lim = 0.0015, x_lim = 3000, signalthr_prediction = TRUE, min_SE = 40, min_SP = 80, boxplot_lim = 2000)
+distribution$Boxplot
 distribution$ROC
 distribution$Coord
+distribution$Density_plot
+distribution$Density_summary
+
 ```
 
 

@@ -26,3 +26,11 @@ A function that computes the marker combinations and counts their corresponding 
 \details{
 This function counts how many samples are 'positive' for each combination. A sample, to be considered positive for a given combination, must have a value higher than a given signal threshold (signalthr) for at least a given number of markers composing that combination (combithr).
 }
+\examples{
+# To compute the marker combinations and count their corresponding positive samples for each class.
+
+## combs <- Combi(data= demo_data, signalthr=450, combithr=1)  # count as positive the samples with
+##                                                             value >= 450 for at least 1 marker
+##                                                             in the combination
+
+}

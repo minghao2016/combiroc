@@ -3,6 +3,7 @@
 #' @param markers_table a data.frame with ranked combination, reporting: SE, SP, number of markers composing the combination and the score (returned by ranked_combs()).
 #' @param selected_combinations a numeric vector that specifies the combinations of interest.
 #' @return a data.frame containing the selected combinations and their composing markers.
+#' @example R/examples/show_markers_example.R
 #' @export
 
 show_markers <- function(markers_table, selected_combinations){

@@ -3,6 +3,7 @@
 #' @details This function calculate SE and SP for each combination. The SE of a given combination (capability to find real positives/cases) corresponds to the SE of the case class, while its SP (capability to exclude real negatives/controls) corresponds to the SP of the control class.
 #'@param data a data.frame returned by load_data().
 #'@param combinations_table a data.frame containing how many samples of each class are "positive" for each combination (returned by Combi()).
+#'@example R/examples/SE_SP_example.R
 #'@return data.frame with SE, SP and number of composing markers for each combination.
 #'@export
 

@@ -20,3 +20,11 @@ A function to compute sensitivity and specificity of each combination for each c
 \details{
 This function calculate SE and SP for each combination. The SE of a given combination (capability to find real positives/cases) corresponds to the SE of the case class, while its SP (capability to exclude real negatives/controls) corresponds to the SP of the control class.
 }
+\examples{
+# To compute sensitivity and specificity of each combination
+
+## combs <- Combi(data= demo_data, signalthr=450, combithr=1)  # count as positive the samples with
+##                                                             value >= 450 for at least 1 marker
+##                                                             in the combination
+
+}

@@ -4,6 +4,7 @@
 #' @param markers a character vector containing one or more markers of interest.
 #' @param markers_table a data.frame with ranked combination, reporting: SE, SP, number of markers composing the combination and the score (returned by ranked_combs()).
 #' @return a numeric vector containing the numbers corresponding to the combinations containing all the selected markers.
+#' @example R/examples/combs_with_example.R
 #' @export
 
 combs_with<- function(markers, markers_table){

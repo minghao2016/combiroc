@@ -18,3 +18,9 @@ A function that simply wraps dyplr::pivot_longer() to reshape data in long forma
 \details{
 This function returns the data in long format (with 'Markers' and 'Values' columns)
 }
+\examples{
+# To reshape demo_data in long format
+
+## demo_data_long <- CombiROC_long(data = demo_data)
+
+}

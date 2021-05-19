@@ -26,3 +26,9 @@ A function to rank combinations by a Youden index and select them if they have a
 \details{
 This function is meant to help the user in finding the best combinations (in the first rows) and allows also (not mandatory) the SE/SP-dependent filtering of combinations.
 }
+\examples{
+# To rank combinations by Youden index and filter-out the ones with SE < min_SE and SP < min_SP
+
+## ranked_combs_SE_SP <- ranked_combs(data= demo_data, combo_table= combs_SE_SP,
+##                       case_class='A', min_SE=40, min_SP=80)
+}

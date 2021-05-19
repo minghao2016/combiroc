@@ -17,3 +17,8 @@ a numeric vector containing the numbers corresponding to the combinations contai
 \description{
 A function to find all the combinations containing all the markers of interest.
 }
+\examples{
+# To show all the combinations with given markers.
+
+## combs_with(markers = c('Marker1', 'Marker2') , markers_table = ranked_combs_SE_SP)
+}

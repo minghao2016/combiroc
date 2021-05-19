@@ -12,6 +12,8 @@
 #' @param sep the field separator character.
 #' @param na.strings a character vector of strings which are to be interpreted as NA values.
 #' @return a data frame (data.frame) containing a representation of the data in the file.
+#' @importFrom utils read.table
+#' @example R/examples/load_unclassified_data_example.R
 #' @export
 
 load_unclassified_data <- function(data, sep = ";", na.strings="" ) {
