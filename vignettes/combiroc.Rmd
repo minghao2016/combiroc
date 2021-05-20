@@ -16,13 +16,13 @@ load_all()
 ```
 
 
-This markdown shows a representative CombiROC analysis workflow in which is assessed the marker combinations performance in classifying samples of the proteomic dataset from [Zingaretti et al. 2012](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3518104/) (the one also used in the CombiROC web app tutorial).  This dataset contains multi-marker signatures for Autoimmune Hepatitis (AIH) for samples clinically diagnosed as “abnormal” (class A) or "normal" (class B).
+This markdown shows a representative **combiroc** package analysis workflow in which is assessed the marker combinations performance in classifying samples of the proteomic dataset from [Zingaretti et al. 2012](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3518104/) (the one also used in the CombiROC web app tutorial).  This dataset contains multi-marker signatures for Autoimmune Hepatitis (AIH) for samples clinically diagnosed as “abnormal” (class A) or "normal" (class B).
 
 ## Data loading
 
 The dataset to be analysed should be in text format, which can be comma, tab or semicolon separated:
 
-- The 1st column must contain patient/sample IDs as characters.
+- The 1st column must contain unique patient/sample IDs.
 - The 2nd column must contain the class to which each sample belongs.
 - The classes must be exactly 2 and they must be written in character format. 
 - From the 3rd column on, the dataset must contain numerical values that represent the signal corresponding to the markers abundance in each sample (marker-related columns). 
@@ -32,15 +32,17 @@ The **load_data()** function uses a customized **read.table()** function that ch
 The loaded dataset is assigned to the "*data*" object.
 ```{r}
 data <- load_data("../data/demo_5Ags.csv", sep=';')
-head(data)
-tail(data)
+data
+```
+The very same dataset has been included in **combiroc** package as a demo dataset, that can be directly called typing *demo_data*. 
+```{r}
+demo_data
 ```
 The **CombiROC_long()** is a function that simply wraps dyplr::**pivot_longer()**
 function, and it's used to reshape the data in long format. Data in long format is required to obtain the boxplot of the next function. The obtained data in long format is assinged to "*data_long*" object.
 ```{r}
 data_long <- CombiROC_long(data)
-head(data_long)
-tail(data_long)
+data_long
 ```
 
 ## Markers distribution overview
@@ -52,7 +54,7 @@ Since the target of the analysis is the identification of marker combinations ca
 
 Usually this threshold is suggested by the guidelines of the kit used for the analysis (e.g. mean of buffer signal + n standard deviations). However, it is a good practice to always check the distribution of signal intensity of the dataset. To help the user with this operation, the **markers_distribution()** have been implemented. This function takes as input data in long format ("*data_long*"), and returns a named list (here assigned to '*distribution*') containing the following objects:
 
--'Boxplot': a boxplot showing the distribution of each marker values for both classes.
+- 'Boxplot': a boxplot showing the distribution of each marker values for both classes.
 - "ROC": a ROC curve showing how many real positive samples would be found positive (SE) and how many real negative samples would be found negative (SP) in function of signal threshold. NB: these SE and SP are refereed to the signal intensity threshold considering all the markers together; it is NOT equal to the SE/SP of a single marker/combination (shown later in **Sensitivity and specificity**).
 - "Coord": a dataframe that contains the coordinates of the above described "ROC" (threshold, SP and SE) that have at least a min SE (40 by default) and a min SP (80 by default). These limits can be set manually by specifying  min_SE and min_SP.
 - "Density_plot": a density plot showing the distribution of the signal intensity values for both the classes. In addition, the function allows the user to set both the y_lim and x_lim values to provide a better visualization.
@@ -66,7 +68,7 @@ In case of lack of a priori known threshold the user can set set signalthr_predi
 distribution <- markers_distribution(data_long, case_class = 'A', y_lim = 0.0015, x_lim = 3000, signalthr_prediction = TRUE, min_SE = 40, min_SP = 80, boxplot_lim = 2000)
 distribution$Boxplot
 distribution$ROC
-head(distribution$Coord)
+distribution$Coord
 distribution$Density_plot
 distribution$Density_summary
 ```
@@ -83,8 +85,7 @@ combithr, instead, should be set exclusively depending on the needed stringency.
 
 ```{r}
 tab<-Combi(data, signalthr = 450, combithr = 1)
-head(tab)
-tail(tab)
+tab
 ```
 ## Sensitivity and specificity
 
@@ -102,8 +103,7 @@ The obtained dataframe with SE, SP and number of markers is assigned to "*mks*" 
 
 ```{r}
 mks <- SE_SP(data, tab)
-head(mks)
-tail(mks)
+mks
 ```
 ## Selection of combinations
 
@@ -184,15 +184,15 @@ $$
 f(x)=    -17.0128  +  1.5378 *log(Marker1 + 1)  +  0.9176 *log(Marker2 + 1) + 0.5706* log(Marker3 + 1)$$
 Predictions (f(x) values) of 'Combination 11' can be visualized with the following command: 
 ```{r}
-head(predict(reports$Models$`Combination 11`, type='link')) # link = f(x)
-tail(predict(reports$Models$`Combination 11`, type='link'))  # link = f(x)
+predict(reports$Models$`Combination 11`, type='link') # link = f(x)
+predict(reports$Models$`Combination 11`, type='link')  # link = f(x)
 ```
 
 
 Prediction probabilities (p(x) values) of 'Combination 11' can be instead visualized by typing: 
 ```{r}
-head(predict(reports$Models$`Combination 11`, type='response')) # response = p(x)
-tail(predict(reports$Models$`Combination 11`, type='response')) # response = p(x)
+predict(reports$Models$`Combination 11`, type='response') # response = p(x)
+predict(reports$Models$`Combination 11`, type='response') # response = p(x)
 ```
 
 
@@ -214,7 +214,7 @@ Specifically, for "Combination 11":
 - Samples with p(x) higher than 0.216 are classified as "positives" (1).
 - Samples with p(x) lower or equal to 0.216 are classified as "negatives" (0).
 
-Thus, using 0.216 as cutoff, "Combination 11" is able to classify the samples in the dataset with a SE equal to 95.0%, SP equal to 86.9%, and accuracy equal to 88.8% (see **ROC curves**, reports['Metrics']).
+Thus, using 0.216 as cutoff, "Combination 11" is able to classify the samples in the dataset with a SE equal to 95.0%, SP equal to 86.9%, and accuracy equal to 88.8% (see **ROC curves**, *reports$Metrics*]).
 
 ## Classification of new samples
 
@@ -230,6 +230,11 @@ The loaded unclassified sample is here assinged to *unc_data*.
 unc_data <- load_unclassified_data(data = '../data/unclassified_proteomic_data.csv', sep = ',')
 unc_data
 ```
+The very same dataset has been included in **combiroc** package as an unclassified demo dataset, that can be directly called typing *demo_unclassified_data*. 
+```{r}
+demo_unclassified_data
+```
+
 The prediction of the class can be achieved with **Classify()**:
 a function that applies the previously calculated models to the unclassified dataset and classifies the samples accordingly to the very same rule shown in the end of the **Results explanation** section.
 

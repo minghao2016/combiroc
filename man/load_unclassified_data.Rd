@@ -22,7 +22,7 @@ A function to load datasets not yet classified. It's analogue to load_data() sin
 \details{
 The unclassified dataset to be loaded should be in text format, which can be comma, tab or semicolon separated:
 \itemize{
-\item The 1st column must contain patient/sample IDs as characters.
+\item The 1st column must contain unique patient/sample IDs.
 \item From the 2nd column on, the dataset must contain numerical values that represent the signal corresponding to the markers abundance in each sample (marker-related columns).
 \item Marker-related columns must be called with the same name of the dataset previously loaded with load_data().
 Only if all the checks are passed, it reorders alphabetically the marker-related columns depending on marker names (necessary for a proper computation of combinations), and it forces "Class" as 2nd column name.
