@@ -15,7 +15,7 @@ ROC_reports(
 \arguments{
 \item{data}{a data.frame returned by load_data().}
 
-\item{markers_table}{a data.frame with ranked combination, reporting: SE, SP, number of markers composing the combination and the score (returned by ranked_combs()).}
+\item{markers_table}{a data.frame with combinations and corresponding positive samples counts, obtained with Combi().}
 
 \item{selected_combinations}{a numeric vector that specifies the combinations of interest.}
 
@@ -38,15 +38,20 @@ This function trains a logistic regression model for each combination and return
 }
 }
 \examples{
+demo_data # combiroc built-in demo data (proteomics data from Zingaretti et al. 2012 - PMC3518104)
+
+combs <- Combi(data= demo_data, signalthr=450, combithr=1)  # compute combinations
+
+
 # To train logistic regression models on each selected combinations and
 # each selected marker, and compute corresponding ROCs.
 
-## reports <- ROC_reports(data= demo_data, markers_table= ranked_combs_SE_SP,
-##                        selected_combinations= c(1,11,15),
-##                        single_markers=c('Marker1', 'Marker2'), case_class='A')
-##
-## reports$Plot  # Shows the ROC curves
-## reports$Metrics # Shows the ROC metrics
-## report$Models # show models
-## report$reports$Models$`Combination 11` # show model trained with Combination 1
+reports <- ROC_reports(data= demo_data, markers_table= combs,
+                        selected_combinations= c(1,11,15),
+                        single_markers=c('Marker1', 'Marker2'), case_class='A')
+
+reports$Plot  # Shows the ROC curves
+reports$Metrics # Shows the ROC metrics
+reports$Models # show models
+reports$reports$Models$`Combination 11` # show model trained with Combination 11
 }

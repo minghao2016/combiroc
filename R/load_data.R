@@ -38,8 +38,8 @@ load_data <- function(data, sep = ";", na.strings="" ) {
     cond_list1[i] <- str_detect(colnames(CombiROC_data)[i],"-")}
   # True if a column contains numbers
 
-  if (class(CombiROC_data[,1])!= 'character'){stop('Values of 1st column must be characters')}
-  # fist column must have patients/samples ID as characters
+  if (length(unique(CombiROC_data[,1]))!=dim(CombiROC_data)[1]){stop('Values of 1st column must contain unique IDs!')}
+  # fist column must have patients/samples IDs, they have to be unique.
 
   else if (class(CombiROC_data[,2])!= 'character'){stop('Values of 2nd column must be characters')}
   # second column must contain the class of the samples as characters

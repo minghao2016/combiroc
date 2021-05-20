@@ -7,7 +7,7 @@
 #' - "Models": the list of models (glm() objects) that have been computed and then used to classify the samples (in which you can find the model equation for each selected combination).
 
 #' @param data a data.frame returned by load_data().
-#' @param markers_table a data.frame with ranked combination, reporting: SE, SP, number of markers composing the combination and the score (returned by ranked_combs()).
+#' @param markers_table a data.frame with combinations and corresponding positive samples counts, obtained with Combi().
 #' @param single_markers a character vector that specifies the single markers of interest.
 #' @param selected_combinations a numeric vector that specifies the combinations of interest.
 #' @param case_class a character that specifies which of the two classes of the dataset is the case class.

@@ -4,6 +4,7 @@
 #' @details This function returns the data in long format (with 'Markers' and 'Values' columns)
 #' @param data a data.frame returned by load_data().
 #' @return a data.frame in long format
+#' @import stringr
 #' @importFrom tidyr pivot_longer
 #' @example R/examples/CombiROC_long_example.R
 #' @export

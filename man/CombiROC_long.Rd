@@ -19,8 +19,11 @@ A function that simply wraps dyplr::pivot_longer() to reshape data in long forma
 This function returns the data in long format (with 'Markers' and 'Values' columns)
 }
 \examples{
+
+demo_data # combiroc built-in demo data (proteomics data from Zingaretti et al. 2012 - PMC3518104)
+
 # To reshape demo_data in long format
 
-## demo_data_long <- CombiROC_long(data = demo_data)
+demo_data_long <- CombiROC_long(data = demo_data)
 
 }

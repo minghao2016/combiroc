@@ -33,8 +33,22 @@ A function that applies the previously calculated models to an unclassified data
 This function  can classify dataset loaded with load_unclassified_data() that MUST contain all the markers of the classified dataset used to train the models (the one loaded with load_data()).
 }
 \examples{
-# To show all the combinations with given markers.
+demo_data # combiroc built-in demo data (proteomics data from Zingaretti et al. 2012 - PMC3518104)
+demo_unclassified_data # combiroc built-in unclassified demo data
 
-## classified_data <- Classify(unclassified_data= demo_unclassified_data, Models= reports$Models,
-##                             Metrics= reports$Metrics, Positive_class=1, Negative_class=0)
+combs <- Combi(data= demo_data, signalthr=450, combithr=1)  # compute combinations
+
+reports <- ROC_reports(data= demo_data, markers_table= combs,
+                       selected_combinations= c(1,11,15),
+                       single_markers=c('Marker1', 'Marker2'), case_class='A') # train logistic
+                                                                               # regression models
+
+
+# To classify new samples with logistic regression models.
+
+classified_data <- Classify(unclassified_data= demo_unclassified_data, Models= reports$Models,
+                             Metrics= reports$Metrics, Positive_class=1, Negative_class=0)
+
+classified_data$`Combination 11` # show samples classified using Logistic regression model
+                                 # trained with Combination 11
 }

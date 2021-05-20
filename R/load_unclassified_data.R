@@ -32,9 +32,8 @@ load_unclassified_data <- function(data, sep = ";", na.strings="" ) {
     cond_list1[i] <- str_detect(colnames(unclassified_data)[i],"-")}
   # True if a column contains numbers
 
-  if (class(unclassified_data[,1])!= 'character'){stop('Values of 1st column must be characters')}
-  # fist column must have patients/samples ID as characters
-
+  if (length(unique(unclassified_data[,1]))!=dim(unclassified_data)[1]){stop('Values of 1st column must contain unique IDs!')}
+  # fist column must have patients/samples IDs, they have to be unique
 
 
   else if (sum(cond_list) != dim(unclassified_data)[2]-1){stop('Values from 2nd column on must be numbers')}
