@@ -1,14 +1,16 @@
 ---
-title: "CombiROC workflow"
+title: "combiroc"
 output:
   html_document:
     df_print: paged
   pdf_document: default
+vignette: >
+  %\VignetteIndexEntry{combiroc}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-# needed libraries
 library(devtools)
 load_all()
 ```
@@ -29,7 +31,7 @@ The dataset to be analysed should be in text format, which can be comma, tab or 
 The **load_data()** function uses a customized **read.table()** function that checks the conformity of the dataset format. If all the checks are passed, it reorders alphabetically the marker-related columns depending on marker names (necessary for a proper computation of combinations), and it forces "Class" as 2nd column name.
 The loaded dataset is assigned to the "*data*" object.
 ```{r}
-data <- load_data("data/demo_5Ags.csv", sep=';')
+data <- load_data("../data/demo_5Ags.csv", sep=';')
 head(data)
 tail(data)
 ```
@@ -50,11 +52,13 @@ Since the target of the analysis is the identification of marker combinations ca
 
 Usually this threshold is suggested by the guidelines of the kit used for the analysis (e.g. mean of buffer signal + n standard deviations). However, it is a good practice to always check the distribution of signal intensity of the dataset. To help the user with this operation, the **markers_distribution()** have been implemented. This function takes as input data in long format ("*data_long*"), and returns a named list (here assigned to '*distribution*') containing the following objects:
 
-- "Plot_density": a density plot showing the distribution of the signal intensity values for both the classes. In addition, the function allows the user to set both the y_lim and x_lim values to provide a better visualization.
+-'Boxplot': a boxplot showing the distribution of each marker values for both classes.
 - "ROC": a ROC curve showing how many real positive samples would be found positive (SE) and how many real negative samples would be found negative (SP) in function of signal threshold. NB: these SE and SP are refereed to the signal intensity threshold considering all the markers together; it is NOT equal to the SE/SP of a single marker/combination (shown later in **Sensitivity and specificity**).
 - "Coord": a dataframe that contains the coordinates of the above described "ROC" (threshold, SP and SE) that have at least a min SE (40 by default) and a min SP (80 by default). These limits can be set manually by specifying  min_SE and min_SP.
+- "Density_plot": a density plot showing the distribution of the signal intensity values for both the classes. In addition, the function allows the user to set both the y_lim and x_lim values to provide a better visualization.
+- "Density_summary": a summary statistics of the density plot.
 
-In case of lack of a priori known threshold the user can set set signalthr_prediction= TRUE. In this way the function provides a "suggested signal threshold" that corresponds to the median of the singnal threshold values (in "Coord") at which SE/SP are grater or equal to their set minimal values (min_SE and min_SP), and it adds this threshold on the "Plot_density" object as a dashed black line. The use of the median allows to pick a threshold whose SE/SP are not too close to the limits (min_SE and min_SP), but it is recommended to always inspect "Coord" and choose the most appropriate signal threshold by considering SP, SE and Youden index.
+In case of lack of a priori known threshold the user can set set signalthr_prediction= TRUE. In this way the function provides a "suggested signal threshold" that corresponds to the median of the singnal threshold values (in "Coord") at which SE/SP are grater or equal to their set minimal values (min_SE and min_SP), and it adds this threshold on the "Density_plot" object as a dashed black line. The use of the median allows to pick a threshold whose SE/SP are not too close to the limits (min_SE and min_SP), but it is recommended to always inspect "Coord" and choose the most appropriate signal threshold by considering SP, SE and Youden index.
 
 
 
@@ -62,10 +66,9 @@ In case of lack of a priori known threshold the user can set set signalthr_predi
 distribution <- markers_distribution(data_long, case_class = 'A', y_lim = 0.0015, x_lim = 3000, signalthr_prediction = TRUE, min_SE = 40, min_SP = 80, boxplot_lim = 2000)
 distribution$Boxplot
 distribution$ROC
-distribution$Coord
+head(distribution$Coord)
 distribution$Density_plot
 distribution$Density_summary
-
 ```
 
 
@@ -158,7 +161,7 @@ combs_list
 
 ## Results explanation
 
-To be more clear about the interpretation of results, this section will be focused on "Combination 11" (Marker1+Marker2+Marker3) which has an optimal cutoff equal to  0.216 (see **ROC curves**, reports['Metrics']) .
+To be more clear about the interpretation of results, this section will be focused on "Combination 11" (Marker1+Marker2+Marker3) which has an optimal cutoff equal to  0.216 (see **ROC curves**, *reports$Metrics*) .
 This is the equation used to compute the predictions:
 
 $$
@@ -224,7 +227,7 @@ To load the dataset with the new unclassified samples  **load_unclassified_data(
 For explanatory purposes, in the following example has been used a 'synthetic' unclassified dataset ('data/unclassified_proteomic_data.csv') obtained by randomly picking 20 samples from the already classified dataset (*data*).
 The loaded unclassified sample is here assinged to *unc_data*. 
 ```{r}
-unc_data <- load_unclassified_data(data = 'data/unclassified_proteomic_data.csv', sep = ',')
+unc_data <- load_unclassified_data(data = '../data/unclassified_proteomic_data.csv', sep = ',')
 unc_data
 ```
 The prediction of the class can be achieved with **Classify()**:
