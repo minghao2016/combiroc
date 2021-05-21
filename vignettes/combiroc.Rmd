@@ -31,7 +31,7 @@ The dataset to be analysed should be in text format, which can be comma, tab or 
 The **load_data()** function uses a customized **read.table()** function that checks the conformity of the dataset format. If all the checks are passed, it reorders alphabetically the marker-related columns depending on marker names (necessary for a proper computation of combinations), and it forces "Class" as 2nd column name.
 The loaded dataset is assigned to the "*data*" object.
 ```{r}
-data <- load_data("../data/demo_5Ags.csv", sep=';')
+data <- load_data("../data/demo_data.csv", sep=';')
 data
 ```
 The very same dataset has been included in **combiroc** package as a demo dataset, that can be directly called typing *demo_data*. 
@@ -227,7 +227,7 @@ To load the dataset with the new unclassified samples  **load_unclassified_data(
 For explanatory purposes, in the following example has been used a 'synthetic' unclassified dataset ('data/unclassified_proteomic_data.csv') obtained by randomly picking 20 samples from the already classified dataset (*data*).
 The loaded unclassified sample is here assinged to *unc_data*. 
 ```{r}
-unc_data <- load_unclassified_data(data = '../data/unclassified_proteomic_data.csv', sep = ',')
+unc_data <- load_unclassified_data(data = '../data/demo_unclassified_data.csv', sep = ',')
 unc_data
 ```
 The very same dataset has been included in **combiroc** package as an unclassified demo dataset, that can be directly called typing *demo_unclassified_data*. 
