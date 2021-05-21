@@ -20,7 +20,7 @@ A data frame with 170 rows and 7 variables:
 demo_data
 }
 \description{
-A dataset containing signal intensity values of a 5-marker signatures for Autoimmune Hepatitis (AIH
+A dataset containing signal intensity values of a 5-marker signatures for Autoimmune Hepatitis (AIH).
 Samples have been clinically diagnosed as “abnormal” (class A) or "normal" (class B).
 }
 \keyword{datasets}
