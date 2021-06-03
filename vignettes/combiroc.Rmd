@@ -3,16 +3,17 @@ title: "combiroc"
 output:
   html_document: 
     df_print: paged
-  pdf_document: default
+  pdf_document: 
+    latex_engine: xelatex
+    df_print: paged
 vignette: >
   %\VignetteIndexEntry{combiroc}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
 ---
 
 ```{r setup, include=FALSE}
-library(devtools)
-load_all()
+library(combiroc)
 ```
 
 
@@ -184,15 +185,15 @@ $$
 f(x)=    -17.0128  +  1.5378 *log(Marker1 + 1)  +  0.9176 *log(Marker2 + 1) + 0.5706* log(Marker3 + 1)$$
 Predictions (f(x) values) of 'Combination 11' can be visualized with the following command: 
 ```{r}
-predict(reports$Models$`Combination 11`, type='link') # link = f(x)
-predict(reports$Models$`Combination 11`, type='link')  # link = f(x)
+head(predict(reports$Models$`Combination 11`, type='link')) # link = f(x)
+head(predict(reports$Models$`Combination 11`, type='link'))  # link = f(x)
 ```
 
 
 Prediction probabilities (p(x) values) of 'Combination 11' can be instead visualized by typing: 
 ```{r}
-predict(reports$Models$`Combination 11`, type='response') # response = p(x)
-predict(reports$Models$`Combination 11`, type='response') # response = p(x)
+head(predict(reports$Models$`Combination 11`, type='response')) # response = p(x)
+head(predict(reports$Models$`Combination 11`, type='response')) # response = p(x)
 ```
 
 

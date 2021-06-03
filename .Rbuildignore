@@ -5,3 +5,5 @@
 ^\./repo$
 
 ^LICENSE\.md$
+^doc$
+^Meta$
