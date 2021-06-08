@@ -50,24 +50,27 @@ The dataset to be analysed should be in text format, which can be separated by c
 ## Data loading
 
 The `load_data()` function uses a customized **read.table()** function that checks the conformity of the dataset format. If all the checks are passed, marker-related columns are reordered alphabetically, depending on marker names (this is necessary for a proper computation of combinations), and it imposes "Class" as the name of the second column. The loaded dataset is here assigned to the "*data*" object.
-```{r, echo=FALSE}
-data <- load_data("../data/demo_data.csv", sep=';')
-```
 ```{r, eval=FALSE}
 data <- load_data("../data/demo_data.csv", sep=';')
+head(data)
 ```
 ```{r, echo=FALSE}
+data <- load_data("../data/demo_data.csv", sep=';')
 head(data)
 ```
 The AIH demonstrative dataset is preloaded in the package and can be directly called typing `demo_data`. 
 
 ## Exploring the data
 
-It is usually a good thing to visually explore your data with at least a few plots. Box plots are a nice option to observe the distribution of measurements in each sample. The user can plot the data as she/he wishes using the preferred function: since data for combiroc are required to be in _wide_ (_untidy_) format, they cannot directly used with the widely used `ggplot()` function. Either the user is free to make the data longer (tidy) for the sole purpose of plotting or he can use the package's `CombiROC_long()` function, which is designed to wrap `dplyr::pivot_longer()`function, and it's used to reshape the data in long format. Data in long format is required to obtain the boxplot of the next function. 
+It is usually a good thing to visually explore your data with at least a few plots. Box plots are a nice option to observe the distribution of measurements in each sample. The user can plot the data as she/he wishes using the preferred function: since data for CombiROC are required to be in _wide_ (_untidy_) format, they cannot directly used with the widely used `ggplot()` function. Either the user is free to make the data longer (tidy) for the sole purpose of plotting or the package's `CombiROC_long()` function can be used for this purpose, which is designed to wrap `dplyr::pivot_longer()`function, and it's used to reshape the data in long format. Data in long format are required for the plotting functions of the package. 
 
 The `data` object in wide format is thus transformed into the reshaped long format `data_long` object
 
-```{r}
+```{r, eval=FALSE}
+data_long <- CombiROC_long(data)
+data_long
+```
+```{r, echo=FALSE}
 data_long <- CombiROC_long(data)
 data_long
 ```
@@ -79,7 +82,7 @@ Since the target of the analysis is the identification of marker combinations ca
 - Positively select most samples belonging to the case class ("A" in this case), which values must be above the signal threshold.
 - Negatively select most control samples ("B"), which values must be below the signal threshold. 
 
-Usually this threshold is suggested by the guidelines of the kit used for the analysis (e.g. mean of buffer signal + n standard deviations). However, it is a good practice to always check the distribution of signal intensity of the dataset. To help the user with this operation, the `markers_distribution()` have been implemented. This function takes as input data in long format ("*data_long*"), and returns a named list (here assigned to the '*distr*' object). Specific warnings are ususlly triggered with this command remembering the users a few default parameters that are in place durinf the computation. 
+Usually this threshold is suggested by the guidelines of the kit used for the analysis (e.g. mean of buffer signal + n standard deviations). However, it is a good practice to always check the distribution of signal intensity of the dataset. To help the user with this operation, the `markers_distribution()` have been implemented. This function takes as input data in long format ("*data_long*"), and returns a named list (here assigned to the '*distr*' object). Specific warnings are ususlly triggered with this command remembering the users a few default parameters that are in place during the computation. 
 
 ```{r}
 distr <- markers_distribution(data_long, case_class = 'A', y_lim = 0.0015, x_lim = 3000, signalthr_prediction = TRUE, min_SE = 40, min_SP = 80, boxplot_lim = 2000)
@@ -103,9 +106,13 @@ The __ROC__ curve shows how many real positive samples would be found positive (
 ```{r, ROC}
 distr$ROC
 ```
-The __Coord__ is a dataframe that contains the coordinates of the above described "ROC" (threshold, SP and SE) that have at least a min SE (40 by default) and a min SP (80 by default). These limits can be set manually by specifying  min_SE and min_SP.
-```{r, coord}
+
+The __Coord__ is a dataframe that contains the coordinates of the above described "ROC" (threshold, SP and SE) that have at least a min SE (40 by default) and a min SP (80 by default). These limits can be set manually by specifying  min_SE and min_SP. The Youden index is also computed: this is the Youden's J statistic capturing the performance of a dichotomous diagnostic test.
+```{r, coord1, eval=FALSE}
 distr$Coord
+```
+```{r, coord2, echo=FALSE}
+head(distr$Coord, n=10)
 ```
 
 The __Density_plot__ shows the distribution of the signal intensity values for both the classes. In addition, the function allows the user to set both the y_lim and x_lim values to provide a better visualization.
@@ -113,18 +120,12 @@ The __Density_plot__ shows the distribution of the signal intensity values for b
 distr$Density_plot
 ```
 
-Finally, the __Density_summary__ displays summary statistics of the density plot:
+Finally, the __Density_summary__ displays a few summary statistics of the density plot.
 ```{r, summary}
 distr$Density_summary
 ```
 
 In case of lack of a priori known threshold the user can set set signalthr_prediction= TRUE. In this way the function provides a "suggested signal threshold" that corresponds to the median of the singnal threshold values (in "Coord") at which SE/SP are greater or equal to their set minimal values (min_SE and min_SP), and it adds this threshold on the "Density_plot" object as a dashed black line. The use of the median allows to pick a threshold whose SE/SP are not too close to the limits (min_SE and min_SP), but it is recommended to always inspect "Coord" and choose the most appropriate signal threshold by considering SP, SE and Youden index.
-
-
-
-
-
-
 
 
 ## Combinatorial analysis
@@ -136,10 +137,15 @@ In case of lack of guidelines, it's recommended the inspection of data distribut
 
 `combithr`, instead, should be set exclusively depending on the needed stringency. In this example the obtained combinations dataframe is assigned to "*tab*" object.
 
-```{r}
-tab<-Combi(data, signalthr = 450, combithr = 1)
-tab
+```{r, eval=FALSE}
+tab <- Combi(data, signalthr = 450, combithr = 1)
+head(tab, n=20)
 ```
+```{r, echo=FALSE}
+tab <- Combi(data, signalthr = 450, combithr = 1)
+head(tab, n=20)
+```
+
 ## Sensitivity and specificity
 
 `SE_SP()` function calulates:
