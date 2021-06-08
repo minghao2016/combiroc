@@ -125,7 +125,7 @@ Boxplot<- ggplot(data_long, aes(Markers, Values)) +
 
     res <- p+geom_vline(aes(xintercept=pr),
                         color="black", linetype="dashed", size=0.5)+
-      annotate("text", x = pr*0.60, y = 0, label =  as.character(round(pr)))+
+      annotate("text", x = pr*0.50, y = 0, label =  as.character(round(pr,2)))+
       labs(x = "Signal intensity", y="Frequency")}
 
   robj <- list(res, coord, ggroc(rocobj), df, Boxplot)

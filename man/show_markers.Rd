@@ -7,7 +7,7 @@
 show_markers(markers_table, selected_combinations)
 }
 \arguments{
-\item{markers_table}{a data.frame with ranked combination, reporting: SE, SP, number of markers composing the combination and the score (returned by ranked_combs()).}
+\item{markers_table}{a data.frame with combinations returned by Combi().}
 
 \item{selected_combinations}{a numeric vector that specifies the combinations of interest.}
 }

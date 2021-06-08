@@ -1,6 +1,6 @@
 #' @title Show the composition of combinations.
 #' @description  A function to show the composition of combinations of interest.
-#' @param markers_table a data.frame with ranked combination, reporting: SE, SP, number of markers composing the combination and the score (returned by ranked_combs()).
+#' @param markers_table a data.frame with combinations returned by Combi().
 #' @param selected_combinations a numeric vector that specifies the combinations of interest.
 #' @return a data.frame containing the selected combinations and their composing markers.
 #' @example R/examples/show_markers_example.R

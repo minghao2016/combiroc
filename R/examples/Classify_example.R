@@ -14,5 +14,4 @@ reports <- ROC_reports(data= demo_data, markers_table= combs,
 classified_data <- Classify(unclassified_data= demo_unclassified_data, Models= reports$Models,
                              Metrics= reports$Metrics, Positive_class=1, Negative_class=0)
 
-classified_data$`Combination 11` # show samples classified using Logistic regression model
-                                 # trained with Combination 11
+classified_data  # show samples classified using Logistic regression models

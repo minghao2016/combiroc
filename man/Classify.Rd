@@ -24,7 +24,7 @@ Classify(
 \item{Negative_class}{a numeric or a character that specifies the label of the samples that will be classified as negatives}
 }
 \value{
-a named list of data.frames, one for each marker/combination contained in the list of models, containg the predicted class for each sample
+a data.frame containing the predicted class of each sample, for each marker/combination in Models
 }
 \description{
 A function that applies the previously calculated models to an unclassified dataset and classifies the samples.
@@ -49,6 +49,5 @@ reports <- ROC_reports(data= demo_data, markers_table= combs,
 classified_data <- Classify(unclassified_data= demo_unclassified_data, Models= reports$Models,
                              Metrics= reports$Metrics, Positive_class=1, Negative_class=0)
 
-classified_data$`Combination 11` # show samples classified using Logistic regression model
-                                 # trained with Combination 11
+classified_data  # show samples classified using Logistic regression models
 }

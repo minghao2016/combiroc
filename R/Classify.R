@@ -9,14 +9,15 @@
 #' @param Metrics a list of data.frame objects containing ROC metrics, returned by ROC_reports().
 #' @param Positive_class a numeric or a character that specifies the label of the samples that will be classified as positives
 #' @param Negative_class a numeric or a character that specifies the label of the samples that will be classified as negatives
-#' @return  a named list of data.frames, one for each marker/combination contained in the list of models, containg the predicted class for each sample
+#' @return  a data.frame containing the predicted class of each sample, for each marker/combination in Models
 #' @importFrom stats formula glm median predict quantile sd
 #' @example R/examples/Classify_example.R
 #' @export
 Classify <- function(unclassified_data, Models, Metrics, Positive_class=1, Negative_class=0){
 
   classification <- list()
-
+  pr_df <- data.frame(unclassified_data[,1])
+  colnames(pr_df)[1] <- 'index'
   for (i in names(Models)){
 
 
@@ -24,11 +25,9 @@ Classify <- function(unclassified_data, Models, Metrics, Positive_class=1, Negat
     pred <- predict(Models[[i]], newdata = unclassified_data,
                     type = "response")
     cutoff <- Metrics[which(rownames(Metrics)==i), 4]
-    pr_df <- data.frame(unclassified_data[,1])
-    pr_df$predicted_class <- pred>cutoff
-    colnames(pr_df)[1]<- colnames(unclassified_data)[1]
-    pr_df$predicted_class[which(pr_df$predicted_class=='TRUE')] <- Positive_class
-    pr_df$predicted_class[which(pr_df$predicted_class=='FALSE')] <- Negative_class
-    classification[[i]] <- pr_df
+
+    pr_df[i] <- pred>cutoff
+    pr_df[which(pr_df[i]=='TRUE'), i] <- Positive_class
+    pr_df[which(pr_df[i]=='FALSE'), i] <- Negative_class
   }
-  return(classification)}
+  return(pr_df)}
