@@ -114,7 +114,7 @@ distribution$Density_plot
 ```
 
 Finally, the __Density_summary__ displays summary statistics of the density plot:
-```{r, density}
+```{r, summary}
 distribution$Density_summary
 ```
 
