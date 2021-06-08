@@ -1,7 +1,7 @@
 ---
-title: "Getting started with combiroc"
+title: "Getting started with CombiROC"
 subtitle: |
-  | How to determine optimal combinations of markers from omics data
+  | Finding optimal combinations of markers from omics data
 author: 
 - Ivan Ferrari, Riccardo L. Rossi
 date: "`r format(Sys.time(), '%d %B %Y')`"
@@ -27,11 +27,11 @@ library(combiroc)
 
 # Summary
 
-Powerful biomarkers are important tools in diagnostic, clinical and research settings. In the area of diagnostic medicine, a biomarker is often used as a tool to identify subjects with a disease, or at high risk of developing a disease. Moreover, it can be used to foresee the more likely outcome of the disease, monitor its progression and predict the response to a given therapy. Diagnostic accuracy can be improved considerably by combining multiple markers, whose performance in identifying diseased subjects is usually assessed via receiver operating characteristic (ROC) curves. The CombiROC tool was originally designed as an easy to use R-Shiny web application [Mazzara et al. 2017](https://www.nature.com/articles/srep45477) to determine optimal combinations of markers from diverse complex omics data; such an implementation is easy to use but has limited fetaures and has limitations given by the machine it is deployed on. This combiroc package is the natural evolution of the CombiROC tool and it allows the researcher/analyst to freely use the method and further build on it. 
+Powerful biomarkers are important tools in diagnostic, clinical and research settings. In the area of diagnostic medicine, a biomarker is often used as a tool to identify subjects with a disease, or at high risk of developing a disease. Moreover, it can be used to foresee the more likely outcome of the disease, monitor its progression and predict the response to a given therapy. Diagnostic accuracy can be improved considerably by combining multiple markers, whose performance in identifying diseased subjects is usually assessed via receiver operating characteristic (ROC) curves. The CombiROC tool was originally designed as an easy to use R-Shiny web application [Mazzara et al. 2017](https://www.nature.com/articles/srep45477) to determine optimal combinations of markers from diverse complex omics data; such an implementation is easy to use but has limited fetaures and has limitations given by the machine it is deployed on. This CombiROC package is the natural evolution of the CombiROC tool and it allows the researcher/analyst to freely use the method and further build on it. 
 
-# Standard combiroc workflow
+# Standard CombiROC workflow
 
-The aim of this document is to show the whole combiroc workflow to get you up and running as quickly as possible with this package. To do so we're going to use the proteomic dataset from [Zingaretti et al. 2012](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3518104/) containing multi-marker signatures for Autoimmune Hepatitis (AIH) for samples clinically diagnosed as “abnormal” (class A) or "normal" (class B). The scope of the workflow is to first find the markers combinations, then to assess their performance in classifying samples of the dataset.
+The aim of this document is to show the whole CombiROC workflow to get you up and running as quickly as possible with this package. To do so we're going to use the proteomic dataset from [Zingaretti et al. 2012](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3518104/) containing multi-marker signatures for Autoimmune Hepatitis (AIH) for samples clinically diagnosed as “abnormal” (class A) or "normal" (class B). The scope of the workflow is to first find the markers combinations, then to assess their performance in classifying samples of the dataset.
 
 __Note:__ if you use combiroc in your research, please cite:
 
@@ -79,26 +79,52 @@ Since the target of the analysis is the identification of marker combinations ca
 - Positively select most samples belonging to the case class ("A" in this case), which values must be above the signal threshold.
 - Negatively select most control samples ("B"), which values must be below the signal threshold. 
 
-Usually this threshold is suggested by the guidelines of the kit used for the analysis (e.g. mean of buffer signal + n standard deviations). However, it is a good practice to always check the distribution of signal intensity of the dataset. To help the user with this operation, the `markers_distribution()` have been implemented. This function takes as input data in long format ("*data_long*"), and returns a named list (here assigned to '*distribution*') containing the following objects:
-
-- 'Boxplot': a boxplot showing the distribution of each marker values for both classes.
-- "ROC": a ROC curve showing how many real positive samples would be found positive (SE) and how many real negative samples would be found negative (SP) in function of signal threshold. NB: these SE and SP are refereed to the signal intensity threshold considering all the markers together; it is NOT equal to the SE/SP of a single marker/combination (shown later in **Sensitivity and specificity**).
-- "Coord": a dataframe that contains the coordinates of the above described "ROC" (threshold, SP and SE) that have at least a min SE (40 by default) and a min SP (80 by default). These limits can be set manually by specifying  min_SE and min_SP.
-- "Density_plot": a density plot showing the distribution of the signal intensity values for both the classes. In addition, the function allows the user to set both the y_lim and x_lim values to provide a better visualization.
-- "Density_summary": a summary statistics of the density plot.
-
-In case of lack of a priori known threshold the user can set set signalthr_prediction= TRUE. In this way the function provides a "suggested signal threshold" that corresponds to the median of the singnal threshold values (in "Coord") at which SE/SP are grater or equal to their set minimal values (min_SE and min_SP), and it adds this threshold on the "Density_plot" object as a dashed black line. The use of the median allows to pick a threshold whose SE/SP are not too close to the limits (min_SE and min_SP), but it is recommended to always inspect "Coord" and choose the most appropriate signal threshold by considering SP, SE and Youden index.
-
-
+Usually this threshold is suggested by the guidelines of the kit used for the analysis (e.g. mean of buffer signal + n standard deviations). However, it is a good practice to always check the distribution of signal intensity of the dataset. To help the user with this operation, the `markers_distribution()` have been implemented. This function takes as input data in long format ("*data_long*"), and returns a named list (here assigned to the '*dist*' object). Specific warnings are ususlly triggered with this command remembering the users a few default parameters that are in place durinf the computation. 
 
 ```{r}
-distribution <- markers_distribution(data_long, case_class = 'A', y_lim = 0.0015, x_lim = 3000, signalthr_prediction = TRUE, min_SE = 40, min_SP = 80, boxplot_lim = 2000)
-distribution$Boxplot
+dist <- markers_distribution(data_long, case_class = 'A', y_lim = 0.0015, x_lim = 3000, signalthr_prediction = TRUE, min_SE = 40, min_SP = 80, boxplot_lim = 2000)
+```
+The `dist` object contains the following elements: 
+
+- a Boxplot distribution
+- a ROC curve
+- the curve's coordinates
+- a density plot
+- a summary. 
+
+All this information can be plotted/displayed individually.
+
+The __Boxplot__ shows the distribution of each marker values for both classes:
+```{r, boxplot}
+dist$Boxplot
+```
+
+The __ROC__ curve shows how many real positive samples would be found positive (SE) and how many real negative samples would be found negative (SP) in function of signal threshold. NB: these SE and SP are refereed to the signal intensity threshold considering all the markers together; it is NOT equal to the SE/SP of a single marker/combination (shown later in **Sensitivity and specificity**).
+```{r, ROC}
 distribution$ROC
+```
+The __Coord__ is a dataframe that contains the coordinates of the above described "ROC" (threshold, SP and SE) that have at least a min SE (40 by default) and a min SP (80 by default). These limits can be set manually by specifying  min_SE and min_SP.
+```{r, coord}
 distribution$Coord
+```
+
+The __Density_plot__ shows the distribution of the signal intensity values for both the classes. In addition, the function allows the user to set both the y_lim and x_lim values to provide a better visualization.
+```{r, density}
 distribution$Density_plot
+```
+
+Finally, the __Density_summary__ displays summary statistics of the density plot:
+```{r, density}
 distribution$Density_summary
 ```
+
+In case of lack of a priori known threshold the user can set set signalthr_prediction= TRUE. In this way the function provides a "suggested signal threshold" that corresponds to the median of the singnal threshold values (in "Coord") at which SE/SP are greater or equal to their set minimal values (min_SE and min_SP), and it adds this threshold on the "Density_plot" object as a dashed black line. The use of the median allows to pick a threshold whose SE/SP are not too close to the limits (min_SE and min_SP), but it is recommended to always inspect "Coord" and choose the most appropriate signal threshold by considering SP, SE and Youden index.
+
+
+
+
+
+
 
 
 ## Combinatorial analysis
