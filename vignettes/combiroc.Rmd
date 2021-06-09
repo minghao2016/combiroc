@@ -2,10 +2,12 @@
 title: "Getting started with CombiROC"
 subtitle: |
   | Finding optimal combinations of markers from omics data
-author: 
-- Ivan Ferrari, Riccardo L. Rossi
+author: "Ivan Ferrari, Riccardo L. Rossi"
 date: "`r format(Sys.time(), '%d %B %Y')`"
-output: rmarkdown::html_document 
+output:
+  html_document:
+    toc: true 
+    df_print: paged
   #   df_print: paged
   # pdf_document: 
   #   latex_engine: xelatex
@@ -16,9 +18,10 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, echo = FALSE}
-library(httr)
-knitr::opts_chunk$set(comment = "#>", collapse = TRUE)
+```{r, include = FALSE}
+#library(httr)
+#knitr::opts_chunk$set(comment = "#>", collapse = TRUE)
+knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r setup, include=FALSE}
@@ -66,14 +69,11 @@ It is usually a good thing to visually explore your data with at least a few plo
 
 The `data` object in wide format is thus transformed into the reshaped long format `data_long` object
 
-```{r, eval=FALSE}
+```{r}
 data_long <- CombiROC_long(data)
 data_long
 ```
-```{r, echo=FALSE}
-data_long <- CombiROC_long(data)
-data_long
-```
+
 
 ## Markers distribution overview
 
@@ -87,6 +87,7 @@ Usually this threshold is suggested by the guidelines of the kit used for the an
 ```{r}
 distr <- markers_distribution(data_long, case_class = 'A', y_lim = 0.0015, x_lim = 3000, signalthr_prediction = TRUE, min_SE = 40, min_SP = 80, boxplot_lim = 2000)
 ```
+
 The `distr` object contains the following elements: 
 
 - a Boxplot distribution
@@ -95,25 +96,28 @@ The `distr` object contains the following elements:
 - a density plot
 - a summary. 
 
-All this information can be plotted/displayed individually.
+All this information can be plotted/displayed individually.  
+
+### Distribution via boxplot 
 
 The __Boxplot__ shows the distribution of each marker values for both classes:
 ```{r, boxplot}
 distr$Boxplot
 ```
 
-The __ROC__ curve shows how many real positive samples would be found positive (SE) and how many real negative samples would be found negative (SP) in function of signal threshold. NB: these SE and SP are refereed to the signal intensity threshold considering all the markers together; it is NOT equal to the SE/SP of a single marker/combination (shown later in **Sensitivity and specificity**).
+### The ROC curve for all markers and its coordinates
+
+The __ROC__ curve shows how many real positive samples would be found positive (sensitivity, or SE) and how many real negative samples would be found negative (specificity, or SP) in function of signal threshold. NB: these SE and SP are refereed to the signal intensity threshold considering _all_ the markers together; they are _not_ the SE and SP of a single marker/combination computed by the `SE_SP()` command further discussed in the **Sensitivity and specificity** paragraph.
 ```{r, ROC}
 distr$ROC
 ```
 
-The __Coord__ is a dataframe that contains the coordinates of the above described "ROC" (threshold, SP and SE) that have at least a min SE (40 by default) and a min SP (80 by default). These limits can be set manually by specifying  min_SE and min_SP. The Youden index is also computed: this is the Youden's J statistic capturing the performance of a dichotomous diagnostic test.
-```{r, coord1, eval=FALSE}
-distr$Coord
-```
-```{r, coord2, echo=FALSE}
+The __Coord__ is a dataframe that contains the coordinates of the above described "ROC" (threshold, SP and SE) that have at least a min SE (40 by default) and a min SP (80 by default). These limits can be set manually by specifying  min_SE and min_SP. The Youden index is also computed: this is the Youden's J statistic capturing the performance of a dichotomous diagnostic test, with higher values for better performance (note that Youden index is computed here as $J = SE + SP$, but can be found elsewhere calculated as $J = SE + SP -1$, with lower and upper limits being 0 and 1 respectively).
+```{r, coord1}
 head(distr$Coord, n=10)
 ```
+
+### The density plot and summary for signals
 
 The __Density_plot__ shows the distribution of the signal intensity values for both the classes. In addition, the function allows the user to set both the y_lim and x_lim values to provide a better visualization.
 ```{r, density}
@@ -126,7 +130,6 @@ distr$Density_summary
 ```
 
 In case of lack of a priori known threshold the user can set set signalthr_prediction= TRUE. In this way the function provides a "suggested signal threshold" that corresponds to the median of the singnal threshold values (in "Coord") at which SE/SP are greater or equal to their set minimal values (min_SE and min_SP), and it adds this threshold on the "Density_plot" object as a dashed black line. The use of the median allows to pick a threshold whose SE/SP are not too close to the limits (min_SE and min_SP), but it is recommended to always inspect "Coord" and choose the most appropriate signal threshold by considering SP, SE and Youden index.
-
 
 ## Combinatorial analysis
 
@@ -275,7 +278,7 @@ Specifically, for "Combination 11":
 
 Thus, using 0.216 as cutoff, "Combination 11" is able to classify the samples in the dataset with a SE equal to 95.0%, SP equal to 86.9%, and accuracy equal to 88.8% (see **ROC curves**, *reports$Metrics*]).
 
-## Classification of new samples
+# Classification of new samples
 
 CombiROC package also offers the possibility to exploit the models for each selected marker/combination obtained with `ROC_reports()`  (here assigned to *reports$Models*) to directly classify new samples.
 
@@ -314,3 +317,45 @@ call the data.frame list and specify it.
 cl_data <- Classify(unc_data, Models =  reports$Models, Metrics = reports$Metrics, Positive_class = 'A', Negative_class = 'B')
 cl_data$`Combination 11`
 ```
+
+# Additional tips & tricks
+
+The CombiROC package evolved from the [CombiROC Shiny Web app](http://combiroc.eu/) and it is an ongoing project. While the Shiny app is still working, we plan to mantain and improve the package with new functionalities. Here we offer tips on how to further exploring the data taking advantage into ; some of these features may be natively included in future versions of the CombiROC package.  
+
+## Individual markers exploration
+
+Further markers exploration can be done using other packages' functions such as `group_by()`, `summarize()` and `ggplot()` on the the `data_long` dataframe which contains all markers data in long format.  
+As an example, a few summary statistics can be computed as follow (the libraries `dplyr` and `moments` are needed, the latter is used to calculate the Skewness)
+
+```{r, message=FALSE}
+library(dplyr)
+library(moments)
+
+data_long %>%
+  group_by(Markers, Class) %>%
+  summarize(Mean = mean(Values),
+            Min = min(Values),
+            Max = max(Values),
+            Sd = sd(Values),
+            CV = sd(Values)/mean(Values),
+            First_Quart. = quantile(Values)[2],
+            Median = median(Values),
+            Third_Quart. = quantile(Values)[4],
+            Skewness = skewness(Values))
+```
+
+A quick plotting overview of individual marker values can be done with a scatter plot using the library `ggplot2`. Here is an example for the marker "Marker2":
+
+```{r, message=FALSE}
+library(ggplot2)
+
+myMarker <- "Marker2"
+
+data_long %>%
+  filter(Markers == myMarker) %>%
+  ggplot(aes(x= Patient.ID, y=Values)) +
+  geom_point(aes(color=Class)) +
+  labs(title=myMarker, x ="Samples") +
+  scale_x_discrete(labels = NULL, breaks = NULL)
+```
+
