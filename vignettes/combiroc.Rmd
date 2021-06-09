@@ -28,7 +28,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(combiroc)
 ```
 
-# Summary
+# Summary {#top}
 
 Powerful biomarkers are important tools in diagnostic, clinical and research settings. In the area of diagnostic medicine, a biomarker is often used as a tool to identify subjects with a disease, or at high risk of developing a disease. Moreover, it can be used to foresee the more likely outcome of the disease, monitor its progression and predict the response to a given therapy. Diagnostic accuracy can be improved considerably by combining multiple markers, whose performance in identifying diseased subjects is usually assessed via receiver operating characteristic (ROC) curves. The CombiROC tool was originally designed as an easy to use R-Shiny web application [Mazzara et al. 2017](https://www.nature.com/articles/srep45477) to determine optimal combinations of markers from diverse complex omics data; such an implementation is easy to use but has limited fetaures and has limitations given by the machine it is deployed on. This CombiROC package is the natural evolution of the CombiROC tool and it allows the researcher/analyst to freely use the method and further build on it. 
 
@@ -67,7 +67,7 @@ The AIH demonstrative dataset is preloaded in the package and can be directly ca
 
 It is usually a good thing to visually explore your data with at least a few plots. Box plots are a nice option to observe the distribution of measurements in each sample. The user can plot the data as she/he wishes using the preferred function: since data for CombiROC are required to be in _wide_ (_untidy_) format, they cannot directly used with the widely used `ggplot()` function. Either the user is free to make the data longer (tidy) for the sole purpose of plotting or the package's `CombiROC_long()` function can be used for this purpose, which is designed to wrap `dplyr::pivot_longer()`function, and it's used to reshape the data in long format. Data in long format are required for the plotting functions of the package. 
 
-The `data` object in wide format is thus transformed into the reshaped long format `data_long` object
+The __data__ object in wide format is thus transformed into the reshaped long format __data_long__ object
 
 ```{r}
 data_long <- CombiROC_long(data)
@@ -82,13 +82,13 @@ Since the target of the analysis is the identification of marker combinations ca
 - Positively select most samples belonging to the case class ("A" in this case), which values must be above the signal threshold.
 - Negatively select most control samples ("B"), which values must be below the signal threshold. 
 
-Usually this threshold is suggested by the guidelines of the kit used for the analysis (e.g. mean of buffer signal + n standard deviations). However, it is a good practice to always check the distribution of signal intensity of the dataset. To help the user with this operation, the `markers_distribution()` have been implemented. This function takes as input data in long format ("*data_long*"), and returns a named list (here assigned to the '*distr*' object). Specific warnings are ususlly triggered with this command remembering the users a few default parameters that are in place during the computation. 
+Usually this threshold is suggested by the guidelines of the kit used for the analysis (e.g. mean of buffer signal + n standard deviations). However, it is a good practice to always check the distribution of signal intensity of the dataset. To help the user with this operation, the `markers_distribution()` have been implemented. This function takes as input data in long format ( __data_long__ ), and returns a named list (here assigned to the __distr__ object). Specific warnings are ususlly triggered with this command remembering the users a few default parameters that are in place during the computation. 
 
 ```{r}
 distr <- markers_distribution(data_long, case_class = 'A', y_lim = 0.0015, x_lim = 3000, signalthr_prediction = TRUE, min_SE = 40, min_SP = 80, boxplot_lim = 2000)
 ```
 
-The `distr` object contains the following elements: 
+The __distr__ object contains the following elements: 
 
 - a Boxplot distribution
 - a ROC curve
@@ -140,11 +140,7 @@ In case of lack of guidelines, it's recommended the inspection of data distribut
 
 `combithr`, instead, should be set exclusively depending on the needed stringency. In this example the obtained combinations dataframe is assigned to "*tab*" object.
 
-```{r, eval=FALSE}
-tab <- Combi(data, signalthr = 450, combithr = 1)
-head(tab, n=20)
-```
-```{r, echo=FALSE}
+```{r}
 tab <- Combi(data, signalthr = 450, combithr = 1)
 head(tab, n=20)
 ```
@@ -169,25 +165,25 @@ mks
 ```
 ## Selection of combinations
 
-**ranked_combs()** is a function that, after having specified the case class ("A" in this case),  ranks the combinations by the Youden index in order to show the combinations with the highest SE (of cases) and SP (of controls) on the top, facilitating the user in the selection of the best ones. The Youden is calculated in this way:
+After specifying the case class ("A" in this case), the function `ranked_combs()` ranks the combinations by the Youden index in order to show the combinations with the highest SE (of cases) and SP (of controls) on the top, facilitating the user in the selection of the best ones. The Youden index (J) is calculated in this way:
 $$
- Youden = SE+SP
+ J = SE+SP
 $$
 The user can also set (not mandatory) a minimal value of SE and/or SP that a combination must have to be selected.
-In this case the minimal values of SE and SP are set, respectively, to 40 and 80, in order to reproduce both the gold combinations selection reported in [Mazzara et. al 2017](https://www.nature.com/articles/srep45477) and also the tutorial of the web app with default thresholds. The obtained dataframe with ranked combination is assigned to "*rmks*" object. 
+In this case the minimal values of SE and SP are set, respectively, to 40 and 80, in order to reproduce both the gold combinations selection reported in [Mazzara et. al 2017](https://www.nature.com/articles/srep45477) and also the tutorial of the web app with default thresholds. The obtained dataframe with ranked combination is assigned to __rmks__ object. 
 
 
 ```{r}
-rmks<- ranked_combs(data, mks, case_class = 'A', min_SE = 40, min_SP = 80)
+rmks <- ranked_combs(data, mks, case_class = 'A', min_SE = 40, min_SP = 80)
 rmks
 ```
 
 ## ROC curves
 
-To allow an objective comparison of combinations, the function `ROC_reports()` applies the Generalised Linear Model (`stats::glm()` with family= binomial) for each selected one. The resulting predictions are then used to compute ROC curves (with `pROC::roc()`) and their corresponding metrics which are both returned by the function as a named list object (in this case called "*reports*").  This function requires as input:
+To allow an objective comparison of combinations, the function `ROC_reports()` applies the Generalised Linear Model (`stats::glm()` with family= binomial) for each selected one. The resulting predictions are then used to compute ROC curves (with `pROC::roc()`) and their corresponding metrics which are both returned by the function as a named list object (in this case called __reports__).  This function requires as input:
 
-- The data object ("*data*") obtained with `load_data()`.
-- The table with combinations and corresponding positive samples counts (*"tab"*), obtained with `Combi()`.
+- The data object ( __data__ ) obtained with `load_data()`.
+- The table with combinations and corresponding positive samples counts ( __tab__ ), obtained with `Combi()`.
 
 In addition, the function requires to specify the class case, the single markers and/or the combinations of interest. 
 In this example have been chosen a single marker (Marker1) and 2 combinations (combinations number 11 and 15).
@@ -195,30 +191,16 @@ In this example have been chosen a single marker (Marker1) and 2 combinations (c
 reports <-ROC_reports(data, markers_table = tab, case_class = 'A',
                       single_markers =c('Marker1'), selected_combinations = c(11,15))
 ```
-"*reports*" contains 3 named objects:
+__reports__ contains 3 items that can be accessed using the `$` operator:
 
-- "Plot": a ggplot object with the ROC curves of the selected combinations.
-- "Metrics": a dataframe with the metrics of the roc curves (AUC, opt. cutoff, etc ...).
-- "Models": The list of models that have been computed and then used to classify the samples (the equation for each selected combination).
+- Plot: a ggplot object with the ROC curves of the selected combinations.
+- Metrics: a dataframe with the metrics of the roc curves (AUC, opt. cutoff, etc ...).
+- Models: The list of models that have been computed and then used to classify the samples (the equation for each selected combination).
 
 ```{r}
 reports$Plot
 reports$Metrics
 reports$Models
-```
-## Retrieving composition of combinations
-
-`show_markers()` returns a data frame containing the composition of each combination of interest. It requires as input one or more combinations (only their numbers), and the table with combinations and corresponding positive samples counts (*"tab"*, obtained with `Combi()`).
-```{r}
-show_markers(selected_combinations =c(11,15), markers_table = tab)
-```
-
-## Retrieving combinations containing markers of interest
-
-`combs_with()` returns the combinations containing all the markers of interest. It requires as input one or more single marker, and the table with combinations and corresponding positive samples counts (*"tab"*, obtained with `Combi()`). The list with the combinations containing all the markers is assigned to *"combs_list"* object.
-```{r}
-combs_list <- combs_with(markers=c('Marker1', 'Marker3'), markers_table = tab)
-combs_list
 ```
 
 ## Results explanation
@@ -320,16 +302,31 @@ cl_data$`Combination 11`
 
 # Additional tips & tricks
 
-The CombiROC package evolved from the [CombiROC Shiny Web app](http://combiroc.eu/) and it is an ongoing project. While the Shiny app is still working, we plan to mantain and improve the package with new functionalities. Here we offer tips on how to further exploring the data taking advantage into ; some of these features may be natively included in future versions of the CombiROC package.  
+The CombiROC package evolved from the [CombiROC Shiny Web app](http://combiroc.eu/) and it is an ongoing project. While the Shiny app is still running, we plan to concentrate any further improvement on the package which will be enriched with new functionalities. In the meantime, here we offer tips on ancillary commands and additional ways to explore the data taking advantage of the long format of the `data_long` object; some of these features maight be natively included or wrapped into new functions in future versions of the CombiROC package.  
 
-## Individual markers exploration
+## Retrieving composition of combinations
 
-Further markers exploration can be done using other packages' functions such as `group_by()`, `summarize()` and `ggplot()` on the the `data_long` dataframe which contains all markers data in long format.  
-As an example, a few summary statistics can be computed as follow (the libraries `dplyr` and `moments` are needed, the latter is used to calculate the Skewness)
+`show_markers()` returns a data frame containing the composition of each combination of interest. It requires as input one or more combinations (only their numbers), and the table with combinations and corresponding positive samples counts (*"tab"*, obtained with `Combi()`).
+```{r}
+show_markers(selected_combinations =c(11,15), markers_table = tab)
+```
+
+## Retrieving combinations containing markers of interest
+
+`combs_with()` returns the combinations containing all the markers of interest. It requires as input one or more single marker, and the table with combinations and corresponding positive samples counts (*"tab"*, obtained with `Combi()`). The list with the combinations containing all the markers is assigned to *"combs_list"* object.
+```{r}
+combs_list <- combs_with(markers=c('Marker1', 'Marker3'), markers_table = tab)
+combs_list
+```
+
+## Summary statistics of individual markers
+
+Further markers exploration can be done using other packages' functions such as `group_by()`, `summarize()` and `ggplot()` on the the `data_long` dataframe.
+As an example, a few summary statistics can be computed for each marker of both classes, separately, as follow (the libraries `dplyr` and `moments` are needed). Numbers in this table are those behind the box plot obtained with `distr$boxplot` as seen before.
 
 ```{r, message=FALSE}
 library(dplyr)
-library(moments)
+library(moments) # needed for skewness() function
 
 data_long %>%
   group_by(Markers, Class) %>%
@@ -344,9 +341,12 @@ data_long %>%
             Skewness = skewness(Values))
 ```
 
+## Plotting of intensities of individual markers
+
 A quick plotting overview of individual marker values can be done with a scatter plot using the library `ggplot2`. Here is an example for the marker "Marker2":
 
 ```{r, message=FALSE}
+library(dplyr) # needed for the filter() function and %>% operator
 library(ggplot2)
 
 myMarker <- "Marker2"
@@ -359,3 +359,4 @@ data_long %>%
   scale_x_discrete(labels = NULL, breaks = NULL)
 ```
 
+Back to the [top](#top) of this doc
