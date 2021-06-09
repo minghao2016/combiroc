@@ -180,18 +180,18 @@ rmks
 
 ## ROC curves
 
-To allow an objective comparison of combinations, the function `ROC_reports()` applies the Generalised Linear Model (`stats::glm()` with family= binomial) for each selected one. The resulting predictions are then used to compute ROC curves (with `pROC::roc()`) and their corresponding metrics which are both returned by the function as a named list object (in this case called __reports__).  This function requires as input:
+To allow an objective comparison of combinations, the function `ROC_reports()` applies the Generalised Linear Model (`stats::glm()` with argument `family= binomial`) for each selected one. The resulting predictions are then used to compute ROC curves (with function `pROC::roc()`) and their corresponding metrics which are both returned by the function as a named list object (in this case called __reports__).  The function `ROC_reports()` requires as input:
 
 - The data object ( __data__ ) obtained with `load_data()`.
 - The table with combinations and corresponding positive samples counts ( __tab__ ), obtained with `Combi()`.
 
-In addition, the function requires to specify the class case, the single markers and/or the combinations of interest. 
-In this example have been chosen a single marker (Marker1) and 2 combinations (combinations number 11 and 15).
+In addition, the user has to specify the class case, the single markers and/or the combinations of interest with the specific function's arguments.  
+In the example below a single marker (Marker1) and 2 combinations (combinations number 11 and 15) were choosen.
 ```{r}
 reports <-ROC_reports(data, markers_table = tab, case_class = 'A',
                       single_markers =c('Marker1'), selected_combinations = c(11,15))
 ```
-__reports__ contains 3 items that can be accessed using the `$` operator:
+The obtained __reports__ object contains 3 items that can be accessed using the `$` operator:
 
 - Plot: a ggplot object with the ROC curves of the selected combinations.
 - Metrics: a dataframe with the metrics of the roc curves (AUC, opt. cutoff, etc ...).
@@ -205,7 +205,7 @@ reports$Models
 
 ## Results explanation
 
-To be more clear about the interpretation of results, this section will be focused on "Combination 11" (Marker1+Marker2+Marker3) which has an optimal cutoff equal to  0.216 (see **ROC curves**, *reports$Metrics*) .
+For a more in deep discussion on how to interpret the results, this section will be focused on "Combination 11" (combining Marker1, Marker2 and Marker3) which has an optimal cutoff equal to 0.216 (see  teh __CutOff__ column in `reports$Metrics`) .
 This is the equation used to compute the predictions:
 
 $$
@@ -221,11 +221,12 @@ $$
 
 
 
-For "Combination 11", the predictions have been calculated in this way (see **ROC curves**, reports['Models']):
-
+The predictions for "Combination 11" have been computed using the coefficients displayed as in `reports$Models` (see previous paragraph):
 
 $$
-f(x)=    -17.0128  +  1.5378 *log(Marker1 + 1)  +  0.9176 *log(Marker2 + 1) + 0.5706* log(Marker3 + 1)$$
+f(x)=    -17.0128  +  1.5378 *log(Marker1 + 1)  +  0.9176 *log(Marker2 + 1) + 0.5706* log(Marker3 + 1)
+$$
+
 Predictions (f(x) values) of 'Combination 11' can be visualized with the following command: 
 ```{r}
 head(predict(reports$Models$`Combination 11`, type='link')) # link = f(x)
@@ -258,34 +259,31 @@ Specifically, for "Combination 11":
 - Samples with p(x) higher than 0.216 are classified as "positives" (1).
 - Samples with p(x) lower or equal to 0.216 are classified as "negatives" (0).
 
-Thus, using 0.216 as cutoff, "Combination 11" is able to classify the samples in the dataset with a SE equal to 95.0%, SP equal to 86.9%, and accuracy equal to 88.8% (see **ROC curves**, *reports$Metrics*]).
+Thus, using 0.216 as cutoff, "Combination 11" is able to classify the samples in the dataset with a SE equal to 95.0%, SP equal to 86.9%, and accuracy equal to 88.8% (see __ROC curves__, `reports$Metrics`).
 
 # Classification of new samples
 
-CombiROC package also offers the possibility to exploit the models for each selected marker/combination obtained with `ROC_reports()`  (here assigned to *reports$Models*) to directly classify new samples.
+A new feature of the CombiROC package (not present in the CombiROC Tool Shiny app), offers the possibility to exploit the models obtained with `ROC_reports()` for each selected marker/combination (models that were assigned to `reports$Models`) to directly classify new samples.
 
-The unclassified dataset must be similar to the dataset used for the previous combinatorial analysis (with the same markers, and obviously without the 'Class' column).
+The unclassified dataset must be similar to the dataset used for the previous combinatorial analysis (i.e. of the same nature and with the same markers, but obviously _without_ the 'Class' column).
 
-To load the dataset with the new unclassified samples  `load_unclassified_data()` has been implemented. This function is analogue to `load_data()` because it loads the same kind of files and it performs the same format checks, with the exception of what concerns 'Class' column (which is not present in unclassified datasets).  
+To load datasets with unclassified samples a specific `load_unclassified_data()` function was implemented. This function is analogue to `load_data()` since it loads the same kind of files and it performs the same format checks, with the exception of the _Class_ column which is not present in an unclassified datasets and thus not required.  
 
-For explanatory purposes, in the following example has been used a 'synthetic' unclassified dataset ('data/unclassified_proteomic_data.csv') obtained by randomly picking 20 samples from the already classified dataset (*data*).
-The loaded unclassified sample is here assinged to *unc_data*. 
-```{r}
+For purely dimonstrative purposes, in the following example a "synthetic" unclassified dataset ('data/unclassified_proteomic_data.csv') was used: it was obtained by randomly picking 20 samples from the already classified dataset (the __data__). The loaded unclassified sample is here assinged to the __unc_data__ object. Please note that this dataset has a Patient.ID column which actually allows the identification of the class, but this column is not used in the workflow and has solely labeling purposes.
+```{r, eval=FALSE}
 unc_data <- load_unclassified_data(data = '../data/demo_unclassified_data.csv', sep = ',')
-unc_data
 ```
-The very same dataset has been included in **combiroc** package as an unclassified demo dataset, that can be directly called typing `demo_unclassified_data`. 
-```{r, echo=FALSE}
+This very same dataset has been included in CombiROC package as an unclassified demo dataset, that can be directly called typing `demo_unclassified_data`. 
+```{r}
 head(demo_unclassified_data)
 ```
 
-The prediction of the class can be achieved with `Classify()`:
-a function that applies the previously calculated models to the unclassified dataset and classifies the samples accordingly to the very same rule shown in the end of the **Results explanation** section.
+The prediction of the class can be achieved with `Classify()`: this function applies the models previously calculated on a classified dataset working as training dataset, to the unclassified dataset and classifies the samples accordingly to the prediction probability and optimal cutoff as shown in the __Results explanation__ section.
 
-This function takes as inputs:
+This `Classify()` function takes as inputs:
 
-- the unclassified dataset containing the new samples to be classified (*unc_data*).
-- the list of models that have been previously computed by `ROC_reports()` (*reports$Models*).
+- the unclassified dataset containing the new samples to be classified (`unc_data`).
+- the list of models `reports$Models` that have been previously computed by `ROC_reports()` (*reports$Models*).
 - the list of metrics that have been previously computed by `ROC_reports()` (*reports$Metrics*).
 
 In addition the user can set the labels of the predicted class (setting Positive_class and Negative_class), otherwise they will be 1 for positive samples and 0 for the negative samples by default (see the rule shown in the end of the **Results explanation** section).
@@ -296,6 +294,7 @@ To visualize a data.frame containing the classification performed by a model cor
 call the data.frame list and specify it.
 
 ```{r}
+unc_data <- demo_unclassified_data
 cl_data <- Classify(unc_data, Models =  reports$Models, Metrics = reports$Metrics, Positive_class = 'A', Negative_class = 'B')
 cl_data$`Combination 11`
 ```
