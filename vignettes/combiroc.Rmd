@@ -1,5 +1,5 @@
 ---
-title: "Getting started with CombiROC"
+title: "Quick guide to CombiROC"
 subtitle: |
   | Finding optimal combinations of markers from omics data
 author: "Ivan Ferrari, Riccardo L. Rossi"
@@ -8,16 +8,12 @@ output:
   html_document:
     toc: true 
     df_print: paged
-  #   df_print: paged
-  # pdf_document: 
-  #   latex_engine: xelatex
-  #   df_print: paged
 vignette: >
-  %\VignetteIndexEntry{Getting started with combiroc}
+  %\VignetteIndexEntry{Quick guide to CombiROC}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-{#top}
+
 ```{r, include = FALSE}
 #library(httr)
 #knitr::opts_chunk$set(comment = "#>", collapse = TRUE)
@@ -28,7 +24,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(combiroc)
 ```
 
-# Summary 
+# Summary {#top}
 
 Powerful biomarkers are important tools in diagnostic, clinical and research settings. In the area of diagnostic medicine, a biomarker is often used as a tool to identify subjects with a disease, or at high risk of developing a disease. Moreover, it can be used to foresee the more likely outcome of the disease, monitor its progression and predict the response to a given therapy. Diagnostic accuracy can be improved considerably by combining multiple markers, whose performance in identifying diseased subjects is usually assessed via receiver operating characteristic (ROC) curves. The CombiROC tool was originally designed as an easy to use R-Shiny web application to determine optimal combinations of markers from diverse complex omics data ( [Mazzara et al. 2017](https://www.nature.com/articles/srep45477) ); such an implementation is easy to use but has limited features and limitations arise from the machine it is deployed on. The CombiROC _package_ is the natural evolution of the CombiROC tool and it allows the researcher/analyst to freely use the method and further build on it. 
 
