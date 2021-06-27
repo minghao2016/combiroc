@@ -4,7 +4,7 @@
 \alias{Combi}
 \title{Compute combinations.}
 \usage{
-Combi(data, signalthr = 0, combithr = 1)
+Combi(data, signalthr = 0, combithr = 1, max_length = dim(data) - 2)
 }
 \arguments{
 \item{data}{a data.frame returned by load_data().}
@@ -16,6 +16,8 @@ Combi(data, signalthr = 0, combithr = 1)
 }}
 
 \item{combithr}{a numeric that specifies the necessary number of positivelly expressed markers (>= signalthr), in a given combination, to cosinder that combination positivelly expressed in a sample.}
+
+\item{max_length}{an integer that specifies the max combination length that is allowed}
 }
 \value{
 a data.frame containing how many samples of each class are "positive" for each combination.
