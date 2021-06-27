@@ -4,7 +4,7 @@
 \alias{Combi}
 \title{Compute combinations.}
 \usage{
-Combi(data, signalthr = 0, combithr = 1, max_length = dim(data) - 2)
+Combi(data, signalthr = 0, combithr = 1, max_length = NULL)
 }
 \arguments{
 \item{data}{a data.frame returned by load_data().}

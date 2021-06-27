@@ -14,7 +14,7 @@
 #'@export
 
 
-Combi <-function(data,signalthr=0, combithr=1, max_length=dim(data)-2){
+Combi <-function(data,signalthr=0, combithr=1, max_length=NULL){
 
   nclass <- unique(data$Class) # to retrieve the 2 classes
 
@@ -27,6 +27,8 @@ Combi <-function(data,signalthr=0, combithr=1, max_length=dim(data)-2){
   markers <- as.factor(rownames(dfe))
 
   # parameters for combinations
+  if (is.null(max_length)){max_length <- n_features}
+
   k<- 1:max_length
 
   l <- array(0, dim = c(1, length(markers)))
