@@ -63,6 +63,20 @@ Combi <-function(data,signalthr=0, combithr=1, max_length=NULL){
       index<-index+1
     }}
 
+  # only single markers
+
+  if (max_length==1){
+    cdf <- data.frame(listCombinationMarkers, frequencyCombinationMarkers)
+    colnames(cdf) <- c('Markers', paste('#Positives ', nclass[1]), paste('#Positives ', nclass[2]))
+    for (i in 1:n_features){
+      rownames(cdf)[i] <- cdf[i,1]
+    }
+  }
+
+
+  # makers + combinations
+  if (max_length>1){
+
   # creation of the dataframe with combinations and corresponding frequencies
   cdf <- data.frame(listCombinationMarkers, frequencyCombinationMarkers)
   colnames(cdf) <- c('Markers', paste('#Positives ', nclass[1]), paste('#Positives ', nclass[2]))
@@ -71,6 +85,7 @@ Combi <-function(data,signalthr=0, combithr=1, max_length=NULL){
   }
   for (j in (n_features+1):K){
     rownames(cdf)[j] <- paste('Combination', as.character(j-n_features) )
+  }
   }
 
   return(cdf)}

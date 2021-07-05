@@ -32,15 +32,19 @@ ROC_reports <- function(data, markers_table, selected_combinations=NULL, single_
 
 
   if (is.null(selected_combinations)){
-    sc<- single_markers}
-  if (!is.null(selected_combinations)){
-    sc<- selected_combinations + (length(colnames(data))-2)}
-  if (!is.null(single_markers)){
     for (i in 1:length(single_markers)){
-      single_markers[i] <- which(rownames(markers_table)== single_markers[i])
-    }
-    sc <- as.numeric(union(single_markers,sc))
-  }
+    single_markers[i] <- which(rownames(markers_table)== single_markers[i])}
+    sc<- as.numeric(single_markers)}
+
+  if (!is.null(selected_combinations)){
+    if (is.null(single_markers)){
+    sc<- selected_combinations + (length(colnames(data))-2)}
+
+    if (!is.null(single_markers)){
+      sc<- selected_combinations + (length(colnames(data))-2)
+      for (i in 1:length(single_markers)){
+        single_markers[i] <- which(rownames(markers_table)== single_markers[i])}
+    sc <- as.numeric(union(single_markers,sc))}}
 
 
   AUC <- rep(0, length(sc))
