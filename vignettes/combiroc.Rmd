@@ -61,7 +61,7 @@ The AIH demonstrative dataset is preloaded in the package and can be directly ca
 
 ## Exploring the data
 
-It is usually a good thing to visually explore your data with at least a few plots. Box plots are a nice option to observe the distribution of measurements in each sample. The user can plot the data as she/he wishes using the preferred function: since data for CombiROC are required to be in _wide_ (_untidy_) format, they cannot directly used with the widely used `ggplot()` function. Either the user is free to make the data longer (tidy) for the sole purpose of plotting or the package's `CombiROC_long()` function can be used for this purpose, which is designed to wrap `dplyr::pivot_longer()`function, and it's used to reshape the data in long format. Data in long format are required for the plotting functions of the package. 
+It is usually a good thing to visually explore your data with at least a few plots. Box plots are a nice option to observe the distribution of measurements in each sample. The user can plot the data as she/he wishes using the preferred function: since data for CombiROC are required to be in _wide_ (_untidy_) format, they cannot directly used with the widely used `ggplot()` function. Either the user is free to make the data longer (tidy) for the sole purpose of plotting or the package's `CombiROC_long()` function can be used for this purpose, which is designed to wrap `tidyr::pivot_longer()`function, and it's used to reshape the data in long format. Data in long format are required for the plotting functions of the package. 
 
 The __data__ object in wide format is thus transformed into the reshaped long format __data_long__ object
 
@@ -125,7 +125,7 @@ Finally, the __Density_summary__ displays a few summary statistics of the densit
 distr$Density_summary
 ```
 
-In case of lack of a priori known threshold the user can set set signalthr_prediction= TRUE. In this way the function provides a "suggested signal threshold" that corresponds to the median of the singnal threshold values (in "Coord") at which SE/SP are greater or equal to their set minimal values (min_SE and min_SP), and it adds this threshold on the "Density_plot" object as a dashed black line. The use of the median allows to pick a threshold whose SE/SP are not too close to the limits (min_SE and min_SP), but it is recommended to always inspect "Coord" and choose the most appropriate signal threshold by considering SP, SE and Youden index.
+In case of lack of a priori known threshold the user can set set signalthr_prediction= TRUE. In this way the function provides a "suggested signal threshold" that corresponds to the median of the signal threshold values (in "Coord") at which SE/SP are greater or equal to their set minimal values (min_SE and min_SP), and it adds this threshold on the "Density_plot" object as a dashed black line. The use of the median allows to pick a threshold whose SE/SP are not too close to the limits (min_SE and min_SP), but it is recommended to always inspect "Coord" and choose the most appropriate signal threshold by considering SP, SE and Youden index.
 
 ## Combinatorial analysis
 
