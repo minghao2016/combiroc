@@ -3,5 +3,5 @@ demo_data # combiroc built-in demo data (proteomics data from Zingaretti et al. 
 
 # To reshape demo_data in long format
 
-demo_data_long <- CombiROC_long(data = demo_data)
+demo_data_long <- combiroc_long(data = demo_data)
 

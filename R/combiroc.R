@@ -6,7 +6,7 @@
 #'
 #' - load_data(): to check and load data.
 #' - load_unclassified_data(): to check and load unclassified data.
-#' - CombiROC_long(): to reshape data in long format.
+#' - combiroc_long(): to reshape data in long format.
 #'
 #' @section distribution inspection:
 #'
@@ -14,14 +14,14 @@
 #'
 #' @section combinatorial analysis:
 #'
-#' - Combi(): to compute marker combinations.
-#' - SE_SP(): to compute sensitivity and specificity of each combination.
+#' - combi(): to compute marker combinations.
+#' - se_sp(): to compute sensitivity and specificity of each combination.
 #' - ranked_combs(): to rank combinations.
 #'
 #' @section logistic regression training and fitting:
 #'
-#' - ROC_reports(): to train logistic regression and compute ROC.
-#' - Classify(): to apply the previously calculated models to an unclassified dataset and classifies the samples.
+#' - roc_reports(): to train logistic regression and compute ROC.
+#' - classify(): to apply the previously calculated models to an unclassified dataset and classifies the samples.
 #'
 #' @section  markers/combinations correspondence:
 #'

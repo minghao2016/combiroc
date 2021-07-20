@@ -16,7 +16,7 @@ markers_distribution(
 )
 }
 \arguments{
-\item{data_long}{a data.frame in long format returned by CombiROC_long()}
+\item{data_long}{a data.frame in long format returned by combiroc_long()}
 
 \item{min_SE}{a numeric that specifies the min value of SE that a threshold must have to be included in $Coord.}
 
@@ -43,7 +43,7 @@ This function returns a named list containing the following objects:
 \itemize{
 \item “Density_plot”: a density plot showing the distribution of the signal intensity values for both the classes.
 \item "Density_summary": a data.frame showing a summary statistics of the distributions.
-\item “ROC”: a ROC curve showing how many real positive samples would be found positive (SE) and how many real negative samples would be found negative (SP) in function of signal threshold. NB: these SE and SP are refereed to the signal intensity threshold considering all the markers together; it is NOT equal to the SE/SP of a single marker/combination found with SE_SP().
+\item “ROC”: a ROC curve showing how many real positive samples would be found positive (SE) and how many real negative samples would be found negative (SP) in function of signal threshold. NB: these SE and SP are refereed to the signal intensity threshold considering all the markers together; it is NOT equal to the SE/SP of a single marker/combination found with se_sp().
 \item “Coord”: a data.frame that contains the coordinates of the above described “ROC” (threshold, SP and SE) that have at least a min SE (40 by default) and a min SP (80 by default).
 \item "Boxplot": a boxplot showing the distribution of the signal intensity values of each marker singularly, for both the classes.
 }
@@ -56,7 +56,7 @@ The use of the median allows to pick a threshold whose SE/SP are not too close t
 \examples{
 demo_data # combiroc built-in demo data (proteomics data from Zingaretti et al. 2012 - PMC3518104)
 
-demo_data_long <- CombiROC_long(data = demo_data) # long format data
+demo_data_long <- combiroc_long(data = demo_data) # long format data
 
 
 

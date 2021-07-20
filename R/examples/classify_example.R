@@ -1,9 +1,9 @@
 demo_data # combiroc built-in demo data (proteomics data from Zingaretti et al. 2012 - PMC3518104)
 demo_unclassified_data # combiroc built-in unclassified demo data
 
-combs <- Combi(data= demo_data, signalthr=450, combithr=1)  # compute combinations
+combs <- combi(data= demo_data, signalthr=450, combithr=1)  # compute combinations
 
-reports <- ROC_reports(data= demo_data, markers_table= combs,
+reports <- roc_reports(data= demo_data, markers_table= combs,
                        selected_combinations= c(1,11,15),
                        single_markers=c('Marker1', 'Marker2'), case_class='A') # train logistic
                                                                                # regression models
@@ -11,7 +11,7 @@ reports <- ROC_reports(data= demo_data, markers_table= combs,
 
 # To classify new samples with logistic regression models.
 
-classified_data <- Classify(unclassified_data= demo_unclassified_data, Models= reports$Models,
+classified_data <- classify(unclassified_data= demo_unclassified_data, Models= reports$Models,
                              Metrics= reports$Metrics, Positive_class=1, Negative_class=0)
 
 classified_data  # show samples classified using Logistic regression models

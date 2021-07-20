@@ -9,7 +9,7 @@ ranked_combs(data, combo_table, case_class, min_SE = 0, min_SP = 0)
 \arguments{
 \item{data}{a data.frame returned by load_data().}
 
-\item{combo_table}{a data.frame with SE, SP and number of composing markers for each combination (returned by SE_SP()).}
+\item{combo_table}{a data.frame with SE, SP and number of composing markers for each combination (returned by se_sp()).}
 
 \item{case_class}{a character that specifies which of the two classes of the dataset is the case class.}
 
@@ -29,9 +29,9 @@ This function is meant to help the user in finding the best combinations (in the
 \examples{
 demo_data # combiroc built-in demo data (proteomics data from Zingaretti et al. 2012 - PMC3518104)
 
-combs <- Combi(data= demo_data, signalthr=450, combithr=1)  # compute combinations
+combs <- combi(data= demo_data, signalthr=450, combithr=1)  # compute combinations
 
-combs_SE_SP <- SE_SP(data=demo_data, combinations_table=combs) # compute SE and SP
+combs_SE_SP <- se_sp(data=demo_data, combinations_table=combs) # compute SE and SP
                                                                # of each combination
 
 

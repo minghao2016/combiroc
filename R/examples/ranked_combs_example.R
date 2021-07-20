@@ -1,8 +1,8 @@
 demo_data # combiroc built-in demo data (proteomics data from Zingaretti et al. 2012 - PMC3518104)
 
-combs <- Combi(data= demo_data, signalthr=450, combithr=1)  # compute combinations
+combs <- combi(data= demo_data, signalthr=450, combithr=1)  # compute combinations
 
-combs_SE_SP <- SE_SP(data=demo_data, combinations_table=combs) # compute SE and SP
+combs_SE_SP <- se_sp(data=demo_data, combinations_table=combs) # compute SE and SP
                                                                # of each combination
 
 

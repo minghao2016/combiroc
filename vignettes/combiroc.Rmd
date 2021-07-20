@@ -32,7 +32,7 @@ Powerful biomarkers are important tools in diagnostic, clinical and research set
 
 The aim of this document is to show the whole CombiROC workflow to get you up and running as quickly as possible with this package. To do so we're going to use the proteomic dataset from [Zingaretti et al. 2012](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3518104/) containing multi-marker signatures for Autoimmune Hepatitis (AIH) for samples clinically diagnosed as “abnormal” (class A) or "normal" (class B). The scope of the workflow is to first find the markers combinations, then to assess their performance in classifying samples of the dataset.
 
-__Note:__ if you use combiroc in your research, please cite:
+__Note:__ if you use CombiROC in your research, please cite:
 
 > Mazzara S., Rossi R.L., Grifantini R., Donizetti S., Abrignani L., Bombaci M. (2017) CombiROC: an interactive web tool for selecting accurate marker combinations of omics data. _Scientific Reports_, __7__:45477. [10.1038/srep45477](https://doi.org/10.1038/srep45477)  
 
@@ -61,12 +61,12 @@ The AIH demonstrative dataset is preloaded in the package and can be directly ca
 
 ## Exploring the data
 
-It is usually a good thing to visually explore your data with at least a few plots. Box plots are a nice option to observe the distribution of measurements in each sample. The user can plot the data as she/he wishes using the preferred function: since data for CombiROC are required to be in _wide_ (_untidy_) format, they cannot be plotted directly with the widely used `ggplot()` function. Either the user is free to make the data longer (tidy) for the sole purpose of plotting or the package's `CombiROC_long()` function can be used for this purpose; this function wraps the `tidyr::pivot_longer()`function, and it's used to reshape the data in long format. Data in long format are required for the plotting functions of the package and for many other Tidyverse-oriented applications. 
+It is usually a good thing to visually explore your data with at least a few plots. Box plots are a nice option to observe the distribution of measurements in each sample. The user can plot the data as she/he wishes using the preferred function: since data for CombiROC are required to be in _wide_ (_untidy_) format, they cannot be plotted directly with the widely used `ggplot()` function. Either the user is free to make the data longer (tidy) for the sole purpose of plotting or the package's `combiroc_long()` function can be used for this purpose; this function wraps the `tidyr::pivot_longer()`function, and it's used to reshape the data in long format. Data in long format are required for the plotting functions of the package and for many other Tidyverse-oriented applications. 
 
 The __data__ object in the original wide format can be thus transformed into the reshaped long format __data_long__ object, and further used. See also the section ["Tips & tricks"](#tips) for some plotting examples.
 
 ```{r}
-data_long <- CombiROC_long(data)
+data_long <- combiroc_long(data)
 data_long
 ```
 
@@ -103,12 +103,12 @@ distr$Boxplot
 
 ### The ROC curve for all markers and its coordinates
 
-The __ROC__ curve shows how many real positive samples would be found positive (sensitivity, or SE) and how many real negative samples would be found negative (specificity, or SP) in function of signal threshold. NB: these SE and SP are refereed to the signal intensity threshold considering _all_ the markers together; they are _not_ the SE and SP of a single marker/combination computed by the `SE_SP()` command further discussed in the **Sensitivity and specificity** paragraph.
+The __ROC__ curve shows how many real positive samples would be found positive (sensitivity, or SE) and how many real negative samples would be found negative (specificity, or SP) in function of signal threshold. NB: these SE and SP are refereed to the signal intensity threshold considering _all_ the markers together; they are _not_ the SE and SP of a single marker/combination computed by the `se_sp()` command further discussed in the **Sensitivity and specificity** paragraph.
 ```{r, ROC}
 distr$ROC
 ```
 
-The __Coord__ is a dataframe that contains the coordinates of the above described "ROC" (threshold, SP and SE) that have at least a min SE (40 by default) and a min SP (80 by default). These limits can be set manually by specifying  min_SE and min_SP. The Youden index is also computed: this is the Youden's J statistic capturing the performance of a dichotomous diagnostic test, with higher values for better performance (note that Youden index is computed here as $J = SE + SP$, but can be found elsewhere calculated as $J = SE + SP -1$, with lower and upper limits being 0 and 1 respectively).
+The __Coord__ is a dataframe that contains the coordinates of the above described "ROC" (threshold, SP and SE) that have at least a min SE (40 by default) and a min SP (80 by default). These limits can be set manually by specifying  min_SE and min_SP. The Youden index is also computed: this is the Youden's J statistic capturing the performance of a dichotomous diagnostic test, with higher values for better performance ( $J = SE + SP -1$).
 ```{r, coord1}
 head(distr$Coord, n=10)
 ```
@@ -129,7 +129,7 @@ In case of lack of a priori known threshold the user can set set signalthr_predi
 
 ## Combinatorial analysis
 
-`Combi()` function computes the marker combinations and counts their corresponding positive samples for each class (once thresholds are selected). A sample, to be considered positive for a given combination, must have a value higher than a given signal threshold (signalthr) for at least a given number of markers composing that combination (combithr). In this case `signalthr` is set at 450 while `combithr` is set at 1, in order to reproduce both the results reported in [Mazzara et. al 2017](https://www.nature.com/articles/srep45477) (CombiROC paper) and also the tutorial of the web app with default thresholds. 
+`combi()` function computes the marker combinations and counts their corresponding positive samples for each class (once thresholds are selected). A sample, to be considered positive for a given combination, must have a value higher than a given signal threshold (signalthr) for at least a given number of markers composing that combination (combithr). In this case `signalthr` is set at 450 while `combithr` is set at 1, in order to reproduce both the results reported in [Mazzara et. al 2017](https://www.nature.com/articles/srep45477) (CombiROC paper) and also the tutorial of the web app with default thresholds. 
 
 As discussed before, `signalthr` should be set depending on the guidelines of the kit used for the analysis or by an accurate inspection of signal intensity distribution (see **Markers distribution overview** section). In this specific case 450 is the mean of the intensity of buffer + 3 standard deviation (see [Bombaci & Rossi 2019](https://link.springer.com/protocol/10.1007%2F978-1-4939-9164-8_16)).
 In case of lack of guidelines, it's recommended the inspection of data distribution (see `markers_distribution()`). 
@@ -137,13 +137,13 @@ In case of lack of guidelines, it's recommended the inspection of data distribut
 `combithr`, instead, should be set exclusively depending on the needed stringency. In this example the obtained combinations dataframe is assigned to "*tab*" object.
 
 ```{r}
-tab <- Combi(data, signalthr = 450, combithr = 1)
+tab <- combi(data, signalthr = 450, combithr = 1)
 head(tab, n=20)
 ```
 
 ## Sensitivity and specificity
 
-`SE_SP()` function calulates:
+`se_sp()` function calulates:
 
 - Sensitivity (SE) and specificty (SP) of each combination for each class.
 - The number of markers composing each combination (#Markers). 
@@ -156,14 +156,14 @@ Thus, the SE of a given combination (capability to find real positives/cases) co
 The obtained dataframe with SE, SP and number of markers is assigned to "*mks*" object. 
 
 ```{r}
-mks <- SE_SP(data, tab)
+mks <- se_sp(data, tab)
 mks
 ```
 ## Selection of combinations
 
-After specifying the case class ("A" in this case), the function `ranked_combs()` ranks the combinations by the Youden index in order to show the combinations with the highest SE (of cases) and SP (of controls) on the top, facilitating the user in the selection of the best ones. The Youden index (J) is calculated in this way:
+After specifying the case class ("A" in this case), the function `ranked_combs()` ranks the combinations by the Youden index in order to show the combinations with the highest SE (of cases) and SP (of controls) on the top, facilitating the user in the selection of the best ones. Again, the Youden index (J) is calculated in this way:
 $$
- J = SE+SP
+ J = SE+SP-1
 $$
 The user can also set (not mandatory) a minimal value of SE and/or SP that a combination must have to be selected.
 In this case the minimal values of SE and SP are set, respectively, to 40 and 80, in order to reproduce both the gold combinations selection reported in [Mazzara et. al 2017](https://www.nature.com/articles/srep45477) and also the tutorial of the web app with default thresholds. The obtained dataframe with ranked combination is assigned to __rmks__ object. 
@@ -176,15 +176,15 @@ rmks
 
 ## ROC curves
 
-To allow an objective comparison of combinations, the function `ROC_reports()` applies the Generalised Linear Model (`stats::glm()` with argument `family= binomial`) for each selected one. The resulting predictions are then used to compute ROC curves (with function `pROC::roc()`) and their corresponding metrics which are both returned by the function as a named list object (in this case called __reports__).  The function `ROC_reports()` requires as input:
+To allow an objective comparison of combinations, the function `roc_reports()` applies the Generalised Linear Model (`stats::glm()` with argument `family= binomial`) for each selected one. The resulting predictions are then used to compute ROC curves (with function `pROC::roc()`) and their corresponding metrics which are both returned by the function as a named list object (in this case called __reports__).  The function `roc_reports()` requires as input:
 
 - The data object ( __data__ ) obtained with `load_data()`.
-- The table with combinations and corresponding positive samples counts ( __tab__ ), obtained with `Combi()`.
+- The table with combinations and corresponding positive samples counts ( __tab__ ), obtained with `combi()`.
 
 In addition, the user has to specify the class case, the single markers and/or the combinations of interest with the specific function's arguments.  
 In the example below a single marker (Marker1) and 2 combinations (combinations number 11 and 15) were choosen.
 ```{r}
-reports <-ROC_reports(data, markers_table = tab, case_class = 'A',
+reports <-roc_reports(data, markers_table = tab, case_class = 'A',
                       single_markers =c('Marker1'), selected_combinations = c(11,15))
 ```
 The obtained __reports__ object contains 3 items that can be accessed using the `$` operator:
@@ -201,7 +201,7 @@ reports$Models
 
 ## Results explanation
 
-For a more in deep discussion on how to interpret the results, this section will be focused on "Combination 11" (combining Marker1, Marker2 and Marker3) which has an optimal cutoff equal to 0.216 (see  teh __CutOff__ column in `reports$Metrics`) .
+For a more in deep discussion on how to interpret the results, this section will be focused on "Combination 11" (combining Marker1, Marker2 and Marker3) which has an optimal cutoff equal to 0.216 (see  the __CutOff__ column in `reports$Metrics`) .
 This is the equation used to compute the predictions:
 
 $$
@@ -259,7 +259,7 @@ Thus, using 0.216 as cutoff, "Combination 11" is able to classify the samples in
 
 # Classification of new samples
 
-A new feature of the CombiROC package (not present in the CombiROC Tool Shiny app), offers the possibility to exploit the models obtained with `ROC_reports()` for each selected marker/combination (models that were assigned to `reports$Models`) to directly classify new samples.
+A new feature of the CombiROC package (not present in the CombiROC Tool Shiny app), offers the possibility to exploit the models obtained with `roc_reports()` for each selected marker/combination (models that were assigned to `reports$Models`) to directly classify new samples.
 
 The unclassified dataset must be similar to the dataset used for the previous combinatorial analysis (i.e. of the same nature and with the same markers, but obviously _without_ the 'Class' column).
 
@@ -274,13 +274,13 @@ This very same dataset has been included in CombiROC package as an unclassified 
 head(demo_unclassified_data)
 ```
 
-The prediction of the class can be achieved with `Classify()`: this function applies the models previously calculated on a classified dataset working as training dataset, to the unclassified dataset and classifies the samples accordingly to the prediction probability and optimal cutoff as shown in the __Results explanation__ section.
+The prediction of the class can be achieved with `classify()`: this function applies the models previously calculated on a classified dataset working as training dataset, to the unclassified dataset and classifies the samples accordingly to the prediction probability and optimal cutoff as shown in the __Results explanation__ section.
 
-This `Classify()` function takes as inputs:
+This `classify()` function takes as inputs:
 
 - the unclassified dataset containing the new samples to be classified (`unc_data`).
-- the list of models `reports$Models` that have been previously computed by `ROC_reports()` (*reports$Models*).
-- the list of metrics that have been previously computed by `ROC_reports()` (*reports$Metrics*).
+- the list of models `reports$Models` that have been previously computed by `roc_reports()` (*reports$Models*).
+- the list of metrics that have been previously computed by `roc_reports()` (*reports$Metrics*).
 
 In addition the user can set the labels of the predicted class (setting Positive_class and Negative_class), otherwise they will be 1 for positive samples and 0 for the negative samples by default (see the rule shown in the end of the **Results explanation** section).
 
@@ -291,7 +291,7 @@ call the data.frame list and specify it.
 
 ```{r}
 unc_data <- demo_unclassified_data
-cl_data <- Classify(unc_data, Models =  reports$Models, Metrics = reports$Metrics, Positive_class = 'A', Negative_class = 'B')
+cl_data <- classify(unc_data, Models =  reports$Models, Metrics = reports$Metrics, Positive_class = 'A', Negative_class = 'B')
 cl_data$`Combination 11`
 ```
 
@@ -301,14 +301,14 @@ The CombiROC package evolved from the [CombiROC Shiny Web app](http://combiroc.e
 
 ## Retrieving composition of combinations
 
-`show_markers()` returns a data frame containing the composition of each combination of interest. It requires as input one or more combinations (only their numbers), and the table with combinations and corresponding positive samples counts (*"tab"*, obtained with `Combi()`).
+`show_markers()` returns a data frame containing the composition of each combination of interest. It requires as input one or more combinations (only their numbers), and the table with combinations and corresponding positive samples counts (*"tab"*, obtained with `combi()`).
 ```{r}
 show_markers(selected_combinations =c(11,15), markers_table = tab)
 ```
 
 ## Retrieving combinations containing markers of interest
 
-`combs_with()` returns the combinations containing all the markers of interest. It requires as input one or more single marker, and the table with combinations and corresponding positive samples counts (*"tab"*, obtained with `Combi()`). The list with the combinations containing all the markers is assigned to *"combs_list"* object.
+`combs_with()` returns the combinations containing all the markers of interest. It requires as input one or more single marker, and the table with combinations and corresponding positive samples counts (*"tab"*, obtained with `combi()`). The list with the combinations containing all the markers is assigned to *"combs_list"* object.
 ```{r}
 combs_list <- combs_with(markers=c('Marker1', 'Marker3'), markers_table = tab)
 combs_list
@@ -357,14 +357,14 @@ data_long %>%
 ## Bubble plot of the "Gold" combinations 
 
 The following code can be used to plot a "bubble plot" of the markers combinations according to sensitivity (SE), specificity (SP) and size (number of markers in each combination).
-All these plotting functions take as input the `mks` dataframe obtained with the `SE_SP()` function (see above) and containing the SE and SP values for cases and controls in all marker combinations. The original `mks` dataframe can be customly filtered to plot only a subset of combinations meeting specific criteria.  
+All these plotting functions take as input the `mks` dataframe obtained with the `se_sp()` function (see above) and containing the SE and SP values for cases and controls in all marker combinations. The original `mks` dataframe can be customly filtered to plot only a subset of combinations meeting specific criteria.  
 
 ```{r, message=FALSE}
 library(dplyr) # needed for the filter() function and %>% operator
 library(ggplot2)
 
 mks %>% 
-  ggplot(aes(x = `SP%_B`, y = `SE%_A`, size = `#Markers` )) +
+  ggplot(aes(x = `SP% B`, y = `SE% A`, size = `# Markers` )) +
   geom_point(alpha=0.5) +
   scale_size(range = c(5, 15), name="# of markers") +
   scale_x_continuous(limits = c(0,100)) +
@@ -384,8 +384,8 @@ min_SP <- 80 # arbitrarily choosen SP cutoff (as in the web-app slider)
 library(dplyr)
 
 mks %>%
-  mutate(Combo = ifelse((`SP%_B`>min_SP & `SE%_A`>min_SE),"gold","below_thr")) %>% 
-  ggplot(aes(x = `SP%_B`, y = `SE%_A`, size = `#Markers`, color = Combo)) +
+  mutate(Combo = ifelse((`SP% B`>min_SP & `SE% A`>min_SE),"gold","below_thr")) %>% 
+  ggplot(aes(x = `SP% B`, y = `SE% A`, size = `# Markers`, color = Combo)) +
   geom_point(alpha=0.3) +
   scale_size(range = c(5, 15), name="# of markers") +
   scale_x_continuous(limits = c(0,100)) +

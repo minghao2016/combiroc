@@ -7,7 +7,7 @@
 
 #'  - “Density_plot”: a density plot showing the distribution of the signal intensity values for both the classes.
 #'  - "Density_summary": a data.frame showing a summary statistics of the distributions.
-#'  - “ROC”: a ROC curve showing how many real positive samples would be found positive (SE) and how many real negative samples would be found negative (SP) in function of signal threshold. NB: these SE and SP are refereed to the signal intensity threshold considering all the markers together; it is NOT equal to the SE/SP of a single marker/combination found with SE_SP().
+#'  - “ROC”: a ROC curve showing how many real positive samples would be found positive (SE) and how many real negative samples would be found negative (SP) in function of signal threshold. NB: these SE and SP are refereed to the signal intensity threshold considering all the markers together; it is NOT equal to the SE/SP of a single marker/combination found with se_sp().
 #'  - “Coord”: a data.frame that contains the coordinates of the above described “ROC” (threshold, SP and SE) that have at least a min SE (40 by default) and a min SP (80 by default).
 #'  - "Boxplot": a boxplot showing the distribution of the signal intensity values of each marker singularly, for both the classes.
 #'
@@ -16,7 +16,7 @@
 #' and it adds this threshold on the "Density_plot" object as a dashed black line.
 #' The use of the median allows to pick a threshold whose SE/SP are not too close to the limits (min_SE and min_SP), but it is recommended to always inspect "Coord" and choose the most appropriate signal threshold by considering SP, SE and Youden index.
 
-#' @param data_long a data.frame in long format returned by CombiROC_long()
+#' @param data_long a data.frame in long format returned by combiroc_long()
 #' @param y_lim a numeric setting the max values of y that will be visualized in the density plot (zoom only, no data loss).
 #' @param x_lim a numeric setting the max values of x that will be visualized in the density plot (zoom only, no data loss).
 #' @param boxplot_lim a numeric setting the max values of y that will be visualized in the boxplot (zoom only, no data loss).
@@ -76,7 +76,7 @@ Boxplot<- ggplot(data_long, aes(Markers, Values)) +
 
   rocobj <-roc(Values, response=bin, levels=c("0","1"), quiet= TRUE)
   coord <- coords(rocobj)
-  coord$Youden <- coord$specificity+coord$sensitivity
+  coord$Youden <- coord$specificity+coord$sensitivity - 1
   coord$specificity <- round(coord$specificity*100)
   coord$sensitivity <- round(coord$sensitivity*100)
   coord <- coord[coord$specificity>=min_SP & coord$sensitivity>=min_SE, ]

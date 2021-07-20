@@ -1,12 +1,12 @@
 demo_data # combiroc built-in demo data (proteomics data from Zingaretti et al. 2012 - PMC3518104)
 
-combs <- Combi(data= demo_data, signalthr=450, combithr=1)  # compute combinations
+combs <- combi(data= demo_data, signalthr=450, combithr=1)  # compute combinations
 
 
 # To train logistic regression models on each selected combinations and
 # each selected marker, and compute corresponding ROCs.
 
-reports <- ROC_reports(data= demo_data, markers_table= combs,
+reports <- roc_reports(data= demo_data, markers_table= combs,
                         selected_combinations= c(1,11,15),
                         single_markers=c('Marker1', 'Marker2'), case_class='A')
 

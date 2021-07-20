@@ -2,7 +2,7 @@
 #' @description A function to rank combinations by a Youden index and select them if they have a min SE and/or SP.
 #' @details This function is meant to help the user in finding the best combinations (in the first rows) and allows also (not mandatory) the SE/SP-dependent filtering of combinations.
 #' @param data a data.frame returned by load_data().
-#' @param combo_table a data.frame with SE, SP and number of composing markers for each combination (returned by SE_SP()).
+#' @param combo_table a data.frame with SE, SP and number of composing markers for each combination (returned by se_sp()).
 #' @param case_class a character that specifies which of the two classes of the dataset is the case class.
 #' @param min_SE a numeric that specifies the min value of SE that a combination must have to be filtered-in.
 #' @param min_SP a numeric that specifies the min value of SP that a combination must have to be filtered-in.
@@ -17,9 +17,9 @@ ranked_combs <- function(data, combo_table, case_class, min_SE=0, min_SP=0) {
   # if case class is the first
   if (case_class == nclass[1]) {
 
-    # computing F1 as 2*(SE 1st class * SP 2nd class) /  (SE 1st class + SP 2nd class)
-    combo_table$Youden<-  combo_table[,1] + combo_table[,4]
-    combo_table$Youden<-combo_table$Youden/100
+    # computing Youden as 2*(SE 1st class * SP 2nd class) /  (SE 1st class + SP 2nd class)
+    combo_table$Youden<-combo_table[,1] + combo_table[,4]
+    combo_table$Youden<-(combo_table$Youden/100)-1
     ranked_SE_SP<-combo_table[order(-combo_table$Youden), ]
     ranked_SE_SP<- ranked_SE_SP[,c(1,4,5,6)]
     return(ranked_SE_SP[ranked_SE_SP[,1]>=min_SE & ranked_SE_SP[,2]>=min_SP,])}
@@ -31,7 +31,7 @@ ranked_combs <- function(data, combo_table, case_class, min_SE=0, min_SP=0) {
 
     # computing F1 as 2*(SE 2nd class * SP 1st class) /  (SE 2nd class + SP 1st class)
     combo_table$Youden<-combo_table[,2] + combo_table[,3]
-    combo_table$Youden<-combo_table$Youden/100
+    combo_table$Youden<-(combo_table$Youden/100)-1
     ranked_SE_SP<-combo_table[order(-combo_table$Youden), ]
     ranked_SE_SP<- ranked_SE_SP[,c(2,3,5,6)]
     return(ranked_SE_SP[ranked_SE_SP[,1]>=min_SE & ranked_SE_SP[,2]>=min_SP,])}

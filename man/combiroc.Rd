@@ -12,7 +12,7 @@ Easily and Powerfully Calculates Specificity, Sensitivity and ROC Curves of Biom
 \itemize{
 \item load_data(): to check and load data.
 \item load_unclassified_data(): to check and load unclassified data.
-\item CombiROC_long(): to reshape data in long format.
+\item combiroc_long(): to reshape data in long format.
 }
 }
 
@@ -26,8 +26,8 @@ Easily and Powerfully Calculates Specificity, Sensitivity and ROC Curves of Biom
 \section{combinatorial analysis}{
 
 \itemize{
-\item Combi(): to compute marker combinations.
-\item SE_SP(): to compute sensitivity and specificity of each combination.
+\item combi(): to compute marker combinations.
+\item se_sp(): to compute sensitivity and specificity of each combination.
 \item ranked_combs(): to rank combinations.
 }
 }
@@ -35,8 +35,8 @@ Easily and Powerfully Calculates Specificity, Sensitivity and ROC Curves of Biom
 \section{logistic regression training and fitting}{
 
 \itemize{
-\item ROC_reports(): to train logistic regression and compute ROC.
-\item Classify(): to apply the previously calculated models to an unclassified dataset and classifies the samples.
+\item roc_reports(): to train logistic regression and compute ROC.
+\item classify(): to apply the previously calculated models to an unclassified dataset and classifies the samples.
 }
 }
 

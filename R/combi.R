@@ -6,15 +6,15 @@
 
 #' - Positively selects most samples belonging to the case class, which must be above signalthr.
 #' - Negatively selects most control samples, which must be below signalthr.
-#'@param combithr a numeric that specifies the necessary number of positivelly expressed markers (>= signalthr), in a given combination, to cosinder that combination positivelly expressed in a sample.
+#'@param combithr a numeric that specifies the necessary number of positively expressed markers (>= signalthr), in a given combination, to cosinder that combination positivelly expressed in a sample.
 #'@param max_length an integer that specifies the max combination length that is allowed
 #'@return a data.frame containing how many samples of each class are "positive" for each combination.
 #'@import gtools
-#'@example R/examples/Combi_example.R
+#'@example R/examples/combi_example.R
 #'@export
 
 
-Combi <-function(data,signalthr=0, combithr=1, max_length=NULL){
+combi <-function(data,signalthr=0, combithr=1, max_length=NULL){
 
   nclass <- unique(data$Class) # to retrieve the 2 classes
 

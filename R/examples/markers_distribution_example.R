@@ -1,6 +1,6 @@
 demo_data # combiroc built-in demo data (proteomics data from Zingaretti et al. 2012 - PMC3518104)
 
-demo_data_long <- CombiROC_long(data = demo_data) # long format data
+demo_data_long <- combiroc_long(data = demo_data) # long format data
 
 
 

@@ -2,12 +2,12 @@
 #' @description A function to compute sensitivity and specificity of each combination for each class.
 #' @details This function calculate SE and SP for each combination. The SE of a given combination (capability to find real positives/cases) corresponds to the SE of the case class, while its SP (capability to exclude real negatives/controls) corresponds to the SP of the control class.
 #'@param data a data.frame returned by load_data().
-#'@param combinations_table a data.frame containing how many samples of each class are "positive" for each combination (returned by Combi()).
-#'@example R/examples/SE_SP_example.R
+#'@param combinations_table a data.frame containing how many samples of each class are "positive" for each combination (returned by combi()).
+#'@example R/examples/se_sp_example.R
 #'@return data.frame with SE, SP and number of composing markers for each combination.
 #'@export
 
-SE_SP <- function(data, combinations_table){
+se_sp <- function(data, combinations_table){
 
   mks <- combinations_table
   names<- c()
@@ -18,9 +18,9 @@ SE_SP <- function(data, combinations_table){
   for (i in  1:length(nclass)){
     SE_SP[,i]<- round(mks[,i+1]*100/length(colnames(t(data[data$Class==nclass[i],])))
                       ,digits=0) # SE of the given class
-    names[i] <- paste0('SE%_', nclass[i])
+    names[i] <- paste('SE%', nclass[i])
     SE_SP[,i+2]<- 100-SE_SP[,i] # SP of the given class
-    names[i+2] <- paste0('SP%_', nclass[i])
+    names[i+2] <- paste('SP%', nclass[i])
   }
 
   SE_SP <- data.frame(SE_SP) # from array to dataframe
@@ -34,7 +34,7 @@ SE_SP <- function(data, combinations_table){
   # the number of markers is equal to number of '-' +1  => '-' must be avoided in marker name
 
   SE_SP$count <- data.frame(n_markers)[,1]
-  colnames(SE_SP)[5] <- '#Markers'
+  colnames(SE_SP)[5] <- '# Markers'
 
   return(SE_SP)
 }

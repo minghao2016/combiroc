@@ -7,16 +7,16 @@
 #' - "Models": the list of models (glm() objects) that have been computed and then used to classify the samples (in which you can find the model equation for each selected combination).
 
 #' @param data a data.frame returned by load_data().
-#' @param markers_table a data.frame with combinations and corresponding positive samples counts, obtained with Combi().
+#' @param markers_table a data.frame with combinations and corresponding positive samples counts, obtained with combi().
 #' @param single_markers a character vector that specifies the single markers of interest.
 #' @param selected_combinations a numeric vector that specifies the combinations of interest.
 #' @param case_class a character that specifies which of the two classes of the dataset is the case class.
 #' @return a named list containing 3 objects: "Plot", "Metrics" and "Models".
 #' @import dplyr ggplot2 pROC stringr
-#' @example R/examples/ROC_reports_example.R
+#' @example R/examples/roc_reports_example.R
 #' @export
 
-ROC_reports <- function(data, markers_table, selected_combinations=NULL, single_markers=NULL, case_class){
+roc_reports <- function(data, markers_table, selected_combinations=NULL, single_markers=NULL, case_class){
   # to binarize $Class
   bin<- rep(NA, length(rownames(data)))
   for (i in 1:length(rownames(data))){
