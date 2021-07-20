@@ -61,9 +61,9 @@ The AIH demonstrative dataset is preloaded in the package and can be directly ca
 
 ## Exploring the data
 
-It is usually a good thing to visually explore your data with at least a few plots. Box plots are a nice option to observe the distribution of measurements in each sample. The user can plot the data as she/he wishes using the preferred function: since data for CombiROC are required to be in _wide_ (_untidy_) format, they cannot directly used with the widely used `ggplot()` function. Either the user is free to make the data longer (tidy) for the sole purpose of plotting or the package's `CombiROC_long()` function can be used for this purpose, which is designed to wrap `tidyr::pivot_longer()`function, and it's used to reshape the data in long format. Data in long format are required for the plotting functions of the package. 
+It is usually a good thing to visually explore your data with at least a few plots. Box plots are a nice option to observe the distribution of measurements in each sample. The user can plot the data as she/he wishes using the preferred function: since data for CombiROC are required to be in _wide_ (_untidy_) format, they cannot directly used with the widely used `ggplot()` function. Either the user is free to make the data longer (tidy) for the sole purpose of plotting or the package's `CombiROC_long()` function can be used for this purpose, which is designed to wrap `tidyr::pivot_longer()`function, and it's used to reshape the data in long format. Data in long format are required for the plotting functions of the package and for many other Tidyverse-oriented applications. 
 
-The __data__ object in wide format is thus transformed into the reshaped long format __data_long__ object
+The __data__ object in the original wide format can be thus transformed into the reshaped long format __data_long__ object, and further used. 
 
 ```{r}
 data_long <- CombiROC_long(data)
@@ -73,7 +73,7 @@ data_long
 
 ## Markers distribution overview
 
-Since the target of the analysis is the identification of marker combinations capable to correctly classify samples, the user should choose a signal threshold to define the positivity for a given marker/combination. This threshold should:
+Since the target of the analysis is the identification of marker combinations capable to correctly classify samples, the user should first choose a signal threshold to define the positivity for a given marker/combination. This threshold should:
 
 - Positively select most samples belonging to the case class ("A" in this case), which values must be above the signal threshold.
 - Negatively select most control samples ("B"), which values must be below the signal threshold. 
@@ -353,5 +353,49 @@ data_long %>%
   labs(title=myMarker, x ="Samples") +
   scale_x_discrete(labels = NULL, breaks = NULL)
 ```
+
+## Bubble plot of the "Gold" combinations 
+
+The following code can be used to plot a "bubble plot" of the markers combinations according to sensitivity (SE), specificity (SP) and size (number of markers in each combination).
+
+```{r, message=FALSE}
+library(dplyr) # needed for the filter() function and %>% operator
+library(ggplot2)
+
+ggplot(mks, aes(x = `SP%_B`, y = `SE%_A`, size = `#Markers` )) +
+  geom_point(alpha=0.5) +
+  scale_size(range = c(5, 15), name="# of markers") +
+  scale_x_continuous(limits = c(0,100)) +
+  scale_y_continuous(limits = c(0,100)) +
+  labs(x ="specificity", y = "sensitivity")
+```
+
+If the user wants to highlight the "Golden" combinations (how they were called in the CombiROC web-app), i.e. those above choosen thresholds of SE and SP, first the user need to set the custom cutoffs to 
+
+```{r, message=FALSE}
+library(dplyr) # needed for the mutate() function and %>% operator
+library(ggplot2)
+
+min_SE <- 40 # arbitrarily choosen SE cutoff (as in the web-app slider)
+min_SP <- 80 # arbitrarily choosen SP cutoff (as in the web-app slider)
+
+library(dplyr)
+
+mks %>%
+  mutate(Combo = ifelse((`SP%_B`>80 & `SE%_A`>40),"gold","below_thr")) %>% 
+  ggplot(aes(x = `SP%_B`, y = `SE%_A`, size = `#Markers`, color = Combo)) +
+  geom_point(alpha=0.3) +
+  scale_size(range = c(5, 15), name="# of markers") +
+  scale_x_continuous(limits = c(0,100)) +
+  scale_y_continuous(limits = c(0,100)) +
+  labs(x ="specificity", y = "sensitivity") +
+  guides(color = guide_legend(order=2),
+         size = guide_legend(order=1)) +
+  geom_vline(xintercept = min_SP, linetype="dotted", color = "grey", size=1) +
+  geom_hline(yintercept = min_SE, linetype="dotted", color = "grey", size=1) +
+  scale_color_manual(values=c("blue", "gold")) +
+  theme_light()
+```
+
 
 Back to the [top](#top) of this doc
