@@ -357,7 +357,7 @@ data_long %>%
 ## Bubble plot of the "Gold" combinations 
 
 The following code can be used to plot a "bubble plot" of the markers combinations according to sensitivity (SE), specificity (SP) and size (number of markers in each combination).
-All these plotting functions take as input the mks dataframe obtained with the SE_SP() function and containing the SE and SP values for cases and controls in all marker combinations. The original mks dataframe can be customly filtered to plot only a subset of combinations meeting specific criteria.  
+All these plotting functions take as input the `mks` dataframe obtained with the `SE_SP()` function (see above) and containing the SE and SP values for cases and controls in all marker combinations. The original `mks` dataframe can be customly filtered to plot only a subset of combinations meeting specific criteria.  
 
 ```{r, message=FALSE}
 library(dplyr) # needed for the filter() function and %>% operator
@@ -372,7 +372,7 @@ mks %>%
   labs(x ="specificity", y = "sensitivity")
 ```
 
-If the user wants to highlight the "Golden" combinations (how they were called in the CombiROC web-app), i.e. those above chosen thresholds of SE and SP, first the user need to set the custom cutoffs to the desired minimim values (here 40 and 80 for SE and SP respectively).
+If the user wants to highlight the "Golden" combinations (how they were called in the CombiROC web-app), i.e. those above chosen thresholds of SE and SP, first the user need to set the custom cutoffs to the desired minimum values (here 40 and 80 for SE and SP respectively).
 
 ```{r, message=FALSE}
 library(dplyr) # needed for the mutate() function and %>% operator
