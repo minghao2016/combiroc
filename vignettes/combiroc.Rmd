@@ -384,7 +384,7 @@ min_SP <- 80 # arbitrarily choosen SP cutoff (as in the web-app slider)
 library(dplyr)
 
 mks %>%
-  mutate(Combo = ifelse((`SP%_B`>80 & `SE%_A`>40),"gold","below_thr")) %>% 
+  mutate(Combo = ifelse((`SP%_B`>min_SP & `SE%_A`>min_SE),"gold","below_thr")) %>% 
   ggplot(aes(x = `SP%_B`, y = `SE%_A`, size = `#Markers`, color = Combo)) +
   geom_point(alpha=0.3) +
   scale_size(range = c(5, 15), name="# of markers") +
