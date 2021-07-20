@@ -1,5 +1,5 @@
 ---
-title: "Quick guide to CombiROC"
+title: "Guide to CombiROC package"
 subtitle: |
   | Finding optimal combinations of markers from omics data
 author: "Ivan Ferrari, Riccardo L. Rossi"
@@ -61,9 +61,9 @@ The AIH demonstrative dataset is preloaded in the package and can be directly ca
 
 ## Exploring the data
 
-It is usually a good thing to visually explore your data with at least a few plots. Box plots are a nice option to observe the distribution of measurements in each sample. The user can plot the data as she/he wishes using the preferred function: since data for CombiROC are required to be in _wide_ (_untidy_) format, they cannot directly used with the widely used `ggplot()` function. Either the user is free to make the data longer (tidy) for the sole purpose of plotting or the package's `CombiROC_long()` function can be used for this purpose, which is designed to wrap `tidyr::pivot_longer()`function, and it's used to reshape the data in long format. Data in long format are required for the plotting functions of the package and for many other Tidyverse-oriented applications. 
+It is usually a good thing to visually explore your data with at least a few plots. Box plots are a nice option to observe the distribution of measurements in each sample. The user can plot the data as she/he wishes using the preferred function: since data for CombiROC are required to be in _wide_ (_untidy_) format, they cannot be plotted directly with the widely used `ggplot()` function. Either the user is free to make the data longer (tidy) for the sole purpose of plotting or the package's `CombiROC_long()` function can be used for this purpose; this function wraps the `tidyr::pivot_longer()`function, and it's used to reshape the data in long format. Data in long format are required for the plotting functions of the package and for many other Tidyverse-oriented applications. 
 
-The __data__ object in the original wide format can be thus transformed into the reshaped long format __data_long__ object, and further used. 
+The __data__ object in the original wide format can be thus transformed into the reshaped long format __data_long__ object, and further used. See also the section ["Tips & tricks"](#tips) for some plotting examples.
 
 ```{r}
 data_long <- CombiROC_long(data)
@@ -295,9 +295,9 @@ cl_data <- Classify(unc_data, Models =  reports$Models, Metrics = reports$Metric
 cl_data$`Combination 11`
 ```
 
-# Additional tips & tricks
+# Additional tips & tricks {#tips}
 
-The CombiROC package evolved from the [CombiROC Shiny Web app](http://combiroc.eu/) and it is an ongoing project. While the Shiny app is still running, we plan to concentrate any further improvement on the package which will be enriched with new functionalities. In the meantime, here we offer tips on ancillary commands and additional ways to explore the data taking advantage of the long format of the `data_long` object; some of these features maight be natively included or wrapped into new functions in future versions of the CombiROC package.  
+The CombiROC package evolved from the [CombiROC Shiny Web app](http://combiroc.eu/) and it is an ongoing project. While the Shiny app is still running, we plan to concentrate any further improvement on the package which will be enriched with new functionalities. In the meantime, here we offer tips on ancillary commands and additional ways to explore the data taking advantage of the long format of the `data_long` object; some of these features might be natively included or wrapped into new functions in future versions of the CombiROC package.  
 
 ## Retrieving composition of combinations
 
