@@ -67,7 +67,7 @@ combi <-function(data,signalthr=0, combithr=1, max_length=NULL){
 
   if (max_length==1){
     cdf <- data.frame(listCombinationMarkers, frequencyCombinationMarkers)
-    colnames(cdf) <- c('Markers', paste('#Positives ', nclass[1]), paste('#Positives ', nclass[2]))
+    colnames(cdf) <- c('Markers', paste0('#Positives_', nclass[1]), paste('#Positives_', nclass[2]))
     for (i in 1:n_features){
       rownames(cdf)[i] <- cdf[i,1]
     }

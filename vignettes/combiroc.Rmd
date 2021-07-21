@@ -21,7 +21,9 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r setup, include=FALSE}
-library(combiroc)
+#library(combiroc)
+library(devtools)
+load_all()
 ```
 
 # Summary {#top}
@@ -364,7 +366,7 @@ library(dplyr) # needed for the filter() function and %>% operator
 library(ggplot2)
 
 mks %>% 
-  ggplot(aes(x = `SP% B`, y = `SE% A`, size = `# Markers` )) +
+  ggplot(aes(x = `SP_B`, y = `SE_A`, size = `#Markers` )) +
   geom_point(alpha=0.5) +
   scale_size(range = c(5, 15), name="# of markers") +
   scale_x_continuous(limits = c(0,100)) +
@@ -384,8 +386,8 @@ min_SP <- 80 # arbitrarily choosen SP cutoff (as in the web-app slider)
 library(dplyr)
 
 mks %>%
-  mutate(Combo = ifelse((`SP% B`>min_SP & `SE% A`>min_SE),"gold","below_thr")) %>% 
-  ggplot(aes(x = `SP% B`, y = `SE% A`, size = `# Markers`, color = Combo)) +
+  mutate(Combo = ifelse((`SP_B`>min_SP & `SE_A`>min_SE),"gold","below_thr")) %>% 
+  ggplot(aes(x = `SP_B`, y = `SE_A`, size = `#Markers`, color = Combo)) +
   geom_point(alpha=0.3) +
   scale_size(range = c(5, 15), name="# of markers") +
   scale_x_continuous(limits = c(0,100)) +

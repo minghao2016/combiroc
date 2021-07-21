@@ -18,9 +18,9 @@ se_sp <- function(data, combinations_table){
   for (i in  1:length(nclass)){
     SE_SP[,i]<- round(mks[,i+1]*100/length(colnames(t(data[data$Class==nclass[i],])))
                       ,digits=0) # SE of the given class
-    names[i] <- paste('SE%', nclass[i])
+    names[i] <- paste0('SE_', nclass[i])
     SE_SP[,i+2]<- 100-SE_SP[,i] # SP of the given class
-    names[i+2] <- paste('SP%', nclass[i])
+    names[i+2] <- paste0('SP_', nclass[i])
   }
 
   SE_SP <- data.frame(SE_SP) # from array to dataframe
@@ -34,7 +34,7 @@ se_sp <- function(data, combinations_table){
   # the number of markers is equal to number of '-' +1  => '-' must be avoided in marker name
 
   SE_SP$count <- data.frame(n_markers)[,1]
-  colnames(SE_SP)[5] <- '# Markers'
+  colnames(SE_SP)[5] <- '#Markers'
 
   return(SE_SP)
 }

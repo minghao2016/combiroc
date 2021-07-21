@@ -1,6 +1,6 @@
 #' @title Show the composition of combinations.
 #' @description  A function to show the composition of combinations of interest.
-#' @param markers_table a data.frame with combinations returned by Combi().
+#' @param markers_table a data.frame with combinations returned by combi().
 #' @param selected_combinations a numeric vector that specifies the combinations of interest.
 #' @return a data.frame containing the selected combinations and their composing markers.
 #' @example R/examples/show_markers_example.R
@@ -16,7 +16,7 @@ show_markers <- function(markers_table, selected_combinations){
     markers_list[i] <- markers_table[which(rownames(markers_table)==combo_list[i]), 1]
     df[i,2] <- markers_list[[i]]
   }
-  colnames(df) <- c('Combination', 'Composing markers')
+  colnames(df) <- c('Combination', 'Composing_markers')
 
   return(df)}
 
