@@ -37,6 +37,7 @@ Imports:
     stringr,
     stats,
     utils,
+    moments,
     devtools
 Suggests: 
     knitr,
