@@ -9,5 +9,7 @@ combs_SE_SP <- se_sp(data=demo_data, combinations_table=combs) # compute SE and 
 
 # To rank combinations by Youden index and filter-out the ones with SE < min_SE and SP < min_SP
 
-ranked_combs_SE_SP <- ranked_combs(data= demo_data, combo_table= combs_SE_SP,
+rc <- ranked_combs(data= demo_data, combo_table= combs_SE_SP,
                        case_class='A', min_SE=40, min_SP=80)
+rc$table # to visualize the selected gold combinations through a data.frame
+rc$bubble_chart # to visualize the selected gold combinations through a data.frame

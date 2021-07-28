@@ -173,7 +173,8 @@ In this case the minimal values of SE and SP are set, respectively, to 40 and 80
 
 ```{r}
 rmks <- ranked_combs(data, mks, case_class = 'A', min_SE = 40, min_SP = 80)
-rmks
+rmks$table
+rmks$bubble_chart
 ```
 
 ## ROC curves

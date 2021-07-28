@@ -18,7 +18,11 @@ ranked_combs(data, combo_table, case_class, min_SE = 0, min_SP = 0)
 \item{min_SP}{a numeric that specifies the min value of SP that a combination must have to be filtered-in.}
 }
 \value{
-a data.frame with ranked combination, reporting: SE, SP, number of markers composing the combination and the score.
+a named list containing:
+\itemize{
+\item $table, a data.frame with ranked combination, reporting: SE, SP, number of markers composing the combination and the score.
+\item $bubble_chart, a dot plot showing the selected 'gold' combinations
+}
 }
 \description{
 A function to rank combinations by a Youden index and select them if they have a min SE and/or SP.
@@ -38,6 +42,8 @@ combs_SE_SP <- se_sp(data=demo_data, combinations_table=combs) # compute SE and 
 
 # To rank combinations by Youden index and filter-out the ones with SE < min_SE and SP < min_SP
 
-ranked_combs_SE_SP <- ranked_combs(data= demo_data, combo_table= combs_SE_SP,
+rc <- ranked_combs(data= demo_data, combo_table= combs_SE_SP,
                        case_class='A', min_SE=40, min_SP=80)
+rc$table # to visualize the selected gold combinations through a data.frame
+rc$bubble_chart # to visualize the selected gold combinations through a data.frame
 }
