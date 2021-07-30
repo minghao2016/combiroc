@@ -38,7 +38,7 @@ __Note:__ if you use CombiROC in your research, please cite:
 
 > Mazzara S., Rossi R.L., Grifantini R., Donizetti S., Abrignani L., Bombaci M. (2017) CombiROC: an interactive web tool for selecting accurate marker combinations of omics data. _Scientific Reports_, __7__:45477. [10.1038/srep45477](https://doi.org/10.1038/srep45477)  
 
-## Required data format
+## Required data format {#format}
 
 The dataset to be analysed should be in text format, which can be separated by commas, tabs or semicolons. Format of the columns should be the following:
 
@@ -48,7 +48,7 @@ The dataset to be analysed should be in text format, which can be separated by c
 - From the 3rd column on, the dataset must contain numerical values that represent the signal corresponding to the markers abundance in each sample (marker-related columns).
 - The header for marker-related columns can be called 'Marker1, Marker2, Marker3, ...' or can be called directly with the gene/protein name. __Please note__ that "-" (dash) is __not__ allowed in the column names
 
-## Data loading
+## Data loading {#load}
 
 The `load_data()` function uses a customized **read.table()** function that checks the conformity of the dataset format. If all the checks are passed, marker-related columns are reordered alphabetically, depending on marker names (this is necessary for a proper computation of combinations), and it imposes "Class" as the name of the second column. The loaded dataset is here assigned to the "*data*" object.
 ```{r, eval=FALSE}
@@ -73,7 +73,7 @@ data_long
 ```
 
 
-## Markers distribution overview
+## Markers distribution overview {#distr}
 
 Since the target of the analysis is the identification of marker combinations capable to correctly classify samples, the user should first choose a signal threshold to define the positivity for a given marker/combination. This threshold should:
 
@@ -129,11 +129,11 @@ distr$Density_summary
 
 In case of lack of a priori known threshold the user can set set signalthr_prediction= TRUE. In this way the function provides a "suggested signal threshold" that corresponds to the median of the signal threshold values (in "Coord") at which SE/SP are greater or equal to their set minimal values (min_SE and min_SP), and it adds this threshold on the "Density_plot" object as a dashed black line. The use of the median allows to pick a threshold whose SE/SP are not too close to the limits (min_SE and min_SP), but it is recommended to always inspect "Coord" and choose the most appropriate signal threshold by considering SP, SE and Youden index.
 
-## Combinatorial analysis
+## Combinatorial analysis {#combi}
 
 `combi()` function computes the marker combinations and counts their corresponding positive samples for each class (once thresholds are selected). A sample, to be considered positive for a given combination, must have a value higher than a given signal threshold (signalthr) for at least a given number of markers composing that combination (combithr). In this case `signalthr` is set at 450 while `combithr` is set at 1, in order to reproduce both the results reported in [Mazzara et. al 2017](https://www.nature.com/articles/srep45477) (CombiROC paper) and also the tutorial of the web app with default thresholds. 
 
-As discussed before, `signalthr` should be set depending on the guidelines of the kit used for the analysis or by an accurate inspection of signal intensity distribution (see **Markers distribution overview** section). In this specific case 450 is the mean of the intensity of buffer + 3 standard deviation (see [Bombaci & Rossi 2019](https://link.springer.com/protocol/10.1007%2F978-1-4939-9164-8_16)).
+As discussed before, `signalthr` should be set depending on the guidelines of the kit used for the analysis or by an accurate inspection of signal intensity distribution (see [Markers distribution overview](#distr) section). In this specific case 450 is the mean of the intensity of buffer + 3 standard deviation (see [Bombaci & Rossi 2019](https://link.springer.com/protocol/10.1007%2F978-1-4939-9164-8_16)).
 In case of lack of guidelines, it's recommended the inspection of data distribution (see `markers_distribution()`). 
 
 `combithr`, instead, should be set exclusively depending on the needed stringency. In this example the obtained combinations dataframe is assigned to "*tab*" object.
@@ -143,7 +143,7 @@ tab <- combi(data, signalthr = 450, combithr = 1)
 head(tab, n=20)
 ```
 
-## Sensitivity and specificity
+## Sensitivity and specificity {#sesp}
 
 `se_sp()` function calulates:
 
