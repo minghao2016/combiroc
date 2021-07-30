@@ -11,6 +11,8 @@ The web-app Shiny version of CombiROC is still available at http://combiroc.eu/.
 
 The code in this repo is work in progress, and is uploaded here "as-is" with no warranties implied. Improvements and new features will be added on a regular basis, please check on this github page for new features and releases. 
 
+A preprint :page\_facing\_up: on CombiROC package is now available on bioRxiv at <https://www.biorxiv.org/content/#>.
+
 ## Installation
 
 ```r
@@ -25,4 +27,7 @@ install_github("ricrossi/combiroc")
 
 Main documentation is in the package's vignette. You can also find the web version of the documentation at the project website <https://ricrossi.github.io/combiroc>, created with `pkgdown`.
 
+## Package curators
+
+Ivan Ferrari, Riccardo L. Rossi
 
