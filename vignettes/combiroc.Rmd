@@ -72,6 +72,7 @@ data_long <- combiroc_long(data)
 data_long
 ```
 
+Individual markers can also be explored plotting them one by one or retrieving summary statistics. In the section Tips&Tricks at the end of this vignette we suggest code chunks that can be used to [plot intensities of individual markers](#plot_int) across all samples, as well as to [calculate their summary statistics](#sum_stats). 
 
 ## Markers distribution overview {#distr}
 
@@ -317,7 +318,25 @@ combs_list <- combs_with(markers=c('Marker1', 'Marker3'), markers_table = tab)
 combs_list
 ```
 
-## Summary statistics of individual markers
+## Plotting of intensities of individual markers {#plot_int}
+
+A quick plotting overview of individual marker values can be done with a scatter plot using the library `ggplot2`. Here is an example for the marker "Marker2":
+
+```{r, message=FALSE}
+library(dplyr) # needed for the filter() function and %>% operator
+library(ggplot2)
+
+myMarker <- "Marker2"
+
+data_long %>%
+  filter(Markers == myMarker) %>%
+  ggplot(aes(x= Patient.ID, y=Values)) +
+  geom_point(aes(color=Class)) +
+  labs(title=myMarker, x ="Samples") +
+  scale_x_discrete(labels = NULL, breaks = NULL)
+```
+
+## Summary statistics of individual markers {#sum_stats}
 
 Further markers exploration can be done using other packages' functions such as `group_by()`, `summarize()` and `ggplot()` on the the `data_long` dataframe.
 As an example, a few summary statistics can be computed for each marker of both classes, separately, as follow (the libraries `dplyr` and `moments` are needed). Numbers in this table are those behind the box plot obtained with `distr$boxplot` as seen before.
@@ -339,23 +358,6 @@ data_long %>%
             Skewness = skewness(Values))
 ```
 
-## Plotting of intensities of individual markers
-
-A quick plotting overview of individual marker values can be done with a scatter plot using the library `ggplot2`. Here is an example for the marker "Marker2":
-
-```{r, message=FALSE}
-library(dplyr) # needed for the filter() function and %>% operator
-library(ggplot2)
-
-myMarker <- "Marker2"
-
-data_long %>%
-  filter(Markers == myMarker) %>%
-  ggplot(aes(x= Patient.ID, y=Values)) +
-  geom_point(aes(color=Class)) +
-  labs(title=myMarker, x ="Samples") +
-  scale_x_discrete(labels = NULL, breaks = NULL)
-```
 
 ## Bubble plot of the "Gold" combinations 
 
