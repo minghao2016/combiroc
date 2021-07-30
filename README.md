@@ -27,8 +27,8 @@ install_github("ricrossi/combiroc")
 
 Main documentation is in the package's vignette. You can also find the web version of the documentation at the project website <https://ricrossi.github.io/combiroc>, created with `pkgdown`.
 
-## Code authors
+## Contributors
 
-Package authors and curators: Ivan Ferrari, Riccardo L. Rossi
-Initial code and Shiny App author: Saveria Mazzara
+* Package authors and curators: Ivan Ferrari, Riccardo L. Rossi
+* Initial code and Shiny App author: Saveria Mazzara
 
