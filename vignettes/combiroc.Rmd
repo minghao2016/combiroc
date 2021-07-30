@@ -72,6 +72,8 @@ data_long <- combiroc_long(data)
 data_long
 ```
 
+### Checking the individual markers
+
 Individual markers can also be explored plotting them one by one or retrieving summary statistics. In the section Tips&Tricks at the end of this vignette we suggest code chunks that can be used to [plot intensities of individual markers](#plot_int) across all samples, as well as to [calculate their summary statistics](#sum_stats). 
 
 ## Markers distribution overview {#distr}
@@ -87,6 +89,8 @@ Usually this threshold is suggested by the guidelines of the kit used for the an
 distr <- markers_distribution(data_long, case_class = 'A', y_lim = 0.0015, x_lim = 3000, signalthr_prediction = TRUE, min_SE = 40, min_SP = 80, boxplot_lim = 2000)
 ```
 
+### The __distr__ object
+
 The __distr__ object contains the following elements: 
 
 - a Boxplot distribution
@@ -95,9 +99,9 @@ The __distr__ object contains the following elements:
 - a density plot
 - a summary. 
 
-All this information can be plotted/displayed individually.  
+All this information can be plotted/displayed individually. Let's see each one of them
 
-### Distribution via boxplot 
+### Boxplot
 
 The __Boxplot__ shows the distribution of each marker values for both classes:
 ```{r, boxplot}
@@ -116,28 +120,34 @@ The __Coord__ is a dataframe that contains the coordinates of the above describe
 head(distr$Coord, n=10)
 ```
 
-### The density plot and summary for signals
+### The density plot and suggested signal threshold {#dens}
 
 The __Density_plot__ shows the distribution of the signal intensity values for both the classes. In addition, the function allows the user to set both the y_lim and x_lim values to provide a better visualization.
+One important feature of the density plot is that it calculates a possible __signal intensity threshold:__ in case of lack of *a priori* knowedge of the threshold the user can set the argument `signalthr_prediction = TRUE` in the `markers_distribution()` function. In this way the function calculates a "suggested signal threshold" that corresponds to the median of the signal threshold values (in __Coord__) at which SE and SP are greater or equal to their set minimal values (min_SE and min_SP). This threshold is added to the "Density_plot" object as a dashed black line and a number. The use of the median allows to pick a threshold whose SE/SP are not too close to the limits (min_SE and min_SP), but it is recommended to always inspect "Coord" and choose the most appropriate signal threshold by considering SP, SE and Youden index.
+
+This suggested signal threshold is to be used as __signalthr__ argument of the `combi()` function (see further).
+
 ```{r, density}
 distr$Density_plot
 ```
+
+### The density summary
 
 Finally, the __Density_summary__ displays a few summary statistics of the density plot.
 ```{r, summary}
 distr$Density_summary
 ```
 
-In case of lack of a priori known threshold the user can set set signalthr_prediction= TRUE. In this way the function provides a "suggested signal threshold" that corresponds to the median of the signal threshold values (in "Coord") at which SE/SP are greater or equal to their set minimal values (min_SE and min_SP), and it adds this threshold on the "Density_plot" object as a dashed black line. The use of the median allows to pick a threshold whose SE/SP are not too close to the limits (min_SE and min_SP), but it is recommended to always inspect "Coord" and choose the most appropriate signal threshold by considering SP, SE and Youden index.
 
 ## Combinatorial analysis {#combi}
 
-`combi()` function computes the marker combinations and counts their corresponding positive samples for each class (once thresholds are selected). A sample, to be considered positive for a given combination, must have a value higher than a given signal threshold (signalthr) for at least a given number of markers composing that combination (combithr). In this case `signalthr` is set at 450 while `combithr` is set at 1, in order to reproduce both the results reported in [Mazzara et. al 2017](https://www.nature.com/articles/srep45477) (CombiROC paper) and also the tutorial of the web app with default thresholds. 
+`combi()` function computes the marker combinations and counts their corresponding positive samples for each class (once thresholds are selected). A sample, to be considered positive for a given combination, must have a value higher than a given signal threshold (signalthr) for at least a given number of markers composing that combination (combithr). 
 
-As discussed before, `signalthr` should be set depending on the guidelines of the kit used for the analysis or by an accurate inspection of signal intensity distribution (see [Markers distribution overview](#distr) section). In this specific case 450 is the mean of the intensity of buffer + 3 standard deviation (see [Bombaci & Rossi 2019](https://link.springer.com/protocol/10.1007%2F978-1-4939-9164-8_16)).
-In case of lack of guidelines, it's recommended the inspection of data distribution (see `markers_distribution()`). 
+As mentioned before, `signalthr` should be set depending on the guidelines of the kit used for the analysis or by an accurate inspection of signal intensity distribution. In case of lack of such guidelines, one should set the value `signalthr` as suggested by the `distr$Density_plot` as described in the previous section. 
 
-`combithr`, instead, should be set exclusively depending on the needed stringency. In this example the obtained combinations dataframe is assigned to "*tab*" object.
+In this vignette `signalthr` is set at 450 while `combithr` is set at 1, in order to reproduce the results reported in [Mazzara et. al 2017](https://www.nature.com/articles/srep45477) (the original CombiROC paper) or in [Bombaci & Rossi 2019](https://link.springer.com/protocol/10.1007%2F978-1-4939-9164-8_16) as well as in the tutorial of the web app with default thresholds.
+
+`combithr`, instead, should be set exclusively depending on the needed stringency: __1__ is the less stringent and most common choice. The obtained combinations dataframe is assigned to __tab__ dataframe
 
 ```{r}
 tab <- combi(data, signalthr = 450, combithr = 1)
@@ -146,7 +156,7 @@ head(tab, n=20)
 
 ## Sensitivity and specificity {#sesp}
 
-`se_sp()` function calulates:
+`se_sp()` function calculates:
 
 - Sensitivity (SE) and specificty (SP) of each combination for each class.
 - The number of markers composing each combination (#Markers). 
@@ -156,7 +166,7 @@ SE of case class ("A") is calculated dividing the number of positive samples by 
 SE of control class ("B") is calculated dividing the number of positive samples by the total sample of control class (% of positive "B" samples), while SP is calculated subtracting SE to 100 (% of negative "B" samples).
 
 Thus, the SE of a given combination (capability to find real positives/cases) corresponds to the SE of the case class (in this case "A"), while its SP (capability to exclude real negatives/controls) corresponds to the SP of the control class (in this case "B").
-The obtained dataframe with SE, SP and number of markers is assigned to "*mks*" object. 
+The obtained value  of SE, SP and number of markers are assigned to "markers" `mks` dataframe. 
 
 ```{r}
 mks <- se_sp(data, tab)
@@ -168,13 +178,23 @@ After specifying the case class ("A" in this case), the function `ranked_combs()
 $$
  J = SE+SP-1
 $$
-The user can also set (not mandatory) a minimal value of SE and/or SP that a combination must have to be selected.
-In this case the minimal values of SE and SP are set, respectively, to 40 and 80, in order to reproduce both the gold combinations selection reported in [Mazzara et. al 2017](https://www.nature.com/articles/srep45477) and also the tutorial of the web app with default thresholds. The obtained dataframe with ranked combination is assigned to __rmks__ object. 
+The user can also set (not mandatory) a minimal value of SE and/or SP that a combination must have to be selected, i.e. to be considered as "gold" combinations.
 
+A possibility to overview how single markers and all combinations are distributed in the SE - SP coordinates is to plot them with the bubble chart code suggested in the Additional Tips&Tricks section (see: [Bubble plot of all combinations](#bubble)) starting from the `mks` dataframe obtained with the `se_sp()` function (see above). 
+
+The bigger the bubble, the more markers are in the combination: looking at the size and distribution of bubbles across SE and SP values is useful to anticipate how effective will be the combinations in the ranking. Setting no cutoffs (i.e. SE = 0 and SP = 0), all single markers and combinations (all bubbles) will be considered and ranked in the next passage.
+
+
+In this the example below the minimal values of SE and SP are set, respectively, to 40 and 80, in order to reproduce the gold combinations selection reported in [Mazzara et. al 2017](https://www.nature.com/articles/srep45477) and in the tutorial of the web app with default thresholds. The obtained values of combinations, ranked according to Youden index, are stored in the "ranked markers" `rmks` object containing the `table` dataframe.
 
 ```{r}
 rmks <- ranked_combs(data, mks, case_class = 'A', min_SE = 40, min_SP = 80)
 rmks$table
+```
+
+the `rmks` object also has a slot for the `bubble_chart` plot, that can be recalled with the usual `$` operator. This plot discriminates between combinations not passing the SE and SP cutoffs as set in `ranked_combs()` (blue bubbles) and *gold* combinations passing them (yellow bubbles).  
+
+```{r}
 rmks$bubble_chart
 ```
 
@@ -186,7 +206,7 @@ To allow an objective comparison of combinations, the function `roc_reports()` a
 - The table with combinations and corresponding positive samples counts ( __tab__ ), obtained with `combi()`.
 
 In addition, the user has to specify the class case, the single markers and/or the combinations of interest with the specific function's arguments.  
-In the example below a single marker (Marker1) and 2 combinations (combinations number 11 and 15) were choosen.
+In the example below a single marker (Marker1) and two combinations (combinations number 11 and 15) were choosen.
 ```{r}
 reports <-roc_reports(data, markers_table = tab, case_class = 'A',
                       single_markers =c('Marker1'), selected_combinations = c(11,15))
@@ -299,7 +319,7 @@ cl_data <- classify(unc_data, Models =  reports$Models, Metrics = reports$Metric
 cl_data$`Combination 11`
 ```
 
-# Additional tips & tricks {#tips}
+# Additional tips&tricks and code snippets {#tips}
 
 The CombiROC package evolved from the [CombiROC Shiny Web app](http://combiroc.eu/) and it is an ongoing project. While the Shiny app is still running, we plan to concentrate any further improvement on the package which will be enriched with new functionalities. In the meantime, here we offer tips on ancillary commands and additional ways to explore the data taking advantage of the long format of the `data_long` object; some of these features might be natively included or wrapped into new functions in future versions of the CombiROC package.  
 
@@ -359,7 +379,7 @@ data_long %>%
 ```
 
 
-## Bubble plot of the "Gold" combinations 
+## Bubble plot of the all combinations {#bubble}
 
 The following code can be used to plot a "bubble plot" of the markers combinations according to sensitivity (SE), specificity (SP) and size (number of markers in each combination).
 All these plotting functions take as input the `mks` dataframe obtained with the `se_sp()` function (see above) and containing the SE and SP values for cases and controls in all marker combinations. The original `mks` dataframe can be customly filtered to plot only a subset of combinations meeting specific criteria.  
@@ -377,14 +397,16 @@ mks %>%
   labs(x ="specificity", y = "sensitivity")
 ```
 
-If the user wants to highlight the "Golden" combinations (how they were called in the CombiROC web-app), i.e. those above chosen thresholds of SE and SP, first the user need to set the custom cutoffs to the desired minimum values (here 40 and 80 for SE and SP respectively).
+## Bubble plot of the "Gold" combinations {#bubblegold}
+
+If the user wants to customize the plot to highlight the "Golden" combinations (as it is obtained with `rmks$bubble_chart`), the following code can be used:
 
 ```{r, message=FALSE}
 library(dplyr) # needed for the mutate() function and %>% operator
 library(ggplot2)
 
-min_SE <- 40 # arbitrarily choosen SE cutoff (as in the web-app slider)
-min_SP <- 80 # arbitrarily choosen SP cutoff (as in the web-app slider)
+min_SE <- 70 # choosen SE cutoff (as in the web-app slider)
+min_SP <- 85 # choosen SP cutoff (as in the web-app slider)
 
 library(dplyr)
 
