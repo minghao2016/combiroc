@@ -31,4 +31,5 @@ Main documentation is in the package's vignette. You can also find the web versi
 
 * Package authors and curators: Ivan Ferrari, Riccardo L. Rossi
 * Initial code and Shiny App author: Saveria Mazzara
+* From an original idea of Mauro Bombaci
 
