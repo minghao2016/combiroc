@@ -5,7 +5,7 @@ Version: 0.1.0
 Authors@R: 
   c(person(given = "Ivan",
            family = "Ferrari",
-           role = "aut",
+           role = c("aut", "cre"),
            email = "ferrari@ingm.org",
            comment = c(ORCID = "0000-0003-3746-4143")),
     person(given = "Riccardo",
@@ -19,7 +19,7 @@ Authors@R:
            email = "saveria.mazzara@gmail.com"),
     person(given = "Mauro",
            family = "Bombaci",
-           role = "dtc",
+           role = c("ccp", "dtc"),
            email = "bombaci@ingm.org",
            comment = c(ORCID = "0000-0002-9887-4165")))
 Description: Easily and Powerfully Calculates Specificity, Sensitivity and ROC Curves of Biomarkers Combinations.
