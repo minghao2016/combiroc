@@ -88,7 +88,7 @@ roc_reports <- function(data, markers_table, selected_combinations=NULL, single_
   perfwhole <- mutate(perfwhole, AUC = AUC)
   perfwhole <- perfwhole[,c(11,3,2,1,4,5,6,7,8,9,10)]
 
-  p <- ggroc(roc_list)
+  p <- ggroc(roc_list, legacy.axes=T)
   res<-list(p,round(perfwhole,3), model_list)
 
   names(res) <- c('Plot', 'Metrics', 'Models')

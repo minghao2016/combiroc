@@ -128,6 +128,6 @@ Boxplot<- ggplot(data_long, aes(Markers, Values)) +
       annotate("text", x = pr*0.50, y = 0, label =  as.character(round(pr,2)))+
       labs(x = "Signal intensity", y="Frequency")}
 
-  robj <- list(res, coord, ggroc(rocobj), df, Boxplot)
+  robj <- list(res, coord, ggroc(rocobj, legacy.axes=T), df, Boxplot)
   names(robj) <- c('Density_plot', 'Coord', 'ROC', 'Density_summary', 'Boxplot')
   return(robj)}
