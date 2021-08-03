@@ -92,7 +92,7 @@ ranked_combs <- function(data, combo_table, case_class, min_SE=0, min_SP=0) {
       scale_color_manual(values=c("blue", "gold")) +
       theme_light()
 
-    res <- list(rss, bubble)
+    res <- list(combo_table, bubble)
     names(res)<- c('table', 'bubble_chart')
     return(res)}
 
