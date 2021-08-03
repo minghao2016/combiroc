@@ -75,9 +75,10 @@ ranked_combs <- function(data, combo_table, case_class, min_SE=0, min_SP=0) {
     combo_table$Combo <- (combo_table$SP>=min_SP & combo_table$SE>=min_SE)
     Combo <- combo_table$Combo
 
-    combo_table[which(combo_table$Combo=='TRUE'), 6] <- 'gold'
-    combo_table[which(combo_table$Combo=='FALSE'), 6] <- 'below_thr'
+    combo_table[which(combo_table$Combo=='TRUE'), 7] <- 'gold'
+    combo_table[which(combo_table$Combo=='FALSE'), 7] <- 'below_thr'
 
+    rkc <- combo_table[which(combo_table$Combo=='TRUE'), 1:6]
     bubble<-
       ggplot(combo_table, aes(x = SP, y = SE, size = Markers, color = Combo)) +
       geom_point(alpha=0.3) +
@@ -92,7 +93,7 @@ ranked_combs <- function(data, combo_table, case_class, min_SE=0, min_SP=0) {
       scale_color_manual(values=c("blue", "gold")) +
       theme_light()
 
-    res <- list(combo_table, bubble)
+    res <- list(rkc, bubble)
     names(res)<- c('table', 'bubble_chart')
     return(res)}
 
