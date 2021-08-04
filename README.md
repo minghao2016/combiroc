@@ -1,3 +1,5 @@
+<img src="inst/www/combiroc.png" align="right" alt="" width="120" />
+
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/ricrossi/combiroc/workflows/R-CMD-check/badge.svg)](https://github.com/ingmbioinfo/combiroc/actions)
 [![Lifecycle:experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental-1)
@@ -17,7 +19,7 @@ Heads up! We're preparing the preprint :page\_facing\_up: on combiroc package an
 ## Installation
 
 ```r
-# First, install and run devtools from CRAN
+# First, install devtools from CRAN and run it
 install.packages("devtools")
 library(devtools)
 
