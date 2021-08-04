@@ -29,7 +29,7 @@ install_github("ingmbioinfo/combiroc")
 ```
 ## Documentation and tutorials
 
-Main documentation is in the package's vignette. You can also find the web version of the documentation at the [combiroc-project website](https://ingmbioinfo.github.io/combiroc/index.html) created with `pkgdown`.
+Main documentation is in the package's vignette. You can also find the web version of the documentation at the [combiroc-package website](https://ingmbioinfo.github.io/combiroc/index.html) created with `pkgdown`.
 
 ## Contributors
 
