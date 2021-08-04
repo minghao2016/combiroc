@@ -6,7 +6,7 @@
 [![](https://img.shields.io/github/last-commit/ingmbioinfo/combiroc.svg)](https://github.com/ingmbioinfo/combiroc/commits/master)
 <!-- badges: end -->
 
-# CombiROC v.0.1.0
+# CombiROC
 
 CombiROC is a totally new music in multi-markers analysis: an R package for efficient and easy combinatorial selection of biomarkers and sensitivity/specificity-driven prioritization of features. 
 
