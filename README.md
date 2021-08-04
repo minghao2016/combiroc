@@ -8,12 +8,12 @@
 
 # CombiROC v.0.1.0
 
-CombiROC is a totally new music in multi-markers analysis: an R package for efficient and easy combinatorial selection of biomarkers and sensitivity/specificity driven prioritization. 
+CombiROC is a totally new music in multi-markers analysis: an R package for efficient and easy combinatorial selection of biomarkers and sensitivity/specificity-driven prioritization of features. 
 
-The code in this repo is work in progress, and is uploaded here "as-is" with no warranties implied. Improvements and new features will be added on a regular basis, please check on this github page for new features and releases. 
+This is the development version of CombiROC package (combiroc), code in this repo is work in progress and it is uploaded here "as-is" with no warranties implied. Improvements and new features will be added on a regular basis, please check on this github page for new features and releases. 
 
-The CombiROC tool was first published by [Mazzara et al. Scientific Reports 2017](https://www.nature.com/articles/srep45477). A description of the analitycal protocol is also published in [Bombaci & Rossi, Methods Mol Biol 2019](https://link.springer.com/protocol/10.1007%2F978-1-4939-9164-8_16).
-The web-app Shiny version of CombiROC is still available at [combiroc.eu](http://combiroc.eu/): this Shiny version has limited features and low computational power and is not further maintained. For full capabilities install this package on your own machine.
+The CombiROC approach was first published by [Mazzara et al. Scientific Reports 2017](https://www.nature.com/articles/srep45477). A description of the analitycal protocol is also published in [Bombaci & Rossi, Methods Mol Biol 2019](https://link.springer.com/protocol/10.1007%2F978-1-4939-9164-8_16).
+The web-app Shiny version of CombiROC is still available at [combiroc.eu](http://combiroc.eu/), but it has limited features (as well as low computational power) and is not further maintained. For full capabilities and customized analyses install this package on your own machine.
 
 Heads up! We're preparing the preprint :page\_facing\_up: on combiroc package and its applications: it will be soon available on bioRxiv. 
 
