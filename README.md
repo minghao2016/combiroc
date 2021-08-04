@@ -7,7 +7,7 @@
 
 # CombiROC v.0.1.0
 
-CombiROC is an R package for the combinatorial study of multimarkers panels. 
+CombiROC is a totally new music in multi-markers analysis: an R package for efficient and easy combinatorial selection of biomarkers and sensitivity/specificity driven prioritization. 
 
 The code in this repo is work in progress, and is uploaded here "as-is" with no warranties implied. Improvements and new features will be added on a regular basis, please check on this github page for new features and releases. 
 
