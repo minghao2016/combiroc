@@ -41,10 +41,10 @@ data_long <- combiroc_long(data)
 # study distribution of you markers' signal
 # adjust lims and cutoffs according to your own data
 distr <- markers_distribution(data_long, case_class = 'A', 
-	y_lim = 0.0015, x_lim = 3000, 
-	signalthr_prediction = TRUE, 
-	min_SE = 40, min_SP = 80, 
-	boxplot_lim = 2000)
+                              y_lim = 0.0015, x_lim = 3000, 
+                              signalthr_prediction = TRUE, 
+                              min_SE = 40, min_SP = 80, 
+                              boxplot_lim = 2000)
 
 # explore the distr object: boxplot of signals
 distr$Boxplot
@@ -84,7 +84,7 @@ reports$Metrics
 
 Full documentation is in the package's vignette. You can also find the rendered version of the vignette in the [combiroc-package website](https://ingmbioinfo.github.io/combiroc/index.html) created with `pkgdown`.
 
-## Development
+## Issues - Bugs
 
 If you find a bug, or to share ideas for improvement, feel free to [start an issue](https://github.com/ingmbioinfo/combiroc/issues). We do have a roadmap but we also listen!
 
