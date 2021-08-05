@@ -24,9 +24,11 @@ install.packages("remotes")
 library(remotes)
 
 # Then install the development version of CombiROC from GitHub
-
 remotes::install_github("ingmbioinfo/combiroc", 
                         dependencies = TRUE, build_vignettes = TRUE)
+                        
+# remotes is a lightweight replacement of install functions from devtools
+# if you already have devtools, you can also use devtools::install_github() 
 ```
 
 ## Quick start example (for full documentation see further)
