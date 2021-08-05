@@ -31,7 +31,11 @@ remotes::install_github("ingmbioinfo/combiroc",
 # if you already have devtools, you can also use devtools::install_github() 
 ```
 
-## Quick start example (for full documentation see further)
+## Full Documentation - Tutorial
+
+Full documentation is in the package's vignette. You can also find the rendered version of the vignette in the [combiroc-package website](https://ingmbioinfo.github.io/combiroc/index.html) created with `pkgdown`.
+
+## Quick start example
 
 ```r
 library(combiroc)
@@ -83,10 +87,6 @@ reports <-roc_reports(data, markers_table = tab, case_class = 'A',
 reports$Plot
 reports$Metrics
 ```
-
-## Full Documentation - Tutorial
-
-Full documentation is in the package's vignette. You can also find the rendered version of the vignette in the [combiroc-package website](https://ingmbioinfo.github.io/combiroc/index.html) created with `pkgdown`.
 
 ## Issues - Bugs
 
