@@ -38,8 +38,8 @@ data <- demo_data
 # shape it in long format (prone to plotting)
 data_long <- combiroc_long(data)
 
-# study distribution of you markers' signal
-# adjust lims and cutoffs according to your own data
+# study the distribution of you markers' signal
+# arguments values to be adjusted accortind to  data
 distr <- markers_distribution(data_long, case_class = 'A', 
                               y_lim = 0.0015, x_lim = 3000, 
                               signalthr_prediction = TRUE, 
