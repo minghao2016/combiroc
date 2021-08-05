@@ -4,6 +4,7 @@
 [![R-CMD-check](https://github.com/ingmbioinfo/combiroc/workflows/R-CMD-check/badge.svg)](https://github.com/ingmbioinfo/combiroc/actions)
 [![Lifecycle:experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental-1)
 [![](https://img.shields.io/github/last-commit/ingmbioinfo/combiroc.svg)](https://github.com/ingmbioinfo/combiroc/commits/master)
+![GitHub all releases](https://img.shields.io/github/downloads/ingmbioinfo/combiroc/total)
 <!-- badges: end -->
 
 # CombiROC
