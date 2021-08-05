@@ -12,7 +12,7 @@ navbar:
       href: index.html
     articles:
       text: Vignette
-      href: articles/combiroc.html
+      href: articles/combiroc_standard.html
     reference:
       text: Reference
       href: reference/index.html
