@@ -4,27 +4,18 @@ template:
 
 navbar:
   structure:
-    left:
-    - home
-    - intro
-    - reference
-    - articles
-    - tutorials
-    - news
-    right: github
+    left:  [home, articles, reference, news]
+    right: [github]
   components:
     home:
       icon: fa-home fa-lg
       href: index.html
+    articles:
+      text: Vignette
+      href: articles/combiroc.html
     reference:
       text: Reference
       href: reference/index.html
-    articles:
-      text: Articles
-      menu:
-      - text: |
-          User Guide
-        href: articles/combiroc.html
     news:
       text: Changelog
       href: news/index.html
