@@ -81,8 +81,7 @@
 <a href="#combiroc" class="anchor"></a>CombiROC</h1></div>
 <p>CombiROC is a totally new music in multi-markers analysis: an R package for efficient and easy combinatorial selection of biomarkers and sensitivity/specificity-driven prioritization of features.</p>
 <p>This is the development version of CombiROC package (combiroc), code in this repo is work in progress and it is uploaded here “as-is” with no warranties implied. Improvements and new features will be added on a regular basis, please check on this github page for new features and releases.</p>
-<p>The CombiROC approach was first published by <a href="https://www.nature.com/articles/srep45477">Mazzara et al. Scientific Reports 2017</a>. A description of the analitycal protocol is also published in <a href="https://link.springer.com/protocol/10.1007%2F978-1-4939-9164-8_16">Bombaci &amp; Rossi, Methods Mol Biol 2019</a>. The web-app Shiny version of CombiROC is still available at <a href="http://combiroc.eu/">combiroc.eu</a>, but it has limited features (as well as low computational power) and is not further maintained. For full capabilities and customized analyses install this package on your own machine.</p>
-<p>Heads up! We’re preparing the preprint :page_facing_up: on combiroc package and its applications: it will be soon available on bioRxiv.</p>
+<p>The CombiROC approach was first published by <a href="https://www.nature.com/articles/srep45477">Mazzara et al. Scientific Reports 2017</a>. A description of the analitycal protocol is also published in <a href="https://link.springer.com/protocol/10.1007%2F978-1-4939-9164-8_16">Bombaci &amp; Rossi, Methods Mol Biol 2019</a>. The web-app Shiny version of CombiROC is still available at <a href="http://combiroc.eu/">combiroc.eu</a>, but it has limited features (as well as low computational power) and is not further maintained. For full capabilities and customized analyses is advisable to install this package on your own machines.</p>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
@@ -93,6 +92,59 @@
 
 <span class="co"># Then install the development version of CombiROC from GitHub</span>
 <span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">"ingmbioinfo/combiroc"</span><span class="op">)</span></code></pre></div>
+</div>
+<div id="quick-start-example-for-full-documentation-see-further" class="section level2">
+<h2 class="hasAnchor">
+<a href="#quick-start-example-for-full-documentation-see-further" class="anchor"></a>Quick start example (for full documentation see further)</h2>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/ingmbioinfo/combiroc">combiroc</a></span><span class="op">)</span>
+
+<span class="co"># load the preformatted demo dataset</span>
+<span class="va">data</span> <span class="op">&lt;-</span> <span class="va">demo_data</span>
+
+<span class="co"># shape it in long format (prone to plotting)</span>
+<span class="va">data_long</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/combiroc_long.html">combiroc_long</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span>
+
+<span class="co"># study distribution of you markers' signal</span>
+<span class="co"># adjust lims and cutoffs according to your own data</span>
+<span class="va">distr</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/markers_distribution.html">markers_distribution</a></span><span class="op">(</span><span class="va">data_long</span>, case_class <span class="op">=</span> <span class="st">'A'</span>, 
+    y_lim <span class="op">=</span> <span class="fl">0.0015</span>, x_lim <span class="op">=</span> <span class="fl">3000</span>, 
+    signalthr_prediction <span class="op">=</span> <span class="cn">TRUE</span>, 
+    min_SE <span class="op">=</span> <span class="fl">40</span>, min_SP <span class="op">=</span> <span class="fl">80</span>, 
+    boxplot_lim <span class="op">=</span> <span class="fl">2000</span><span class="op">)</span>
+
+<span class="co"># explore the distr object: boxplot of signals</span>
+<span class="va">distr</span><span class="op">$</span><span class="va">Boxplot</span>
+
+<span class="co"># explore the distr object: densities of classes with signal threshold (signalthr)</span>
+<span class="va">distr</span><span class="op">$</span><span class="va">Density_plot</span>
+<span class="va">distr</span><span class="op">$</span><span class="va">Density_summary</span>
+
+<span class="co"># explore the distr object: ROC and its coordinates</span>
+<span class="va">distr</span><span class="op">$</span><span class="va">ROC</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">distr</span><span class="op">$</span><span class="va">Coord</span>, n<span class="op">=</span><span class="fl">10</span><span class="op">)</span>
+
+<span class="co"># combinatorial analysis</span>
+<span class="va">tab</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/combi.html">combi</a></span><span class="op">(</span><span class="va">data</span>, signalthr <span class="op">=</span> <span class="fl">407</span>, combithr <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>
+
+<span class="co"># SE &amp; SP computation</span>
+<span class="va">mks</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/se_sp.html">se_sp</a></span><span class="op">(</span><span class="va">data</span>, <span class="va">tab</span><span class="op">)</span>
+
+<span class="co"># ranked combinations</span>
+<span class="va">rmks</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ranked_combs.html">ranked_combs</a></span><span class="op">(</span><span class="va">data</span>, <span class="va">mks</span>, case_class <span class="op">=</span> <span class="st">'A'</span>, min_SE <span class="op">=</span> <span class="fl">40</span>, min_SP <span class="op">=</span> <span class="fl">80</span><span class="op">)</span>
+
+<span class="co"># check ranked combinations</span>
+<span class="va">rmks</span><span class="op">$</span><span class="va">table</span>
+<span class="va">rmks</span><span class="op">$</span><span class="va">bubble_chart</span>
+
+<span class="co"># results report for specific markers/combinations</span>
+<span class="va">reports</span> <span class="op">&lt;-</span><span class="fu"><a href="reference/roc_reports.html">roc_reports</a></span><span class="op">(</span><span class="va">data</span>, markers_table <span class="op">=</span> <span class="va">tab</span>, case_class <span class="op">=</span> <span class="st">'A'</span>,
+                      single_markers <span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'Marker1'</span><span class="op">)</span>, 
+                      selected_combinations <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">11</span>,<span class="fl">15</span><span class="op">)</span><span class="op">)</span>
+
+<span class="co"># results outputs</span>
+<span class="va">reports</span><span class="op">$</span><span class="va">Plot</span>
+<span class="va">reports</span><span class="op">$</span><span class="va">Metrics</span></code></pre></div>
 </div>
 <div id="documentation-and-tutorials" class="section level2">
 <h2 class="hasAnchor">
