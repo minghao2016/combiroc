@@ -80,9 +80,13 @@ reports$Plot
 reports$Metrics
 ```
 
-## Documentation and tutorials
+## Full Documentation - Tutorial
 
-Main documentation is in the package's vignette. You can also find the web version of the documentation at the [combiroc-package website](https://ingmbioinfo.github.io/combiroc/index.html) created with `pkgdown`.
+Full documentation is in the package's vignette. You can also find the rendered version of the vignette in the [combiroc-package website](https://ingmbioinfo.github.io/combiroc/index.html) created with `pkgdown`.
+
+## Development
+
+If you find a bug, or to share ideas for improvement, feel free to [start an issue](https://github.com/ingmbioinfo/combiroc/issues). We do have a roadmap but we also listen!
 
 ## Contributors
 
