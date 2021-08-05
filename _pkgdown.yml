@@ -1,3 +1,18 @@
 template:
   params:
     bootswatch: cosmo
+
+navbar:
+  components:
+    home:
+      icon: fa-home fa-lg
+      href: index.html
+    articles:
+      text: Tutorial
+      href: articles/combiroc.html
+    reference:
+      text: Reference
+      href: reference/index.html
+    news:
+      text: Changelog
+      href: news/index.html
