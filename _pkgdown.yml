@@ -3,6 +3,14 @@ template:
     bootswatch: cosmo
 
 navbar:
+  structure:
+    left:
+    - home
+    - intro
+    - articles
+    - reference
+    - news
+    right: github
   components:
     home:
       icon: fa-home fa-lg
