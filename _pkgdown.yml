@@ -6,20 +6,28 @@ navbar:
   structure:
     left:
     - home
-    - articles
+    - intro
     - reference
+    - articles
+    - tutorials
     - news
     right: github
   components:
     home:
       icon: fa-home fa-lg
       href: index.html
-    articles:
-      text: Tutorial
-      href: articles/combiroc.html
     reference:
       text: Reference
       href: reference/index.html
+    articles:
+      text: Articles
+      menu:
+      - text: |
+          User Guide
+        href: articles/combiroc.html
     news:
       text: Changelog
       href: news/index.html
+    github:
+      icon: fab fa-github fa-lg
+      href: https://github.com/ingmbioinfo/combiroc
