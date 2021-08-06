@@ -47,7 +47,7 @@ data <- demo_data
 data_long <- combiroc_long(data)
 
 # study the distribution of you markers' signal
-# arguments values to be adjusted accortind to  data
+# arguments values to be adjusted according to  data
 distr <- markers_distribution(data_long, case_class = 'A', 
                               y_lim = 0.0015, x_lim = 3000, 
                               signalthr_prediction = TRUE, 
@@ -97,4 +97,8 @@ If you find a bug, or to share ideas for improvement, feel free to [start an iss
 * Package authors and maintainers: Ivan Ferrari & Riccardo L. Rossi
 * Original code of Shiny App: Saveria Mazzara
 * Initial idea & conception: Mauro Bombaci
+
+## Trivia
+
+We felt very "rock" during development of this package, thus the combiroc hexagon sticker logo is a homage to Eddie Van Hallen and the "Frankenstrat", the [iconic guitar](https://en.wikipedia.org/wiki/Frankenstrat) of the late guitarist. 
 
