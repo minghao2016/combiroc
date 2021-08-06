@@ -17,6 +17,7 @@ Authors@R:
            family = "Mazzara",
            role = "ctb",
            email = "saveria.mazzara@gmail.com"),
+           comment = c(ORCID = "0000-0003-1799-2360")),
     person(given = "Mauro",
            family = "Bombaci",
            role = c("ccp", "dtc"),
