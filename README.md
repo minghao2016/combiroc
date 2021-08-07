@@ -100,5 +100,5 @@ If you find a bug, or to share ideas for improvement, feel free to [start an iss
 
 ## Trivia
 
-We were so happy to finally had the chance to develop the combiroc package that we felt very "rock": this is why the combiroc hexagon sticker logo is a homage to [Eddie Van Hallen](https://en.wikipedia.org/wiki/Eddie_Van_Halen) who left us in 2020, and the "Frankenstrat", his [iconic guitar](https://en.wikipedia.org/wiki/Frankenstrat). 
+We were so happy to finally had the chance to develop the combiroc package that we felt very "rock": this is why the combiroc hexagon sticker logo is a homage to [Eddie Van Halen](https://en.wikipedia.org/wiki/Eddie_Van_Halen) who left us in 2020, and the "Frankenstrat", his [iconic guitar](https://en.wikipedia.org/wiki/Frankenstrat). 
 
