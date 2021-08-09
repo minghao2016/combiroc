@@ -12,3 +12,11 @@ test_that("Metrics object is a data frame of dim 3 rows and 11 columns", {
   expect_length(reports$Metrics, 11)
   expect_length(t(reports$Metrics), 33)
 })
+
+test_that("MODELS in reports objects is a list of 3 glm objects", {
+  expect_type(reports$Models, "list")
+  expect_length(reports$Models, 3)
+  expect_s3_class(reports$Models[[1]], c("glm", "lm"))
+  expect_s3_class(reports$Models[[2]], c("glm", "lm"))
+  expect_s3_class(reports$Models[[3]], c("glm", "lm"))
+})
