@@ -1,8 +1,5 @@
 language: r
-r:
-  - release
 os:
   - linux
-  - osx
 warnings_are_errors: false
 sudo: required
