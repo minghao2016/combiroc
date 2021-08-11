@@ -1,8 +1,8 @@
-# combiroc 0.2.1 - 10/10/2021
+# combiroc 0.2.1 - Aug. 10, 2021
 
 * Minor tweaks on descriptions, hex logo and vignette readability, in preparation for major release
 
-# combiroc 0.2.0 - 8/08/2021
+# combiroc 0.2.0 - Aug. 8, 2021
 
 * This is still a development version passing all R-CMD-checks --as-cran. Unit tests on functions have been added for continuous development. This is to be considered the package's first usable version.
 
