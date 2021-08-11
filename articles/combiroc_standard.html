@@ -423,7 +423,7 @@ In the example below a single marker ( <strong>Marker1</strong> ) and two combin
 <h2 class="hasAnchor">
 <a href="#under-the-hood" class="anchor"></a>Under the hood</h2>
 <p>For a bit deeper discussion on how to interpret the results, this section will be focused on a single specific combination in the dataset seen so far: “Combination 11”, combining Marker1, Marker2 and Marker3. This combination has an <strong>optimal cutoff</strong> equal to 0.216 (see the <strong>CutOff</strong> column in <code>reports$Metrics</code>).<br>
-The following is the regression equation being used by the glm function to compute the predictions:</p>
+The following is the regression equation being used by the Generalized Linear Model (glm) function to compute the predictions:</p>
 <p><span class="math display">\[
 f(x)=β_0+β_1x_1+β_2x_2+ β_3x_3 +...+β_nx_n
 \]</span></p>
@@ -612,7 +612,7 @@ Please note that this dataset has a Patient.ID column which actually allows the 
 </div>
 <div id="bubble" class="section level2">
 <h2 class="hasAnchor">
-<a href="#bubble" class="anchor"></a>Bubble plot of the all combinations</h2>
+<a href="#bubble" class="anchor"></a>Bubble plot of all markers’ combinations</h2>
 <p>The following code can be used to plot a “bubble plot” of the markers combinations according to sensitivity (SE), specificity (SP) and size (number of markers in each combination). All these plotting functions take as input the <code>mks</code> dataframe obtained with the <code><a href="../reference/se_sp.html">se_sp()</a></code> function (see above) and containing the SE and SP values for cases and controls in all marker combinations. The original <code>mks</code> dataframe can be customly filtered to plot only a subset of combinations meeting specific criteria.</p>
 <div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span> <span class="co"># needed for the filter() function and %&gt;% operator</span>
@@ -630,7 +630,7 @@ Please note that this dataset has a Patient.ID column which actually allows the 
 <div id="bubblegold" class="section level2">
 <h2 class="hasAnchor">
 <a href="#bubblegold" class="anchor"></a>Bubble plot of the “Gold” combinations</h2>
-<p>If the user wants to customize the plot to highlight the “Golden” combinations (as it is obtained with <code>rmks$bubble_chart</code>), the following code can be used:</p>
+<p>If the user wants to customize the plot to highlight the “Gold” combinations (as it is obtained with <code>rmks$bubble_chart</code>), the following code can be used:</p>
 <div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span> <span class="co"># needed for the mutate() function and %&gt;% operator</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
