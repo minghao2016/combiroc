@@ -7,5 +7,3 @@ There were no ERRORs, WARNINGs or NOTEs.
 
 ## Note
 This is a first-time submission
-
-## Downstream dependencies
