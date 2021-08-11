@@ -419,42 +419,34 @@ In the example below a single marker ( <strong>Marker1</strong> ) and two combin
 ## Null Deviance:       185.5 
 ## Residual Deviance: 87.95     AIC: 95.95</code></pre>
 </div>
-<div id="results-explanation" class="section level2">
+<div id="under-the-hood" class="section level2">
 <h2 class="hasAnchor">
-<a href="#results-explanation" class="anchor"></a>Results explanation</h2>
-<p>For a bit deeper discussion on how to interpret the results, this section will be focused on “Combination 11” (combining Marker1, Marker2 and Marker3) which has an optimal cutoff equal to 0.216 (see the <strong>CutOff</strong> column in <code>reports$Metrics</code>).<br>
-The following is the equation used to compute the predictions:</p>
+<a href="#under-the-hood" class="anchor"></a>Under the hood</h2>
+<p>For a bit deeper discussion on how to interpret the results, this section will be focused on a single specific combination in the dataset seen so far: “Combination 11”, combining Marker1, Marker2 and Marker3. This combination has an <strong>optimal cutoff</strong> equal to 0.216 (see the <strong>CutOff</strong> column in <code>reports$Metrics</code>).<br>
+The following is the regression equation being used by the glm function to compute the predictions:</p>
 <p><span class="math display">\[
 f(x)=β_0+β_1x_1+β_2x_2+ β_3x_3 +...+β_nx_n
 \]</span></p>
-<p>Where β_0 to β_n are the coefficients determined by the model.<br>
+<p>Where <span class="math inline">\(β_n\)</span> are the coefficients (being <span class="math inline">\(β_0\)</span> the intercept) determined by the model and <span class="math inline">\(x_n\)</span> the variables.<br>
 While, the predicted probabilities have been calculated with the sigmoid function:</p>
 <p><span class="math display">\[
 p(x) =  \frac{\mathrm{1} }{\mathrm{1} + e^{-f(x)} }  
 \]</span></p>
-<p>The predictions for “Combination 11” have been computed using the coefficients displayed as in <code>reports$Models</code> (see previous paragraph):</p>
+<p>In accordance with the above, the predictions for “Combination 11” have been computed using the coefficients displayed as in <code>reports$Models</code> (see previous paragraph), and this combination’s prediction equation will be:</p>
 <p><span class="math display">\[
 f(x)=    -17.0128  +  1.5378 *log(Marker1 + 1)  +  0.9176 *log(Marker2 + 1) + 0.5706* log(Marker3 + 1)
 \]</span></p>
-<p>Predictions (f(x) values) of ‘Combination 11’ can be visualized with the following command:</p>
+<p>As for the predict method for a Generalized Linear Model, predictions are produced on the scale of the additive predictors. Predictions (<span class="math inline">\(f(x)\)</span> values) of Combination 11 can be visualized using the commmand <code>glm::predict</code> with argument <code>type = "link"</code>:</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">reports</span><span class="op">$</span><span class="va">Models</span><span class="op">$</span><span class="va">`Combination 11`</span>, type<span class="op">=</span><span class="st">'link'</span><span class="op">)</span><span class="op">)</span> <span class="co"># link = f(x)</span></code></pre></div>
 <pre><code>##            1            2            3            4            5            6 
 ##  0.166224681 -0.008125528  2.192603482  1.077910194  3.816098810  0.593971602</code></pre>
+<p>Prediction probabilities (<span class="math inline">\(p(x)\)</span> values, i.e. predictions on the scale of the response) of Combination 11 can be instead visualized using argument <code>type = "response"</code>:</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">reports</span><span class="op">$</span><span class="va">Models</span><span class="op">$</span><span class="va">`Combination 11`</span>, type<span class="op">=</span><span class="st">'link'</span><span class="op">)</span><span class="op">)</span>  <span class="co"># link = f(x)</span></code></pre></div>
-<pre><code>##            1            2            3            4            5            6 
-##  0.166224681 -0.008125528  2.192603482  1.077910194  3.816098810  0.593971602</code></pre>
-<p>Prediction probabilities (p(x) values) of ‘Combination 11’ can be instead visualized by typing:</p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">reports</span><span class="op">$</span><span class="va">Models</span><span class="op">$</span><span class="va">`Combination 11`</span>, type<span class="op">=</span><span class="st">'response'</span><span class="op">)</span><span class="op">)</span> <span class="co"># response = p(x)</span></code></pre></div>
 <pre><code>##         1         2         3         4         5         6 
 ## 0.5414607 0.4979686 0.8995833 0.7460983 0.9784606 0.6442759</code></pre>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">reports</span><span class="op">$</span><span class="va">Models</span><span class="op">$</span><span class="va">`Combination 11`</span>, type<span class="op">=</span><span class="st">'response'</span><span class="op">)</span><span class="op">)</span> <span class="co"># response = p(x)</span></code></pre></div>
-<pre><code>##         1         2         3         4         5         6 
-## 0.5414607 0.4979686 0.8995833 0.7460983 0.9784606 0.6442759</code></pre>
-<p>Finally, the comparison between the prediction probability and the optimal cutoff determines the classification of each sample by following this rule:</p>
+<p>Finally, the comparison between the prediction probability and the optimal cutoff (here 0.216, see the <strong>CutOff</strong> column for Classification 11 in <code>reports$Metrics</code>) determines the classification of each sample by following this rule:</p>
 <p><span class="math display">\[
 C(x) = 
 \begin{cases} 
@@ -464,24 +456,24 @@ C(x) =
 \]</span></p>
 <p>Specifically, for “Combination 11”:</p>
 <ul>
-<li>Samples with p(x) higher than 0.216 are classified as “positives” (1).</li>
-<li>Samples with p(x) lower or equal to 0.216 are classified as “negatives” (0).</li>
+<li>Samples with <span class="math inline">\(p(x)\)</span> higher than 0.216 are classified as “positives” (1).</li>
+<li>Samples with <span class="math inline">\(p(x)\)</span> lower or equal to 0.216 are classified as “negatives” (0).</li>
 </ul>
-<p>Thus, using 0.216 as cutoff, “Combination 11” is able to classify the samples in the dataset with a SE equal to 95.0%, SP equal to 86.9%, and accuracy equal to 88.8% (see <strong>ROC curves</strong>, <code>reports$Metrics</code>).</p>
+<p>Thus, using 0.216 as cutoff, Combination 11 is able to classify the samples in the dataset with a SE equal to 95.0%, SP equal to 86.9%, and accuracy equal to 88.8% (see <strong>ROC curves</strong>, <code>reports$Metrics</code>).</p>
 </div>
 </div>
 <div id="classification-of-new-samples" class="section level1">
 <h1 class="hasAnchor">
 <a href="#classification-of-new-samples" class="anchor"></a>Classification of new samples</h1>
-<p>A new feature of the CombiROC package (not present in the CombiROC tool Shiny app), offers the possibility to exploit the models obtained with <code><a href="../reference/roc_reports.html">roc_reports()</a></code> for each selected marker/combination (and assigned to <code>reports$Models</code>) to directly classify new samples that are not labelled, <em>i.e.</em> not assigned to any case or control class.</p>
-<p>The unclassified dataset must be similar to the dataset used for the previous combinatorial analysis ( <em>i.e.</em> of the same nature and with the same markers, but obviously <em>without</em> the ‘Class’ column).</p>
+<p>A new feature of the CombiROC package (not present in the CombiROC tool Shiny app), offers the possibility to exploit the models obtained with <code><a href="../reference/roc_reports.html">roc_reports()</a></code> for each selected marker/combination (and assigned to <code>reports$Models</code>) to directly classify new samples that are not labelled, <em>i.e.</em> <strong>not assigned</strong> to any case or control classes.</p>
+<p>The unclassified data set must be similar to the data set used for the previous combinatorial analysis ( <em>i.e.</em> of the same nature and with the same markers, but obviously <em>without</em> the ‘Class’ column).</p>
 <p>To load datasets with unclassified samples a specific <code><a href="../reference/load_unclassified_data.html">load_unclassified_data()</a></code> function was implemented. This function is analogue to <code><a href="../reference/load_data.html">load_data()</a></code> since it loads the same kind of files and it performs the same format checks, with the exception of the <em>Class</em> column which is not present in an unclassified datasets and thus not required.</p>
 <p>For purely dimonstrative purposes, in the following example a “synthetic” unclassified dataset (‘data/unclassified_proteomic_data.csv’) was used: it was obtained by randomly picking 20 samples from the already classified dataset (the <strong>data</strong>). The loaded unclassified sample is here assinged to the <strong>unc_data</strong> object.<br>
 Please note that this dataset has a Patient.ID column which actually allows the identification of the class (a pre-pended “no” tag identifies healthy subjects) <strong>but this column is not used in the workflow and has solely labeling purposes</strong>.</p>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">unc_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/load_unclassified_data.html">load_unclassified_data</a></span><span class="op">(</span>data <span class="op">=</span> <span class="st">'../data/demo_unclassified_data.csv'</span>, sep <span class="op">=</span> <span class="st">','</span><span class="op">)</span></code></pre></div>
 <p>This very same dataset has been included in CombiROC package as an unclassified demo dataset, which can be directly called typing <code>demo_unclassified_data</code>.</p>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">demo_unclassified_data</span><span class="op">)</span></code></pre></div>
 <pre><code>##   Patient.ID Marker1 Marker2 Marker3 Marker4 Marker5
 ## 1      AIH33    1964     875     404    1883    1021
@@ -499,11 +491,11 @@ Please note that this dataset has a Patient.ID column which actually allows the 
 </ul>
 <p>In addition the user can set the labels of the predicted class (setting <code>Positive_class</code> and <code>Negative_class</code>), otherwise they will be <strong>1</strong> for positive samples and <strong>0</strong> for the negative samples by default (see the rule shown in the end of the <strong>Results explanation</strong> section). Here we are setting <code>Positive_class = "affected"</code> and <code>Negative_class = "healthy"</code></p>
 <p>The function returns a data.frame (<code>cl_data</code> in the example below), whose columns contain the predicted class for each sample according to the models used (originally in <code>reports$Models</code>); here we are still usign <strong>Marker1</strong>, <strong>Combination 11</strong> and <strong>Combination 15</strong>.</p>
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">unc_data</span> <span class="op">&lt;-</span> <span class="va">demo_unclassified_data</span>
 <span class="va">cl_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/classify.html">classify</a></span><span class="op">(</span><span class="va">unc_data</span>, Models <span class="op">=</span>  <span class="va">reports</span><span class="op">$</span><span class="va">Models</span>, Metrics <span class="op">=</span> <span class="va">reports</span><span class="op">$</span><span class="va">Metrics</span>, Positive_class <span class="op">=</span> <span class="st">"affected"</span>, Negative_class <span class="op">=</span> <span class="st">"healthy"</span><span class="op">)</span></code></pre></div>
 <p>As can be observed comparing the outcome in the dataframe with the tag on samples’ names, while the single marker <strong>Marker1</strong> is not 100% efficient in correctly predicting the class (see second row), both markers combinations are.</p>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">cl_data</span></code></pre></div>
 <pre><code>##        index  Marker1 Combination 11 Combination 15
 ## 1      AIH33 affected       affected       affected
@@ -527,13 +519,13 @@ Please note that this dataset has a Patient.ID column which actually allows the 
 ## 19  no AIH74  healthy        healthy        healthy
 ## 20     AIH16 affected       affected       affected</code></pre>
 <p>Thus, each column of the prediction dataframe contains the prediction outcome of a given model and, along with the samples names (in the <em>index</em> column), can be accessed with the $ operator as usual:</p>
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">cl_data</span><span class="op">$</span><span class="va">index</span></code></pre></div>
 <pre><code>##  [1] "AIH33"     "no AIH126" "AIH12"     "no AIH112" "no AIH41"  "no AIH38" 
 ##  [7] "AIH4"      "no AIH32"  "AIH20"     "no AIH13"  "no AIH11"  "no AIH114"
 ## [13] "no AIH121" "AIH17"     "AIH14"     "no AIH106" "no AIH67"  "AIH9"     
 ## [19] "no AIH74"  "AIH16"</code></pre>
-<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">cl_data</span><span class="op">$</span><span class="va">`Combination 11`</span></code></pre></div>
 <pre><code>##  [1] "affected" "healthy"  "affected" "healthy"  "healthy"  "healthy" 
 ##  [7] "affected" "healthy"  "affected" "healthy"  "healthy"  "healthy" 
@@ -548,7 +540,7 @@ Please note that this dataset has a Patient.ID column which actually allows the 
 <h2 class="hasAnchor">
 <a href="#retrieving-composition-of-combinations" class="anchor"></a>Retrieving composition of combinations</h2>
 <p><code><a href="../reference/show_markers.html">show_markers()</a></code> returns a data frame containing the composition of each combination of interest. It requires as input one or more combinations (only their numbers), and the table with combinations and corresponding positive samples counts (<em>“tab”</em>, obtained with <code><a href="../reference/combi.html">combi()</a></code>).</p>
-<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/show_markers.html">show_markers</a></span><span class="op">(</span>selected_combinations <span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">11</span>,<span class="fl">15</span><span class="op">)</span>, markers_table <span class="op">=</span> <span class="va">tab</span><span class="op">)</span></code></pre></div>
 <pre><code>##      Combination       Composing_markers
 ## 1 Combination 11 Marker1-Marker2-Marker3
@@ -558,10 +550,10 @@ Please note that this dataset has a Patient.ID column which actually allows the 
 <h2 class="hasAnchor">
 <a href="#retrieving-combinations-containing-markers-of-interest" class="anchor"></a>Retrieving combinations containing markers of interest</h2>
 <p><code><a href="../reference/combs_with.html">combs_with()</a></code> returns the combinations containing all the markers of interest. It requires as input one or more single marker, and the table with combinations and corresponding positive samples counts (<em>“tab”</em>, obtained with <code><a href="../reference/combi.html">combi()</a></code>). The list with the combinations containing all the markers is assigned to <em>“combs_list”</em> object.</p>
-<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">combs_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combs_with.html">combs_with</a></span><span class="op">(</span>markers<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'Marker1'</span>, <span class="st">'Marker3'</span><span class="op">)</span>, markers_table <span class="op">=</span> <span class="va">tab</span><span class="op">)</span></code></pre></div>
 <pre><code>## The combinations in which you can find ALL the selected markers have been computed</code></pre>
-<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">combs_list</span></code></pre></div>
 <pre><code>## [1]  2 11 14 15 21 22 24 26</code></pre>
 </div>
@@ -569,7 +561,7 @@ Please note that this dataset has a Patient.ID column which actually allows the 
 <h2 class="hasAnchor">
 <a href="#plot_int" class="anchor"></a>Plotting of intensities of individual markers</h2>
 <p>A quick plotting overview of individual marker values can be done with a scatter plot using the library <code>ggplot2</code>. Here is an example for the marker “Marker2”:</p>
-<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span> <span class="co"># needed for the filter() function and %&gt;% operator</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
 
@@ -587,7 +579,7 @@ Please note that this dataset has a Patient.ID column which actually allows the 
 <h2 class="hasAnchor">
 <a href="#sum_stats" class="anchor"></a>Summary statistics of individual markers</h2>
 <p>Further markers exploration can be done using other packages’ functions such as <code><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by()</a></code>, <code><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarize()</a></code> and <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot()</a></code> on the the <code>data_long</code> dataframe. As an example, a few summary statistics can be computed for each marker of both classes, separately, as follow (the libraries <code>dplyr</code> and <code>moments</code> are needed). Numbers in this table are those behind the box plot obtained with <code>distr$boxplot</code> as seen before.</p>
-<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://www.r-project.org">moments</a></span><span class="op">)</span> <span class="co"># needed for skewness() function</span>
 
@@ -622,7 +614,7 @@ Please note that this dataset has a Patient.ID column which actually allows the 
 <h2 class="hasAnchor">
 <a href="#bubble" class="anchor"></a>Bubble plot of the all combinations</h2>
 <p>The following code can be used to plot a “bubble plot” of the markers combinations according to sensitivity (SE), specificity (SP) and size (number of markers in each combination). All these plotting functions take as input the <code>mks</code> dataframe obtained with the <code><a href="../reference/se_sp.html">se_sp()</a></code> function (see above) and containing the SE and SP values for cases and controls in all marker combinations. The original <code>mks</code> dataframe can be customly filtered to plot only a subset of combinations meeting specific criteria.</p>
-<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span> <span class="co"># needed for the filter() function and %&gt;% operator</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
 
@@ -639,7 +631,7 @@ Please note that this dataset has a Patient.ID column which actually allows the 
 <h2 class="hasAnchor">
 <a href="#bubblegold" class="anchor"></a>Bubble plot of the “Gold” combinations</h2>
 <p>If the user wants to customize the plot to highlight the “Golden” combinations (as it is obtained with <code>rmks$bubble_chart</code>), the following code can be used:</p>
-<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span> <span class="co"># needed for the mutate() function and %&gt;% operator</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
 
