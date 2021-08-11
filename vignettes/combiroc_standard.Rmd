@@ -229,7 +229,7 @@ reports$Models
 ## Under the hood
 
 For a bit deeper discussion on how to interpret the results, this section will be focused on a single specific combination in the dataset seen so far: "Combination 11", combining Marker1, Marker2 and Marker3. This combination has an __optimal cutoff__ equal to 0.216 (see  the __CutOff__ column in `reports$Metrics`).  
-The following is the regression equation being used by the glm function to compute the predictions:
+The following is the regression equation being used by the Generalized Linear Model (glm) function to compute the predictions:
 
 $$
 f(x)=β_0+β_1x_1+β_2x_2+ β_3x_3 +...+β_nx_n
@@ -386,7 +386,7 @@ data_long %>%
 ```
 
 
-## Bubble plot of the all combinations {#bubble}
+## Bubble plot of all markers' combinations {#bubble}
 
 The following code can be used to plot a "bubble plot" of the markers combinations according to sensitivity (SE), specificity (SP) and size (number of markers in each combination).
 All these plotting functions take as input the `mks` dataframe obtained with the `se_sp()` function (see above) and containing the SE and SP values for cases and controls in all marker combinations. The original `mks` dataframe can be customly filtered to plot only a subset of combinations meeting specific criteria.  
@@ -406,7 +406,7 @@ mks %>%
 
 ## Bubble plot of the "Gold" combinations {#bubblegold}
 
-If the user wants to customize the plot to highlight the "Golden" combinations (as it is obtained with `rmks$bubble_chart`), the following code can be used:
+If the user wants to customize the plot to highlight the "Gold" combinations (as it is obtained with `rmks$bubble_chart`), the following code can be used:
 
 ```{r, message=FALSE}
 library(dplyr) # needed for the mutate() function and %>% operator
