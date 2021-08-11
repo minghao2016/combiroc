@@ -226,9 +226,9 @@ reports$Metrics
 reports$Models
 ```
 
-## Results explanation
+## Under the hood
 
-For a bit deeper discussion on how to interpret the results, this section will be focused on "Combination 11" (combining Marker1, Marker2 and Marker3) which has an optimal cutoff equal to 0.216 (see  the __CutOff__ column in `reports$Metrics`).  
+For a bit deeper discussion on how to interpret the results, this section will be focused on a single specific combination ("Combination 11"), combining Marker1, Marker2 and Marker3 in the dataset seen so far. This combination has an optimal cutoff equal to 0.216 (see  the __CutOff__ column in `reports$Metrics`).  
 The following is the equation used to compute the predictions:
 
 $$
@@ -254,13 +254,11 @@ $$
 Predictions (f(x) values) of 'Combination 11' can be visualized with the following command: 
 ```{r}
 head(predict(reports$Models$`Combination 11`, type='link')) # link = f(x)
-head(predict(reports$Models$`Combination 11`, type='link'))  # link = f(x)
 ```
 
 
 Prediction probabilities (p(x) values) of 'Combination 11' can be instead visualized by typing: 
 ```{r}
-head(predict(reports$Models$`Combination 11`, type='response')) # response = p(x)
 head(predict(reports$Models$`Combination 11`, type='response')) # response = p(x)
 ```
 
