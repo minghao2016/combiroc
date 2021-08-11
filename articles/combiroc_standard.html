@@ -419,9 +419,9 @@ In the example below a single marker ( <strong>Marker1</strong> ) and two combin
 ## Null Deviance:       185.5 
 ## Residual Deviance: 87.95     AIC: 95.95</code></pre>
 </div>
-<div id="under-the-hood" class="section level2">
+<div id="hood" class="section level2">
 <h2 class="hasAnchor">
-<a href="#under-the-hood" class="anchor"></a>Under the hood</h2>
+<a href="#hood" class="anchor"></a>Under the hood</h2>
 <p>For a bit deeper discussion on how to interpret the results, this section will be focused on a single specific combination in the dataset seen so far: “Combination 11”, combining Marker1, Marker2 and Marker3. This combination has an <strong>optimal cutoff</strong> equal to 0.216 (see the <strong>CutOff</strong> column in <code>reports$Metrics</code>).<br>
 The following is the regression equation being used by the Generalized Linear Model (glm) function to compute the predictions:</p>
 <p><span class="math display">\[
@@ -482,7 +482,7 @@ Please note that this dataset has a Patient.ID column which actually allows the 
 ## 4  no AIH112     144     155      25     600       0
 ## 5   no AIH41       0     193      50     382     135
 ## 6   no AIH38      46      51      24     342      74</code></pre>
-<p>The prediction of the class can be achieved with <code><a href="../reference/classify.html">classify()</a></code>: this function applies the models previously calculated on a classified dataset working as training dataset, to the unclassified dataset and classifies the samples accordingly to the prediction probability and optimal cutoff as shown in the <strong>Results explanation</strong> section.</p>
+<p>The prediction of the class can be achieved with <code><a href="../reference/classify.html">classify()</a></code>: this function applies the models previously calculated on a classified dataset working as training dataset, to the unclassified dataset and classifies the samples accordingly to the prediction probability and optimal cutoff as shown in the <a href="#hood">Under the hood</a> section.</p>
 <p>This <code><a href="../reference/classify.html">classify()</a></code> function takes as inputs:</p>
 <ul>
 <li>the unclassified dataset containing the new samples to be classified (<code>unc_data</code>);</li>
