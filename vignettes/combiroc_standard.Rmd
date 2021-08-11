@@ -226,7 +226,7 @@ reports$Metrics
 reports$Models
 ```
 
-## Under the hood
+## Under the hood {#hood}
 
 For a bit deeper discussion on how to interpret the results, this section will be focused on a single specific combination in the dataset seen so far: "Combination 11", combining Marker1, Marker2 and Marker3. This combination has an __optimal cutoff__ equal to 0.216 (see  the __CutOff__ column in `reports$Metrics`).  
 The following is the regression equation being used by the Generalized Linear Model (glm) function to compute the predictions:
@@ -297,7 +297,7 @@ This very same dataset has been included in CombiROC package as an unclassified 
 head(demo_unclassified_data)
 ```
 
-The prediction of the class can be achieved with `classify()`: this function applies the models previously calculated on a classified dataset working as training dataset, to the unclassified dataset and classifies the samples accordingly to the prediction probability and optimal cutoff as shown in the __Results explanation__ section.
+The prediction of the class can be achieved with `classify()`: this function applies the models previously calculated on a classified dataset working as training dataset, to the unclassified dataset and classifies the samples accordingly to the prediction probability and optimal cutoff as shown in the [Under the hood](#hood) section.
 
 This `classify()` function takes as inputs:
 
