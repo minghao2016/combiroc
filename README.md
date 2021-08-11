@@ -5,6 +5,7 @@
 [![Lifecycle:experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental-1)
 [![](https://img.shields.io/github/last-commit/ingmbioinfo/combiroc.svg)](https://github.com/ingmbioinfo/combiroc/commits/master)
 ![GitHub all releases](https://img.shields.io/github/downloads/ingmbioinfo/combiroc/total)
+[![Travis build status](https://travis-ci.com/ingmbioinfo/combiroc.svg?branch=master)](https://travis-ci.com/ingmbioinfo/combiroc)
 <!-- badges: end -->
 
 # CombiROC
