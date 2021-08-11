@@ -1,6 +1,8 @@
 language: r
 r:
-  - oldrel
   - release
+os:
+  - linux
+  - osx
 warnings_are_errors: false
 sudo: required
