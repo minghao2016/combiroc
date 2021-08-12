@@ -24,34 +24,36 @@ navbar:
       href: https://github.com/ingmbioinfo/combiroc
 
 reference:
-- title: "Demo datasets available"
-  desc: >
-    Demonstrative datasets to be used as examples (AIH proteomics datasets)
-- contents:
+- title: "Built-in demo datasets"
+  desc: "Demonstrative datasets to be used as examples (AIH proteomics datasets)"
+  contents:
   - demo_data
   - demo_unclassified_data
-  - title: "Input and format data"
-  desc: >
-    Functions to read-in and correctly format datasets
-- contents:
+
+- title: "Input and format data"
+  desc: "Functions to read-in and correctly format datasets"
+  contents:
   - load_data
   - load_uclassified_data
   - combiroc_long
+
 - title: "Exploratory functions"
   desc: "Functions to explore the data before actual analysis"
-- contents:
+  contents:
   - markers_distribution
   - single_markers_statistics
+
 - title: "Analysis functions"
   desc: "Functions for the standard analytical workflow"
-- contents:
+  contents:
   - combi
   - se_sp
   - ranked_combs
   - roc_reports
   - classify
+
 - title: "Ancillary"
   desc: "Additional functions to explore results"
-- contents:
+  contents:
   - show_markers
   - combs_with
