@@ -1,3 +1,7 @@
+# combiroc 0.2.2 - Aug. 12, 2021
+
+* Significant restructuring of the guide (vignette), added more unit testing, checked for code coverage and a number of minor misspellings.
+
 # combiroc 0.2.1 - Aug. 10, 2021
 
 * Minor tweaks on descriptions, hex logo and vignette readability, in preparation for major release
