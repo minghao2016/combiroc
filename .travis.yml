@@ -3,3 +3,5 @@ os:
   - linux
 warnings_are_errors: false
 sudo: required
+after_success:
+  - Rscript -e 'covr::codecov()'
