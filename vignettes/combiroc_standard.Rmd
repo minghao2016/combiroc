@@ -67,7 +67,7 @@ Box plots are a nice option to observe the distribution of measurements in each 
 
 Data in long format are required for the plotting functions of the package and for any other Tidyverse-oriented applications. 
 
-The __data__ object in the original wide format can be thus transformed into the reshaped long format __data_long__ object, and further used. See also the section ["Tips & tricks"](#tips) for some plotting examples taking advantage of the reshaped format.
+The __data__ object in the original wide format can be thus transformed into the reshaped long format __data_long__ object, and further used. See also the section ["Code snippets"](#snipp) for some plotting examples taking advantage of the reshaped format.
 
 ```{r}
 data_long <- combiroc_long(data)
@@ -76,7 +76,33 @@ data_long
 
 ### Checking the individual markers
 
-Individual markers can also be explored plotting them one by one or retrieving summary statistics. In the section  ["Tips & tricks"](#tips) at the end of this vignette we suggest code snippets that can be used to [plot intensities of individual markers](#plot_int) across all samples, as well as to [calculate their summary statistics](#sum_stats). 
+Individual markers can also be explored retrieving a summary statistics and all individual scatter plots. To do so, the function `single_markers_statistics()` can be used ingesting the dataframe `data_long` in long format returned by `combiroc_long()`. 
+
+```{r}
+sms <- single_markers_statistics(data_long)
+```
+
+The `single_markers_statistics()` function returns a list on length 2, whose first element (`sms[[1]]`) is a table with statistics for all markers in each class. The computed statistics are:
+
+- mean value
+- minimum and maximum values
+- stadard deviation
+- coefficient of variation
+- first quartile limit, median, third quartile limit
+
+```{r}
+s_table <- sms[[1]]
+s_table
+```
+
+While the second element is another list, containing dot plots, one for each marker. The individual plots can be called from the second element (`sms[[2]]`) of the list with the `$` operator. Here we display the plot for Marker 1:
+
+```{r}
+plot_m2 <- sms[[2]]$Marker1
+plot_m2
+```
+
+In the section ["Code snippets"](#snipp) at the end of this vignette we suggest code snippets that can be used to [customize the plots for individual markers](#plot_int) across all samples, as well as to [modify the summary statistics](#sum_stats). 
 
 ## Markers distribution overview {#distr}
 
@@ -90,7 +116,11 @@ Usually this threshold is suggested by the guidelines of the kit used for the an
 This function takes as input the data in long format ( __data_long__ ), and returns a named list (here assigned to the __distr__ object). Please note that the only required argument of `markers_distributions()` function is `case_class`, while other arguments have defaults: specific warnings are triggered with this command remembering the users the default threshold parameters that are in place during the computation. 
 
 ```{r}
-distr <- markers_distribution(data_long, case_class = 'A', y_lim = 0.0015, x_lim = 3000, signalthr_prediction = TRUE, min_SE = 40, min_SP = 80, boxplot_lim = 2000)
+distr <- markers_distribution(data_long, case_class = 'A', 
+                              y_lim = 0.0015, x_lim = 3000, 
+                              signalthr_prediction = TRUE, 
+                              min_SE = 40, min_SP = 80, 
+                              boxplot_lim = 2000)
 ```
 
 ### The __distr__ object
@@ -191,7 +221,9 @@ The bigger the bubble, the more markers are in the combination: looking at the s
 In the the example below the minimal values of SE and SP are set, respectively, to 40 and 80, in order to reproduce the gold combinations selection reported in [Mazzara et. al 2017](https://www.nature.com/articles/srep45477). The obtained values of combinations, ranked according to Youden index, are stored in the "ranked markers" `rmks` object containing the `table` dataframe and the `bubble_chart` plot that can be accessed individually with the `$` operator.
 
 ```{r}
-rmks <- ranked_combs(data, mks, case_class = 'A', min_SE = 40, min_SP = 80)
+rmks <- ranked_combs(data, mks, 
+                     case_class = 'A', 
+                     min_SE = 40, min_SP = 80)
 rmks$table
 ```
 
@@ -211,8 +243,10 @@ To allow an objective comparison of combinations, the function `roc_reports()` a
 In addition, the user has to specify the class case, and the single markers and/or the combinations that she/he wants to be displayed with the specific function's arguments.  
 In the example below a single marker ( __Marker1__ ) and two combinations (combinations number __11__ and __15__ ) were choosen.
 ```{r}
-reports <-roc_reports(data, markers_table = tab, case_class = 'A',
-                      single_markers =c('Marker1'), selected_combinations = c(11,15))
+reports <-roc_reports(data, markers_table = tab, 
+                      case_class = 'A',
+                      single_markers =c('Marker1'), 
+                      selected_combinations = c(11,15))
 ```
 The obtained __reports__ object contains 3 items that can be accessed using the `$` operator:
 
@@ -287,8 +321,9 @@ The unclassified data set must be similar to the data set used for the previous 
 
 To load datasets with unclassified samples a specific `load_unclassified_data()` function was implemented. This function is analogue to `load_data()` since it loads the same kind of files and it performs the same format checks, with the exception of the _Class_ column which is not present in an unclassified datasets and thus not required.  
 
-For purely dimonstrative purposes, in the following example a "synthetic" unclassified dataset ('data/unclassified_proteomic_data.csv') was used: it was obtained by randomly picking 20 samples from the already classified dataset (the __data__). The loaded unclassified sample is here assinged to the __unc_data__ object.  
-Please note that this dataset has a Patient.ID column which actually allows the identification of the class (a pre-pended "no" tag identifies healthy subjects) __but this column is not used in the workflow and has solely labeling purposes__.
+For purely demonstrative purposes, in the following example a "synthetic" unclassified data set ('data/unclassified_proteomic_data.csv') was used: it was obtained by randomly picking 20 samples from the already classified data set (the __data__). The loaded unclassified sample is here assigned to the __unc_data__ object.  
+Please note that this unclassified data set lacks the "Class" column but has a Patient.ID column which actually allows the identification of the class __but sample names here are not used in the workflow and have labeling purposes to check the prediction outcomes__ (a "no" prefix identifies healthy/normal subjects while the absence of the prefix identifies affected/abnormal subjects).
+
 ```{r, eval=FALSE}
 unc_data <- load_unclassified_data(data = '../data/demo_unclassified_data.csv', sep = ',')
 ```
@@ -297,11 +332,11 @@ This very same dataset has been included in CombiROC package as an unclassified 
 head(demo_unclassified_data)
 ```
 
-The prediction of the class can be achieved with `classify()`: this function applies the models previously calculated on a classified dataset working as training dataset, to the unclassified dataset and classifies the samples accordingly to the prediction probability and optimal cutoff as shown in the [Under the hood](#hood) section.
+The prediction of the class can be achieved with `classify()`: this function applies the models previously calculated on a classified data set working as training dataset, to the unclassified dataset and classifies the samples accordingly to the prediction probability and optimal cutoff as shown in the [Under the hood](#hood) section.
 
 This `classify()` function takes as inputs:
 
-- the unclassified dataset containing the new samples to be classified (`unc_data`);
+- the unclassified data set containing the new samples to be classified (`unc_data`);
 - the list of models `reports$Models` that have been previously computed by `roc_reports()` (*reports$Models*);
 - the list of metrics that have been previously computed by `roc_reports()` (*reports$Metrics*).
 
@@ -311,10 +346,14 @@ The function returns a data.frame (`cl_data` in the example below), whose column
 
 ```{r}
 unc_data <- demo_unclassified_data
-cl_data <- classify(unc_data, Models =  reports$Models, Metrics = reports$Metrics, Positive_class = "affected", Negative_class = "healthy")
+cl_data <- classify(unc_data, 
+                    Models =  reports$Models, 
+                    Metrics = reports$Metrics, 
+                    Positive_class = "abnormal", 
+                    Negative_class = "normal")
 ```
 
-As can be observed comparing the outcome in the dataframe with the tag on samples' names, while the single marker __Marker1__ is not 100% efficient in correctly predicting the class (see second row), both markers combinations are.
+As can be observed comparing the outcome in the dataframe with the tag on samples' names, the single marker __Marker1__ is not 100% efficient in correctly predicting the class (see mismatch in second row, where the _normal_ sample "no AIH126" is classified as _abnormal_ by Marker1); instead, both Combination 11 and 15 correctly assign it to the right class.
 
 ```{r}
 cl_data
@@ -326,9 +365,7 @@ cl_data$index
 cl_data$`Combination 11`
 ```
 
-# Additional tips&tricks and code snippets {#tips}
-
-The CombiROC package evolved from the [CombiROC Shiny Web app](http://combiroc.eu/) and it is an ongoing project. While the Shiny app is still running, we plan to concentrate any further improvement on the package which will be enriched with new functionalities. In the meantime, here we offer tips on ancillary commands and additional ways to explore the data taking advantage of the long format of the `data_long` object; some of these features might be natively included or wrapped into new functions in future versions of the CombiROC package.  
+# Ancillary functions {#ancill}
 
 ## Retrieving composition of combinations
 
@@ -344,6 +381,10 @@ show_markers(selected_combinations =c(11,15), markers_table = tab)
 combs_list <- combs_with(markers=c('Marker1', 'Marker3'), markers_table = tab)
 combs_list
 ```
+
+# Code snippets {#snipp}
+
+In this section we offer code insights taking advantage of the long format of the `data_long` object; starting from here the user can further customize plots and data summaries returned by the combiroc functions.
 
 ## Plotting of intensities of individual markers {#plot_int}
 
