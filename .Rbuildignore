@@ -5,12 +5,12 @@
 ^\./repo$
 
 ^LICENSE\.md$
+^NEWS\.md$
 ^doc$
 ^Meta$
 ^\.travis\.yml$
 ^\.github$
 ^_pkgdown\.yml$
 ^docs$
-^pkgdown$
 
 ^cran-comments\.md$
