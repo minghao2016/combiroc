@@ -1,4 +1,7 @@
 test_that("An unclassified dataframe is read", {
-  d <- load_unclassified_data(data = "demo_unclassified_data.csv", sep = ",")
-  expect_s3_class(d, "data.frame")
+  expect_s3_class(unc_data, "data.frame")
+})
+
+test_that("the name of second column is enforced to Class", {
+  expect_type(unc_data[,1], "character")
 })
