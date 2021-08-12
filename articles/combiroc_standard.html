@@ -133,7 +133,7 @@
 <p>It is usually a good thing to visually explore your data with at least a few plots.<br>
 Box plots are a nice option to observe the distribution of measurements in each sample. The user can plot the data as she/he wishes using the preferred function: since data for CombiROC are required to be in <em>wide</em> (<em>untidy</em>) format, they cannot be plotted directly with the widely used <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot()</a></code> function. Either the user is free to make the data longer (<em>tidy</em>) for the sole purpose of plotting, or the package’s <code><a href="../reference/combiroc_long.html">combiroc_long()</a></code> function can be used for this purpose; this function wraps the <code><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html">tidyr::pivot_longer()</a></code>function, and it’s used to reshape the data in long format.</p>
 <p>Data in long format are required for the plotting functions of the package and for any other Tidyverse-oriented applications.</p>
-<p>The <strong>data</strong> object in the original wide format can be thus transformed into the reshaped long format <strong>data_long</strong> object, and further used. See also the section <a href="#tips">“Tips &amp; tricks”</a> for some plotting examples taking advantage of the reshaped format.</p>
+<p>The <strong>data</strong> object in the original wide format can be thus transformed into the reshaped long format <strong>data_long</strong> object, and further used. See also the section <a href="#snipp">“Code snippets”</a> for some plotting examples taking advantage of the reshaped format.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">data_long</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combiroc_long.html">combiroc_long</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span>
 <span class="va">data_long</span></code></pre></div>
@@ -154,7 +154,41 @@ Box plots are a nice option to observe the distribution of measurements in each 
 <div id="checking-the-individual-markers" class="section level3">
 <h3 class="hasAnchor">
 <a href="#checking-the-individual-markers" class="anchor"></a>Checking the individual markers</h3>
-<p>Individual markers can also be explored plotting them one by one or retrieving summary statistics. In the section <a href="#tips">“Tips &amp; tricks”</a> at the end of this vignette we suggest code snippets that can be used to <a href="#plot_int">plot intensities of individual markers</a> across all samples, as well as to <a href="#sum_stats">calculate their summary statistics</a>.</p>
+<p>Individual markers can also be explored retrieving a summary statistics and all individual scatter plots. To do so, the function <code><a href="../reference/single_markers_statistics.html">single_markers_statistics()</a></code> can be used ingesting the dataframe <code>data_long</code> in long format returned by <code><a href="../reference/combiroc_long.html">combiroc_long()</a></code>.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sms</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/single_markers_statistics.html">single_markers_statistics</a></span><span class="op">(</span><span class="va">data_long</span><span class="op">)</span></code></pre></div>
+<p>The <code><a href="../reference/single_markers_statistics.html">single_markers_statistics()</a></code> function returns a list on length 2, whose first element (<code>sms[[1]]</code>) is a table with statistics for all markers in each class. The computed statistics are:</p>
+<ul>
+<li>mean value</li>
+<li>minimum and maximum values</li>
+<li>stadard deviation</li>
+<li>coefficient of variation</li>
+<li>first quartile limit, median, third quartile limit</li>
+</ul>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">s_table</span> <span class="op">&lt;-</span> <span class="va">sms</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>
+<span class="va">s_table</span></code></pre></div>
+<pre><code>## # A tibble: 10 × 11
+## # Groups:   Markers [5]
+##    Markers Class   Mean   Min   Max     Sd    CV First_Quart. Median
+##    &lt;chr&gt;   &lt;chr&gt;  &lt;dbl&gt; &lt;int&gt; &lt;int&gt;  &lt;dbl&gt; &lt;dbl&gt;        &lt;dbl&gt;  &lt;dbl&gt;
+##  1 Marker1 A     1159.     52  8584 1672.  1.44         369.   569  
+##  2 Marker1 B      161.      0  1223  162.  1.01          59.5  111  
+##  3 Marker2 A      692.     41  3704  783.  1.13         259    422. 
+##  4 Marker2 B      141.      0  2142  205.  1.45          55.2  100. 
+##  5 Marker3 A      767.      0 13178 2436.  3.18          73.2  189  
+##  6 Marker3 B       56.2     0   640   80.6 1.43          10.2   33.5
+##  7 Marker4 A      879.    105  3390  713.  0.811        371    620. 
+##  8 Marker4 B      467.      0  2464  406.  0.869        232    361  
+##  9 Marker5 A      571.      0  2757  582.  1.02         152.   518  
+## 10 Marker5 B      205.      0  4114  413.  2.02          17.2   76  
+## # … with 2 more variables: Third_Quart. &lt;dbl&gt;, Skewness &lt;dbl&gt;</code></pre>
+<p>While the second element is another list, containing dot plots, one for each marker. The individual plots can be called from the second element (<code>sms[[2]]</code>) of the list with the <code><a href="https://rdrr.io/r/base/Extract.html">$</a></code> operator. Here we display the plot for Marker 1:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">plot_m2</span> <span class="op">&lt;-</span> <span class="va">sms</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">Marker1</span>
+<span class="va">plot_m2</span></code></pre></div>
+<p><img src="combiroc_standard_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
+<p>In the section <a href="#snipp">“Code snippets”</a> at the end of this vignette we suggest code snippets that can be used to <a href="#plot_int">customize the plots for individual markers</a> across all samples, as well as to <a href="#sum_stats">modify the summary statistics</a>.</p>
 </div>
 </div>
 <div id="distr" class="section level2">
@@ -167,8 +201,12 @@ Box plots are a nice option to observe the distribution of measurements in each 
 </ul>
 <p>Usually this threshold is suggested by the guidelines of the kit used for the analysis (e.g. mean of buffer signal + n standard deviations). However, it is a good practice to always check the distribution of signal intensity of the dataset. To help the user with this operation, the <code><a href="../reference/markers_distribution.html">markers_distribution()</a></code> function have been implemented generating a set of discoverable objects.</p>
 <p>This function takes as input the data in long format ( <strong>data_long</strong> ), and returns a named list (here assigned to the <strong>distr</strong> object). Please note that the only required argument of <code>markers_distributions()</code> function is <code>case_class</code>, while other arguments have defaults: specific warnings are triggered with this command remembering the users the default threshold parameters that are in place during the computation.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">distr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/markers_distribution.html">markers_distribution</a></span><span class="op">(</span><span class="va">data_long</span>, case_class <span class="op">=</span> <span class="st">'A'</span>, y_lim <span class="op">=</span> <span class="fl">0.0015</span>, x_lim <span class="op">=</span> <span class="fl">3000</span>, signalthr_prediction <span class="op">=</span> <span class="cn">TRUE</span>, min_SE <span class="op">=</span> <span class="fl">40</span>, min_SP <span class="op">=</span> <span class="fl">80</span>, boxplot_lim <span class="op">=</span> <span class="fl">2000</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">distr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/markers_distribution.html">markers_distribution</a></span><span class="op">(</span><span class="va">data_long</span>, case_class <span class="op">=</span> <span class="st">'A'</span>, 
+                              y_lim <span class="op">=</span> <span class="fl">0.0015</span>, x_lim <span class="op">=</span> <span class="fl">3000</span>, 
+                              signalthr_prediction <span class="op">=</span> <span class="cn">TRUE</span>, 
+                              min_SE <span class="op">=</span> <span class="fl">40</span>, min_SP <span class="op">=</span> <span class="fl">80</span>, 
+                              boxplot_lim <span class="op">=</span> <span class="fl">2000</span><span class="op">)</span></code></pre></div>
 <pre><code>## Warning in markers_distribution(data_long, case_class = "A", y_lim = 0.0015, :
 ## In $Coord object you will see only the signal threshold values at which SE&gt;=40
 ## and SP&gt;=80 by default. If you want to change this limits, please set min_SE and
@@ -196,7 +234,7 @@ Box plots are a nice option to observe the distribution of measurements in each 
 <h3 class="hasAnchor">
 <a href="#boxplot" class="anchor"></a>Boxplot</h3>
 <p>The <strong>Boxplot</strong> shows the distribution of each marker values for both classes:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">distr</span><span class="op">$</span><span class="va">Boxplot</span></code></pre></div>
 <p><img src="combiroc_standard_files/figure-html/boxplot-1.png" width="700"></p>
 </div>
@@ -204,11 +242,11 @@ Box plots are a nice option to observe the distribution of measurements in each 
 <h3 class="hasAnchor">
 <a href="#the-roc-curve-for-all-markers-and-its-coordinates" class="anchor"></a>The ROC curve for all markers and its coordinates</h3>
 <p>The <strong>ROC</strong> curve shows how many real positive samples would be found positive (sensitivity, or SE) and how many real negative samples would be found negative (specificity, or SP) in function of signal threshold. Please note that the <em>False Positive Rate</em> (i.e. <em>1 - specificity</em>) is plotted on the x-axis. These SE and SP are refereed to the signal intensity threshold considering <em>all</em> the markers together; they are <em>not</em> the SE and SP of a single marker/combination computed by the <code><a href="../reference/se_sp.html">se_sp()</a></code> function further discussed in the <strong>Sensitivity and specificity</strong> paragraph.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">distr</span><span class="op">$</span><span class="va">ROC</span></code></pre></div>
 <p><img src="combiroc_standard_files/figure-html/ROC-1.png" width="700"></p>
 <p>The <strong>Coord</strong> is a dataframe that contains the coordinates of the above described “ROC” (threshold, SP and SE) that have at least a minimun SE (min_SE) and a minimum SP (min_SP): this two threshold are set by default at <code>min_SE = 40</code> and <code>min_SP = 80</code>, but they can be set manually by specifying different values. The Youden index is also computed: this is the Youden’s J statistic capturing the performance of a dichotomous diagnostic test, with higher values for better performance ( <span class="math inline">\(J = SE + SP -1\)</span>).</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">distr</span><span class="op">$</span><span class="va">Coord</span>, n<span class="op">=</span><span class="fl">10</span><span class="op">)</span></code></pre></div>
 <pre><code>##     threshold specificity sensitivity    Youden
 ## 238     315.5          80          65 0.4453846
@@ -227,7 +265,7 @@ Box plots are a nice option to observe the distribution of measurements in each 
 <a href="#dens" class="anchor"></a>The density plot and suggested signal threshold</h3>
 <p>The <strong>Density_plot</strong> shows the distribution of the signal intensity values for both the classes. In addition, the function allows the user to set both the y_lim and x_lim values to provide a better visualization. One important feature of the density plot is that it calculates a possible <strong>signal intensity threshold:</strong> in case of lack of <em>a priori</em> knowedge of the threshold the user can set the argument <code>signalthr_prediction = TRUE</code> in the <code><a href="../reference/markers_distribution.html">markers_distribution()</a></code> function. In this way the function calculates a “suggested signal threshold” that corresponds to the median of the signal threshold values (in <strong>Coord</strong>) at which SE and SP are greater or equal to their set minimal values (min_SE and min_SP). This threshold is added to the “Density_plot” object as a dashed black line and a number. The use of the median allows to pick a threshold whose SE/SP are not too close to the limits (min_SE and min_SP), but it is recommended to always inspect “Coord” and choose the most appropriate signal threshold by considering SP, SE and Youden index.</p>
 <p>This suggested signal threshold can be used as <strong>signalthr</strong> argument of the <code><a href="../reference/combi.html">combi()</a></code> function further in the workflow.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">distr</span><span class="op">$</span><span class="va">Density_plot</span></code></pre></div>
 <p><img src="combiroc_standard_files/figure-html/density-1.png" width="700"></p>
 </div>
@@ -235,7 +273,7 @@ Box plots are a nice option to observe the distribution of measurements in each 
 <h3 class="hasAnchor">
 <a href="#the-density-summary" class="anchor"></a>The density summary</h3>
 <p>Finally, the <strong>Density_summary</strong> displays a few summary statistics of the density plot.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">distr</span><span class="op">$</span><span class="va">Density_summary</span></code></pre></div>
 <pre><code>##   # observations Min   Max Median     Mean 1st Q. 3rd Q.        SD
 ## A             40   0 13178    461 813.7600 233.25    825 1427.1854
@@ -249,7 +287,7 @@ Box plots are a nice option to observe the distribution of measurements in each 
 <p>As mentioned before, <code>signalthr</code> should be set depending on the guidelines and characteristics of the methodology used for the analysis or by an accurate inspection of signal intensity distribution. In case of lack of specific guidelines, one should set the value <code>signalthr</code> as suggested by the <code>distr$Density_plot</code> as described in the previous section.</p>
 <p>In this vignette <code>signalthr</code> is set at <strong>450</strong> while <code>combithr</code> is set at <strong>1</strong>. We are setting this at 450 (instead of <strong>407</strong> as suggested by the <code>distr$Density_plot</code>) in order to reproduce the results reported in <a href="https://www.nature.com/articles/srep45477">Mazzara et. al 2017</a> (the original CombiROC paper) or in <a href="https://link.springer.com/protocol/10.1007%2F978-1-4939-9164-8_16">Bombaci &amp; Rossi 2019</a> as well as in the tutorial of the web app with default thresholds.</p>
 <p><code>combithr</code>, instead, should be set exclusively depending on the needed stringency: <strong>1</strong> is the less stringent and most common choice (meaning that <em>at least one</em> marker in a combination needs to reach the threshold). The obtained <strong>tab</strong> object is a dataframe of all the combinations obtained with the chosen parameters.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tab</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combi.html">combi</a></span><span class="op">(</span><span class="va">data</span>, signalthr <span class="op">=</span> <span class="fl">450</span>, combithr <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">tab</span>, n<span class="op">=</span><span class="fl">20</span><span class="op">)</span></code></pre></div>
 <pre><code>##                                Markers #Positives  A #Positives  B
@@ -285,7 +323,7 @@ Box plots are a nice option to observe the distribution of measurements in each 
 <p>SE of case class (“A”) is calculated dividing the number of positive samples by the total sample of case class (% of positive “A” samples), while case class SP is calculated subtracting SE to 100 (% of negative “A” samples).</p>
 <p>SE of control class (“B”) is calculated dividing the number of positive samples by the total sample of control class (% of positive “B” samples), while SP is calculated subtracting SE to 100 (% of negative “B” samples).</p>
 <p>Thus, the SE of a given combination (capability to find real positives/cases) corresponds to the SE of the case class (in this case “A”), while its SP (capability to exclude real negatives/controls) corresponds to the SP of the control class (in this case “B”). The obtained value of SE, SP and number of markers are assigned to “markers” <code>mks</code> dataframe.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">mks</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/se_sp.html">se_sp</a></span><span class="op">(</span><span class="va">data</span>, <span class="va">tab</span><span class="op">)</span>
 <span class="va">mks</span></code></pre></div>
 <pre><code>##                SE_A SE_B SP_A SP_B #Markers
@@ -330,8 +368,10 @@ Box plots are a nice option to observe the distribution of measurements in each 
 <p>A possibility to overview how single markers and all combinations are distributed in the SE - SP ballpark is to plot them with the bubble chart code suggested in the Additional Tips&amp;Tricks section (see: <a href="#bubble">Bubble plot of all combinations</a>) starting from the <code>mks</code> dataframe obtained with the <code><a href="../reference/se_sp.html">se_sp()</a></code> function (see above).</p>
 <p>The bigger the bubble, the more markers are in the combination: looking at the size and distribution of bubbles across SE and SP values is useful to anticipate how effective will be the combinations in the ranking. Setting no cutoffs (i.e. SE = 0 and SP = 0), all single markers and combinations (all bubbles) will be considered as <em>“gold” combinations</em> and ranked in the next passage.</p>
 <p>In the the example below the minimal values of SE and SP are set, respectively, to 40 and 80, in order to reproduce the gold combinations selection reported in <a href="https://www.nature.com/articles/srep45477">Mazzara et. al 2017</a>. The obtained values of combinations, ranked according to Youden index, are stored in the “ranked markers” <code>rmks</code> object containing the <code>table</code> dataframe and the <code>bubble_chart</code> plot that can be accessed individually with the <code><a href="https://rdrr.io/r/base/Extract.html">$</a></code> operator.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">rmks</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ranked_combs.html">ranked_combs</a></span><span class="op">(</span><span class="va">data</span>, <span class="va">mks</span>, case_class <span class="op">=</span> <span class="st">'A'</span>, min_SE <span class="op">=</span> <span class="fl">40</span>, min_SP <span class="op">=</span> <span class="fl">80</span><span class="op">)</span>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">rmks</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ranked_combs.html">ranked_combs</a></span><span class="op">(</span><span class="va">data</span>, <span class="va">mks</span>, 
+                     case_class <span class="op">=</span> <span class="st">'A'</span>, 
+                     min_SE <span class="op">=</span> <span class="fl">40</span>, min_SP <span class="op">=</span> <span class="fl">80</span><span class="op">)</span>
 <span class="va">rmks</span><span class="op">$</span><span class="va">table</span></code></pre></div>
 <pre><code>##                SE SE_B SP_A SP #Markers Youden
 ## Combination 11 78    5   22 95        3   0.73
@@ -349,9 +389,9 @@ Box plots are a nice option to observe the distribution of measurements in each 
 ## Marker2        48    2   52 98        1   0.46
 ## Marker5        58   12   42 88        1   0.46</code></pre>
 <p>as mentioned, the <code>rmks</code> object also has a slot for the <code>bubble_chart</code> plot, that can be recalled with the usual <code><a href="https://rdrr.io/r/base/Extract.html">$</a></code> operator. This plot discriminates between combinations not passing the SE and SP cutoffs as set in <code><a href="../reference/ranked_combs.html">ranked_combs()</a></code> (blue bubbles) and <em>“gold” combinations</em> passing them (yellow bubbles).</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">rmks</span><span class="op">$</span><span class="va">bubble_chart</span></code></pre></div>
-<p><img src="combiroc_standard_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
+<p><img src="combiroc_standard_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
 </div>
 <div id="roc-curves" class="section level2">
 <h2 class="hasAnchor">
@@ -363,25 +403,27 @@ Box plots are a nice option to observe the distribution of measurements in each 
 </ul>
 <p>In addition, the user has to specify the class case, and the single markers and/or the combinations that she/he wants to be displayed with the specific function’s arguments.<br>
 In the example below a single marker ( <strong>Marker1</strong> ) and two combinations (combinations number <strong>11</strong> and <strong>15</strong> ) were choosen.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">reports</span> <span class="op">&lt;-</span><span class="fu"><a href="../reference/roc_reports.html">roc_reports</a></span><span class="op">(</span><span class="va">data</span>, markers_table <span class="op">=</span> <span class="va">tab</span>, case_class <span class="op">=</span> <span class="st">'A'</span>,
-                      single_markers <span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'Marker1'</span><span class="op">)</span>, selected_combinations <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">11</span>,<span class="fl">15</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">reports</span> <span class="op">&lt;-</span><span class="fu"><a href="../reference/roc_reports.html">roc_reports</a></span><span class="op">(</span><span class="va">data</span>, markers_table <span class="op">=</span> <span class="va">tab</span>, 
+                      case_class <span class="op">=</span> <span class="st">'A'</span>,
+                      single_markers <span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'Marker1'</span><span class="op">)</span>, 
+                      selected_combinations <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">11</span>,<span class="fl">15</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>The obtained <strong>reports</strong> object contains 3 items that can be accessed using the <code><a href="https://rdrr.io/r/base/Extract.html">$</a></code> operator:</p>
 <ul>
 <li>Plot: a ggplot object with the ROC curves of the selected combinations;</li>
 <li>Metrics: a dataframe with the metrics of the roc curves (AUC, opt. cutoff, etc …);</li>
 <li>Models: The list of models that have been computed and then used to classify the samples (the equation for each selected combination).</li>
 </ul>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">reports</span><span class="op">$</span><span class="va">Plot</span></code></pre></div>
-<p><img src="combiroc_standard_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<p><img src="combiroc_standard_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">reports</span><span class="op">$</span><span class="va">Metrics</span></code></pre></div>
 <pre><code>##                  AUC   SE    SP CutOff   ACC  TN TP FN FP   NPV   PPV
 ## Marker1        0.910 0.90 0.808  0.219 0.829 105 36  4 25 0.963 0.590
 ## Combination 11 0.942 0.95 0.869  0.216 0.888 113 38  2 17 0.983 0.691
 ## Combination 15 0.935 0.90 0.854  0.248 0.865 111 36  4 19 0.965 0.655</code></pre>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">reports</span><span class="op">$</span><span class="va">Models</span></code></pre></div>
 <pre><code>## $Marker1
 ## 
@@ -437,12 +479,12 @@ p(x) =  \frac{\mathrm{1} }{\mathrm{1} + e^{-f(x)} }
 f(x)=    -17.0128  +  1.5378 *log(Marker1 + 1)  +  0.9176 *log(Marker2 + 1) + 0.5706* log(Marker3 + 1)
 \]</span></p>
 <p>As for the predict method for a Generalized Linear Model, predictions are produced on the scale of the additive predictors. Predictions (<span class="math inline">\(f(x)\)</span> values) of Combination 11 can be visualized using the commmand <code>glm::predict</code> with argument <code>type = "link"</code>:</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">reports</span><span class="op">$</span><span class="va">Models</span><span class="op">$</span><span class="va">`Combination 11`</span>, type<span class="op">=</span><span class="st">'link'</span><span class="op">)</span><span class="op">)</span> <span class="co"># link = f(x)</span></code></pre></div>
 <pre><code>##            1            2            3            4            5            6 
 ##  0.166224681 -0.008125528  2.192603482  1.077910194  3.816098810  0.593971602</code></pre>
 <p>Prediction probabilities (<span class="math inline">\(p(x)\)</span> values, i.e. predictions on the scale of the response) of Combination 11 can be instead visualized using argument <code>type = "response"</code>:</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">reports</span><span class="op">$</span><span class="va">Models</span><span class="op">$</span><span class="va">`Combination 11`</span>, type<span class="op">=</span><span class="st">'response'</span><span class="op">)</span><span class="op">)</span> <span class="co"># response = p(x)</span></code></pre></div>
 <pre><code>##         1         2         3         4         5         6 
 ## 0.5414607 0.4979686 0.8995833 0.7460983 0.9784606 0.6442759</code></pre>
@@ -468,12 +510,12 @@ C(x) =
 <p>A new feature of the CombiROC package (not present in the CombiROC tool Shiny app), offers the possibility to exploit the models obtained with <code><a href="../reference/roc_reports.html">roc_reports()</a></code> for each selected marker/combination (and assigned to <code>reports$Models</code>) to directly classify new samples that are not labelled, <em>i.e.</em> <strong>not assigned</strong> to any case or control classes.</p>
 <p>The unclassified data set must be similar to the data set used for the previous combinatorial analysis ( <em>i.e.</em> of the same nature and with the same markers, but obviously <em>without</em> the ‘Class’ column).</p>
 <p>To load datasets with unclassified samples a specific <code><a href="../reference/load_unclassified_data.html">load_unclassified_data()</a></code> function was implemented. This function is analogue to <code><a href="../reference/load_data.html">load_data()</a></code> since it loads the same kind of files and it performs the same format checks, with the exception of the <em>Class</em> column which is not present in an unclassified datasets and thus not required.</p>
-<p>For purely dimonstrative purposes, in the following example a “synthetic” unclassified dataset (‘data/unclassified_proteomic_data.csv’) was used: it was obtained by randomly picking 20 samples from the already classified dataset (the <strong>data</strong>). The loaded unclassified sample is here assinged to the <strong>unc_data</strong> object.<br>
-Please note that this dataset has a Patient.ID column which actually allows the identification of the class (a pre-pended “no” tag identifies healthy subjects) <strong>but this column is not used in the workflow and has solely labeling purposes</strong>.</p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<p>For purely demonstrative purposes, in the following example a “synthetic” unclassified data set (‘data/unclassified_proteomic_data.csv’) was used: it was obtained by randomly picking 20 samples from the already classified data set (the <strong>data</strong>). The loaded unclassified sample is here assigned to the <strong>unc_data</strong> object.<br>
+Please note that this unclassified data set lacks the “Class” column but has a Patient.ID column which actually allows the identification of the class <strong>but sample names here are not used in the workflow and have labeling purposes to check the prediction outcomes</strong> (a “no” prefix identifies healthy/normal subjects while the absence of the prefix identifies affected/abnormal subjects).</p>
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">unc_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/load_unclassified_data.html">load_unclassified_data</a></span><span class="op">(</span>data <span class="op">=</span> <span class="st">'../data/demo_unclassified_data.csv'</span>, sep <span class="op">=</span> <span class="st">','</span><span class="op">)</span></code></pre></div>
 <p>This very same dataset has been included in CombiROC package as an unclassified demo dataset, which can be directly called typing <code>demo_unclassified_data</code>.</p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">demo_unclassified_data</span><span class="op">)</span></code></pre></div>
 <pre><code>##   Patient.ID Marker1 Marker2 Marker3 Marker4 Marker5
 ## 1      AIH33    1964     875     404    1883    1021
@@ -482,65 +524,68 @@ Please note that this dataset has a Patient.ID column which actually allows the 
 ## 4  no AIH112     144     155      25     600       0
 ## 5   no AIH41       0     193      50     382     135
 ## 6   no AIH38      46      51      24     342      74</code></pre>
-<p>The prediction of the class can be achieved with <code><a href="../reference/classify.html">classify()</a></code>: this function applies the models previously calculated on a classified dataset working as training dataset, to the unclassified dataset and classifies the samples accordingly to the prediction probability and optimal cutoff as shown in the <a href="#hood">Under the hood</a> section.</p>
+<p>The prediction of the class can be achieved with <code><a href="../reference/classify.html">classify()</a></code>: this function applies the models previously calculated on a classified data set working as training dataset, to the unclassified dataset and classifies the samples accordingly to the prediction probability and optimal cutoff as shown in the <a href="#hood">Under the hood</a> section.</p>
 <p>This <code><a href="../reference/classify.html">classify()</a></code> function takes as inputs:</p>
 <ul>
-<li>the unclassified dataset containing the new samples to be classified (<code>unc_data</code>);</li>
+<li>the unclassified data set containing the new samples to be classified (<code>unc_data</code>);</li>
 <li>the list of models <code>reports$Models</code> that have been previously computed by <code><a href="../reference/roc_reports.html">roc_reports()</a></code> (<em>reports$Models</em>);</li>
 <li>the list of metrics that have been previously computed by <code><a href="../reference/roc_reports.html">roc_reports()</a></code> (<em>reports$Metrics</em>).</li>
 </ul>
 <p>In addition the user can set the labels of the predicted class (setting <code>Positive_class</code> and <code>Negative_class</code>), otherwise they will be <strong>1</strong> for positive samples and <strong>0</strong> for the negative samples by default (see the rule shown in the end of the <strong>Results explanation</strong> section). Here we are setting <code>Positive_class = "affected"</code> and <code>Negative_class = "healthy"</code></p>
 <p>The function returns a data.frame (<code>cl_data</code> in the example below), whose columns contain the predicted class for each sample according to the models used (originally in <code>reports$Models</code>); here we are still usign <strong>Marker1</strong>, <strong>Combination 11</strong> and <strong>Combination 15</strong>.</p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">unc_data</span> <span class="op">&lt;-</span> <span class="va">demo_unclassified_data</span>
-<span class="va">cl_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/classify.html">classify</a></span><span class="op">(</span><span class="va">unc_data</span>, Models <span class="op">=</span>  <span class="va">reports</span><span class="op">$</span><span class="va">Models</span>, Metrics <span class="op">=</span> <span class="va">reports</span><span class="op">$</span><span class="va">Metrics</span>, Positive_class <span class="op">=</span> <span class="st">"affected"</span>, Negative_class <span class="op">=</span> <span class="st">"healthy"</span><span class="op">)</span></code></pre></div>
-<p>As can be observed comparing the outcome in the dataframe with the tag on samples’ names, while the single marker <strong>Marker1</strong> is not 100% efficient in correctly predicting the class (see second row), both markers combinations are.</p>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<span class="va">cl_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/classify.html">classify</a></span><span class="op">(</span><span class="va">unc_data</span>, 
+                    Models <span class="op">=</span>  <span class="va">reports</span><span class="op">$</span><span class="va">Models</span>, 
+                    Metrics <span class="op">=</span> <span class="va">reports</span><span class="op">$</span><span class="va">Metrics</span>, 
+                    Positive_class <span class="op">=</span> <span class="st">"abnormal"</span>, 
+                    Negative_class <span class="op">=</span> <span class="st">"normal"</span><span class="op">)</span></code></pre></div>
+<p>As can be observed comparing the outcome in the dataframe with the tag on samples’ names, the single marker <strong>Marker1</strong> is not 100% efficient in correctly predicting the class (see mismatch in second row, where the <em>normal</em> sample “no AIH126” is classified as <em>abnormal</em> by Marker1); instead, both Combination 11 and 15 correctly assign it to the right class.</p>
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">cl_data</span></code></pre></div>
 <pre><code>##        index  Marker1 Combination 11 Combination 15
-## 1      AIH33 affected       affected       affected
-## 2  no AIH126 affected        healthy        healthy
-## 3      AIH12 affected       affected       affected
-## 4  no AIH112  healthy        healthy        healthy
-## 5   no AIH41  healthy        healthy        healthy
-## 6   no AIH38  healthy        healthy        healthy
-## 7       AIH4 affected       affected       affected
-## 8   no AIH32  healthy        healthy        healthy
-## 9      AIH20 affected       affected       affected
-## 10  no AIH13  healthy        healthy        healthy
-## 11  no AIH11  healthy        healthy        healthy
-## 12 no AIH114  healthy        healthy        healthy
-## 13 no AIH121  healthy        healthy        healthy
-## 14     AIH17 affected       affected       affected
-## 15     AIH14 affected       affected       affected
-## 16 no AIH106  healthy        healthy        healthy
-## 17  no AIH67  healthy        healthy        healthy
-## 18      AIH9 affected       affected       affected
-## 19  no AIH74  healthy        healthy        healthy
-## 20     AIH16 affected       affected       affected</code></pre>
+## 1      AIH33 abnormal       abnormal       abnormal
+## 2  no AIH126 abnormal         normal         normal
+## 3      AIH12 abnormal       abnormal       abnormal
+## 4  no AIH112   normal         normal         normal
+## 5   no AIH41   normal         normal         normal
+## 6   no AIH38   normal         normal         normal
+## 7       AIH4 abnormal       abnormal       abnormal
+## 8   no AIH32   normal         normal         normal
+## 9      AIH20 abnormal       abnormal       abnormal
+## 10  no AIH13   normal         normal         normal
+## 11  no AIH11   normal         normal         normal
+## 12 no AIH114   normal         normal         normal
+## 13 no AIH121   normal         normal         normal
+## 14     AIH17 abnormal       abnormal       abnormal
+## 15     AIH14 abnormal       abnormal       abnormal
+## 16 no AIH106   normal         normal         normal
+## 17  no AIH67   normal         normal         normal
+## 18      AIH9 abnormal       abnormal       abnormal
+## 19  no AIH74   normal         normal         normal
+## 20     AIH16 abnormal       abnormal       abnormal</code></pre>
 <p>Thus, each column of the prediction dataframe contains the prediction outcome of a given model and, along with the samples names (in the <em>index</em> column), can be accessed with the $ operator as usual:</p>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">cl_data</span><span class="op">$</span><span class="va">index</span></code></pre></div>
 <pre><code>##  [1] "AIH33"     "no AIH126" "AIH12"     "no AIH112" "no AIH41"  "no AIH38" 
 ##  [7] "AIH4"      "no AIH32"  "AIH20"     "no AIH13"  "no AIH11"  "no AIH114"
 ## [13] "no AIH121" "AIH17"     "AIH14"     "no AIH106" "no AIH67"  "AIH9"     
 ## [19] "no AIH74"  "AIH16"</code></pre>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">cl_data</span><span class="op">$</span><span class="va">`Combination 11`</span></code></pre></div>
-<pre><code>##  [1] "affected" "healthy"  "affected" "healthy"  "healthy"  "healthy" 
-##  [7] "affected" "healthy"  "affected" "healthy"  "healthy"  "healthy" 
-## [13] "healthy"  "affected" "affected" "healthy"  "healthy"  "affected"
-## [19] "healthy"  "affected"</code></pre>
+<pre><code>##  [1] "abnormal" "normal"   "abnormal" "normal"   "normal"   "normal"  
+##  [7] "abnormal" "normal"   "abnormal" "normal"   "normal"   "normal"  
+## [13] "normal"   "abnormal" "abnormal" "normal"   "normal"   "abnormal"
+## [19] "normal"   "abnormal"</code></pre>
 </div>
-<div id="tips" class="section level1">
+<div id="ancill" class="section level1">
 <h1 class="hasAnchor">
-<a href="#tips" class="anchor"></a>Additional tips&amp;tricks and code snippets</h1>
-<p>The CombiROC package evolved from the <a href="http://combiroc.eu/">CombiROC Shiny Web app</a> and it is an ongoing project. While the Shiny app is still running, we plan to concentrate any further improvement on the package which will be enriched with new functionalities. In the meantime, here we offer tips on ancillary commands and additional ways to explore the data taking advantage of the long format of the <code>data_long</code> object; some of these features might be natively included or wrapped into new functions in future versions of the CombiROC package.</p>
+<a href="#ancill" class="anchor"></a>Ancillary functions</h1>
 <div id="retrieving-composition-of-combinations" class="section level2">
 <h2 class="hasAnchor">
 <a href="#retrieving-composition-of-combinations" class="anchor"></a>Retrieving composition of combinations</h2>
 <p><code><a href="../reference/show_markers.html">show_markers()</a></code> returns a data frame containing the composition of each combination of interest. It requires as input one or more combinations (only their numbers), and the table with combinations and corresponding positive samples counts (<em>“tab”</em>, obtained with <code><a href="../reference/combi.html">combi()</a></code>).</p>
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/show_markers.html">show_markers</a></span><span class="op">(</span>selected_combinations <span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">11</span>,<span class="fl">15</span><span class="op">)</span>, markers_table <span class="op">=</span> <span class="va">tab</span><span class="op">)</span></code></pre></div>
 <pre><code>##      Combination       Composing_markers
 ## 1 Combination 11 Marker1-Marker2-Marker3
@@ -550,18 +595,23 @@ Please note that this dataset has a Patient.ID column which actually allows the 
 <h2 class="hasAnchor">
 <a href="#retrieving-combinations-containing-markers-of-interest" class="anchor"></a>Retrieving combinations containing markers of interest</h2>
 <p><code><a href="../reference/combs_with.html">combs_with()</a></code> returns the combinations containing all the markers of interest. It requires as input one or more single marker, and the table with combinations and corresponding positive samples counts (<em>“tab”</em>, obtained with <code><a href="../reference/combi.html">combi()</a></code>). The list with the combinations containing all the markers is assigned to <em>“combs_list”</em> object.</p>
-<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">combs_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combs_with.html">combs_with</a></span><span class="op">(</span>markers<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'Marker1'</span>, <span class="st">'Marker3'</span><span class="op">)</span>, markers_table <span class="op">=</span> <span class="va">tab</span><span class="op">)</span></code></pre></div>
 <pre><code>## The combinations in which you can find ALL the selected markers have been computed</code></pre>
-<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">combs_list</span></code></pre></div>
 <pre><code>## [1]  2 11 14 15 21 22 24 26</code></pre>
 </div>
+</div>
+<div id="snipp" class="section level1">
+<h1 class="hasAnchor">
+<a href="#snipp" class="anchor"></a>Code snippets</h1>
+<p>In this section we offer code insights taking advantage of the long format of the <code>data_long</code> object; starting from here the user can further customize plots and data summaries returned by the combiroc functions.</p>
 <div id="plot_int" class="section level2">
 <h2 class="hasAnchor">
 <a href="#plot_int" class="anchor"></a>Plotting of intensities of individual markers</h2>
 <p>A quick plotting overview of individual marker values can be done with a scatter plot using the library <code>ggplot2</code>. Here is an example for the marker “Marker2”:</p>
-<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span> <span class="co"># needed for the filter() function and %&gt;% operator</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
 
@@ -573,13 +623,13 @@ Please note that this dataset has a Patient.ID column which actually allows the 
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color<span class="op">=</span><span class="va">Class</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title<span class="op">=</span><span class="va">myMarker</span>, x <span class="op">=</span><span class="st">"Samples"</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_discrete.html">scale_x_discrete</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="cn">NULL</span>, breaks <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div>
-<p><img src="combiroc_standard_files/figure-html/unnamed-chunk-20-1.png" width="700"></p>
+<p><img src="combiroc_standard_files/figure-html/unnamed-chunk-23-1.png" width="700"></p>
 </div>
 <div id="sum_stats" class="section level2">
 <h2 class="hasAnchor">
 <a href="#sum_stats" class="anchor"></a>Summary statistics of individual markers</h2>
 <p>Further markers exploration can be done using other packages’ functions such as <code><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by()</a></code>, <code><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarize()</a></code> and <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot()</a></code> on the the <code>data_long</code> dataframe. As an example, a few summary statistics can be computed for each marker of both classes, separately, as follow (the libraries <code>dplyr</code> and <code>moments</code> are needed). Numbers in this table are those behind the box plot obtained with <code>distr$boxplot</code> as seen before.</p>
-<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://www.r-project.org">moments</a></span><span class="op">)</span> <span class="co"># needed for skewness() function</span>
 
@@ -614,7 +664,7 @@ Please note that this dataset has a Patient.ID column which actually allows the 
 <h2 class="hasAnchor">
 <a href="#bubble" class="anchor"></a>Bubble plot of all markers’ combinations</h2>
 <p>The following code can be used to plot a “bubble plot” of the markers combinations according to sensitivity (SE), specificity (SP) and size (number of markers in each combination). All these plotting functions take as input the <code>mks</code> dataframe obtained with the <code><a href="../reference/se_sp.html">se_sp()</a></code> function (see above) and containing the SE and SP values for cases and controls in all marker combinations. The original <code>mks</code> dataframe can be customly filtered to plot only a subset of combinations meeting specific criteria.</p>
-<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span> <span class="co"># needed for the filter() function and %&gt;% operator</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
 
@@ -625,13 +675,13 @@ Please note that this dataset has a Patient.ID column which actually allows the 
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_continuous</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">100</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">100</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>x <span class="op">=</span><span class="st">"specificity"</span>, y <span class="op">=</span> <span class="st">"sensitivity"</span><span class="op">)</span></code></pre></div>
-<p><img src="combiroc_standard_files/figure-html/unnamed-chunk-22-1.png" width="700"></p>
+<p><img src="combiroc_standard_files/figure-html/unnamed-chunk-25-1.png" width="700"></p>
 </div>
 <div id="bubblegold" class="section level2">
 <h2 class="hasAnchor">
 <a href="#bubblegold" class="anchor"></a>Bubble plot of the “Gold” combinations</h2>
 <p>If the user wants to customize the plot to highlight the “Gold” combinations (as it is obtained with <code>rmks$bubble_chart</code>), the following code can be used:</p>
-<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span> <span class="co"># needed for the mutate() function and %&gt;% operator</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
 
@@ -654,7 +704,7 @@ Please note that this dataset has a Patient.ID column which actually allows the 
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="va">min_SE</span>, linetype<span class="op">=</span><span class="st">"dotted"</span>, color <span class="op">=</span> <span class="st">"grey"</span>, size<span class="op">=</span><span class="fl">1</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html">scale_color_manual</a></span><span class="op">(</span>values<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"blue"</span>, <span class="st">"gold"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_light</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p><img src="combiroc_standard_files/figure-html/unnamed-chunk-23-1.png" width="700"></p>
+<p><img src="combiroc_standard_files/figure-html/unnamed-chunk-26-1.png" width="700"></p>
 <p>Back to the <a href="#top">top</a> of this doc</p>
 </div>
 </div>
