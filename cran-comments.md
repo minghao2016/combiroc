@@ -1,6 +1,6 @@
 ## Test environments
-* win-builder
-* ubuntu 16.04 LTS (via Travis-ci), R releaase
+* win-builder (via devtools::build() in RStudio)
+* ubuntu 16.04 LTS (via Travis-ci)
 
 ## R CMD check results
 There were no ERRORs, WARNINGs or NOTEs. 
