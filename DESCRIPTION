@@ -16,12 +16,12 @@ Authors@R:
            comment = c(ORCID = "0000-0002-4964-3264")),
     person(given = "Saveria",
            family = "Mazzara",
-           role = "ctb",
+           role = "aut",
            email = "saveria.mazzara@gmail.com",
            comment = c(ORCID = "0000-0003-1799-2360")),
     person(given = "Mauro",
            family = "Bombaci",
-           role = c("ccp", "dtc"),
+           role = c("ccp", "ctb", "dtc"),
            email = "bombaci@ingm.org",
            comment = c(ORCID = "0000-0002-9887-4165")))
 Description: This package provides functions and a workflow to easily and powerfully calculating specificity, sensitivity and ROC curves of biomarkers combinations.
