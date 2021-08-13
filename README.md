@@ -42,6 +42,7 @@ Full documentation is in the package's vignette. You can also find the rendered 
 library(combiroc)
 
 # load the preformatted demo dataset
+# (you can load a dataset of yours using load_data() function: see full docs)
 data <- demo_data
 
 # shape it in long format (prone to plotting)
