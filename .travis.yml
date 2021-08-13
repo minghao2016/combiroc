@@ -1,7 +1,7 @@
 language: r
 os:
   - linux
-warnings_are_errors: false
+warnings_are_errors: true
 sudo: required
 r_packages:
   - covr
