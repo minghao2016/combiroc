@@ -4,6 +4,8 @@ r:
   - devel
 os:
   - linux
+  - windows
+  - osx
 warnings_are_errors: true
 sudo: required
 r_packages:
