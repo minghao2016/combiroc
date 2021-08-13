@@ -21,7 +21,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r setup, include=FALSE}
-#library(combiroc)
+# library(combiroc)
 library(devtools)
 load_all()
 ```
@@ -54,7 +54,7 @@ The `load_data()` function uses a customized **read.table()** function that chec
 Please note that `load_data()` takes the semicolumn (";") as default separator: if the dataset to be loaded has a different separator, i.e. a comma (","), is necessary to specify it in the argument `sep`.
 
 ```{r}
-data <- load_data("../data/demo_data.csv")
+data <- load_data("./data/demo_data.csv", sep = ";")
 head(data)
 ```
 
@@ -325,7 +325,7 @@ For purely demonstrative purposes, in the following example a "synthetic" unclas
 Please note that this unclassified data set lacks the "Class" column but has a Patient.ID column which actually allows the identification of the class __but sample names here are not used in the workflow and have labeling purposes to check the prediction outcomes__ (a "no" prefix identifies healthy/normal subjects while the absence of the prefix identifies affected/abnormal subjects).
 
 ```{r, eval=FALSE}
-unc_data <- load_unclassified_data(data = '../data/demo_unclassified_data.csv', sep = ',')
+unc_data <- load_unclassified_data(data = './data/demo_unclassified_data.csv', sep = ',')
 ```
 This very same dataset has been included in CombiROC package as an unclassified demo dataset, which can be directly called typing `demo_unclassified_data`. 
 ```{r}
