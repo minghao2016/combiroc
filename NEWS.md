@@ -5,6 +5,7 @@ This version of combiroc package is the quasi-stable version ready for CRAN subm
 * Final version of vignette with clarified text and examples
 * Minor tweaks on titles and descriptions throughout the documentation
 * Solved build errors on R development version for windows and ubuntu
+* Removed unnecessary raw data files from data and test folders
 * Performed build checks via Travis
 * Increased code coverage from tests
 
