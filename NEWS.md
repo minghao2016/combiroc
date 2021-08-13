@@ -1,3 +1,13 @@
+# combiroc 0.2.3 - Aug. 13, 2021
+
+This version of combiroc package is the quasi-stable version ready for CRAN submission
+
+* Final version of vignette with clarified text and examples
+* Minor tweaks on titles and descriptions throughout the documentation
+* Solved build errors on R development version for windows and ubuntu
+* Performed build checks via Travis
+* Increased code coverage from tests
+
 # combiroc 0.2.2 - Aug. 12, 2021
 
 * Significant restructuring of the guide (vignette), added more unit testing, checked for code coverage and a number of minor misspellings.
