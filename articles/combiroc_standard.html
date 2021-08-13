@@ -77,7 +77,7 @@
             <h3 class="subtitle"><div class="line-block">Selection and ranking of omics biomarkers combinations made easy.</div></h3>
                         <h4 class="author">Ivan Ferrari, Riccardo L. Rossi</h4>
             
-            <h4 class="date">12 August 2021</h4>
+            <h4 class="date">13 August 2021</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/ingmbioinfo/combiroc/blob/master/vignettes/combiroc_standard.Rmd"><code>vignettes/combiroc_standard.Rmd</code></a></small>
       <div class="hidden name"><code>combiroc_standard.Rmd</code></div>
@@ -185,8 +185,8 @@ Box plots are a nice option to observe the distribution of measurements in each 
 ## # … with 2 more variables: Third_Quart. &lt;dbl&gt;, Skewness &lt;dbl&gt;</code></pre>
 <p>While the second element is another list, containing dot plots, one for each marker. The individual plots can be called from the second element (<code>sms[[2]]</code>) of the list with the <code><a href="https://rdrr.io/r/base/Extract.html">$</a></code> operator. Here we display the plot for Marker 1:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">plot_m2</span> <span class="op">&lt;-</span> <span class="va">sms</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">Marker1</span>
-<span class="va">plot_m2</span></code></pre></div>
+<code class="sourceCode R"><span class="va">plot_m1</span> <span class="op">&lt;-</span> <span class="va">sms</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">Marker1</span>
+<span class="va">plot_m1</span></code></pre></div>
 <p><img src="combiroc_standard_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
 <p>In the section <a href="#snipp">“Code snippets”</a> at the end of this vignette we suggest code snippets that can be used to <a href="#plot_int">customize the plots for individual markers</a> across all samples, as well as to <a href="#sum_stats">modify the summary statistics</a>.</p>
 </div>
