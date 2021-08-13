@@ -1,5 +1,5 @@
 Package: combiroc
-Title: Selection and ranking of omics biomarkers combinations made easy
+Title: Selection and Ranking of Omics Biomarkers Combinations Made Easy
 Date: 08/12/2021
 Version: 0.2.2
 Language: en-US
@@ -12,7 +12,7 @@ Authors@R:
     person(given = "Riccardo L.",
            family = "Rossi",
            role = c("aut", "cre"),
-           email = "rossi@ingm.org",
+           email = "ric.rossi@gmail.com",
            comment = c(ORCID = "0000-0002-4964-3264")),
     person(given = "Saveria",
            family = "Mazzara",
@@ -24,7 +24,7 @@ Authors@R:
            role = c("ccp", "ctb", "dtc"),
            email = "bombaci@ingm.org",
            comment = c(ORCID = "0000-0002-9887-4165")))
-Description: This package provides functions and a workflow to easily and powerfully calculating specificity, sensitivity and ROC curves of biomarkers combinations.
+Description: Combiroc provides functions and a workflow to easily and powerfully calculating specificity, sensitivity and ROC curves of biomarkers combinations.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
