@@ -98,8 +98,8 @@ s_table
 While the second element is another list, containing dot plots, one for each marker. The individual plots can be called from the second element (`sms[[2]]`) of the list with the `$` operator. Here we display the plot for Marker 1:
 
 ```{r}
-plot_m2 <- sms[[2]]$Marker1
-plot_m2
+plot_m1 <- sms[[2]]$Marker1
+plot_m1
 ```
 
 In the section ["Code snippets"](#snipp) at the end of this vignette we suggest code snippets that can be used to [customize the plots for individual markers](#plot_int) across all samples, as well as to [modify the summary statistics](#sum_stats). 
