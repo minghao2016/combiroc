@@ -20,11 +20,17 @@ The Shiny web-app version of CombiROC is still available at [combiroc.eu](http:/
 ## Installation
 
 ```r
-# First, install remotes from CRAN and run it
+# You can install combiroc pulling it from the CRAN:
+install.packages("combiroc")
+```
+### Development version
+
+```r
+# To install the development version from this repository install "remotes"" first:
 install.packages("remotes")
 library(remotes)
 
-# Then install the development version of CombiROC from GitHub
+# Then install the development version of CombiROC:
 remotes::install_github("ingmbioinfo/combiroc", 
                         dependencies = TRUE, build_vignettes = TRUE)
                         
